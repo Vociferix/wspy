@@ -1,0 +1,3022 @@
+from ctypes.util import find_library
+from ctypes import *
+from wspy.errors import *
+from wspy.libglib2 import *
+from wspy.utils import *
+import sys
+import os
+
+lib_name = find_library('wsutil')
+if lib_name is None:
+    raise LibNotFound('wsutil')
+
+libwsutil = CDLL(lib_name)
+
+####################
+# copyright_info.h #
+####################
+
+# const char* get_copyright_info(void);
+get_copyright_info = libwsutil.get_copyright_info
+get_copyright_info.restype = c_char_p
+get_copyright_info.argtypes = []
+
+
+############
+# socket.h #
+############
+
+# gchar* ws_init_sockets(void);
+ws_init_sockets = libwsutil.ws_init_sockets
+ws_init_sockets.restype = gchar_p
+ws_init_sockets.argtypes = []
+
+# void ws_cleanup_sockets(void);
+ws_cleanup_sockets = libwsutil.ws_cleanup_sockets
+ws_init_sockets.restype = None
+ws_init_sockets.argtypes = []
+
+# int ws_socket_ptoa(struct sockaddr_storage* dst, const gchar* src,
+# guint16 def_port);
+ws_socket_ptoa = libwsutil.ws_socket_ptoa
+ws_socket_ptoa.restype = c_int
+ws_socket_ptoa.argtypes = [c_void_p, gchar_p, guint16]
+
+
+###############
+# inet_ipv4.h #
+###############
+
+# typedef guint32 ws_in4_addr;
+ws_in4_addr = guint32
+
+# #define WS_IN4_LOOPBACK ((ws_in4_addr)GUINT32_TO_BE(0x7f000001))
+WS_IN4_LOOPBACK = ws_in4_addr(0x7f000001)
+
+# #define in4_addr_is_local_network_control_block(addr) \
+#   ((addr & 0xffffff00) == 0xe0000000)
+
+
+def in4_addr_is_local_network_control_block(addr):
+    return (addr & 0xffffff00) == 0xe0000000
+
+# #define in4_addr_is_multicast(addr) \
+#   ((addr & 0xf0000000) == 0xe0000000)
+
+
+def in4_addr_is_multicast(addr):
+    return (addr & 0xf0000000) == 0xe0000000
+
+
+###############
+# inet_ipv6.h #
+###############
+
+# #define IPv6_ADDR_SIZE  16
+IPv6_ADDR_SIZE = 16
+
+# #define IPv6_HDR_SIZE           40
+IPv6_HDR_SIZE = 40
+
+# #define IPv6_FRAGMENT_HDR_SIZE  8
+IPv6_FRAGMENT_HDR_SIZE = 8
+
+# typedef struct e_in6_addr {
+#     guint8 bytes[16];
+# } ws_in6_addr;
+
+
+class e_in6_addr(Structure):
+    _fields_ = [('bytes', guint8 * 16)]
+
+
+ws_in6_addr = e_in6_addr
+
+# struct ws_ip6_hdr {
+#     guint32 ip6h_vc_flow;
+#     guint16 ip6h_plen;
+#     guint8 ip6h_nxt;
+#     guint8 ip6h_hlim;
+#     ws_in6_addr ip6h_src;
+#     ws_in6_addr ip6h_dst;
+# };
+
+
+class ws_ip6_hdr(Structure):
+    _fields_ = [('ip6h_vc_flow', guint32),
+                ('ip6h_plen', guint16),
+                ('ip6h_nxt', guint8),
+                ('ip6h_hlim', guint8),
+                ('ip6h_src', ws_in6_addr),
+                ('ip6h_dst', ws_in6_addr)]
+
+# struct ip6_ext {
+#     guchar ip6e_nxt;
+#     guchar ip6e_len;
+# };
+
+
+class ip6_ext(Structure):
+    _fields_ = [('ip6e_nxt', guchar),
+                ('ip6e_len', guchar)]
+
+# struct ip6_rthdr {
+#     guint8 ip6r_nxt;
+#     guint8 ip6r_len;
+#     guint8 ip6r_type;
+#     guint8 ip6r_segleft;
+# };
+
+
+class ip6_rthdr(Structure):
+    _fields_ = [('ip6r_nxt', guint8),
+                ('ip6r_len', guint8),
+                ('ip6r_type', guint8),
+                ('ip6r_segleft', guint8)]
+
+# struct ip6_rthdr0 {
+#     guint8 ip6r0_nxt;
+#     guint8 ip6r0_len;
+#     guint8 ip6r0_type;
+#     guint8 ip6r0_segleft;
+#     guint8 ip6r0_reserved;
+#     guint8 ip6r0_slmap[3];
+#     ws_in6_addr ip6r0_addr[1];
+# };
+
+
+class ip6_rthdr0(Structure):
+    _fields_ = [('ip6r0_nxt', guint8),
+                ('ip6r0_len', guint8),
+                ('ip6r0_type', guint8),
+                ('ip6r0_segleft', guint8),
+                ('ip6r0_reserved', guint8),
+                ('ip6r0_slmap', guint8 * 3),
+                ('ip6r0_addr', ws_in6_addr * 1)]
+
+# struct ip6_frag {
+#     guint8 ip6f_nxt;
+#     guint8 ip6f_reserved;
+#     guint16 ip6f_offlg;
+#     guint32 ip6f_ident;
+# };
+
+
+class ip6_frag(Structure):
+    _fields_ = [('ip6f_nxt', guint8),
+                ('ip6f_reserved', guint8),
+                ('ip6f_offlg', guint16),
+                ('ip6f_ident', guint32)]
+
+
+# #define IP6F_OFF_MASK           0xfff8
+IP6F_OFF_MASK = 0xfff8
+
+# #define IP6F_RESERVED_MASK      0x0006
+IP6F_RESERVED_MASK = 0x0006
+
+# #define IP6F_MORE_FRAG          0x0001
+IP6F_MORE_FRAG = 0x0001
+
+# static inline gboolean in6_addr_is_linklocal(const ws_in6_addr* a);
+
+
+def in6_addr_is_linklocal(a):
+    return a[0].bytes[0] == 0xfe and (a[0].bytes[1] & 0xc0) == 0x80
+
+# static inline gboolean in6_addr_is_sitelocal(const ws_in6_addr* a);
+
+
+def in6_addr_is_sitelocal(a):
+    return a[0].bytes[0] == 0xfe and (a[0].bytes[1] & 0xc0) == 0xc0
+
+# static inline gboolean in6_addr_is_multicast(const ws_in6_addr* a);
+
+
+def in6_addr_is_multicast(a):
+    return a[0].bytes[0] == 0xff
+
+
+###############
+# inet_addr.h #
+# a
+
+# #define WS_INET_ADDRSTRLEN      16
+WS_INET_ADDRSTRLEN = 16
+
+# #define WS_INET6_ADDRSTRLEN     46
+WS_INET6_ADDRSTRLEN = 46
+
+# const gchar* ws_inet_ntop4(gconstpointer src, gchar* dst, guint dst_size);
+ws_inet_ntop4 = libwsutil.ws_inet_ntop4
+ws_inet_ntop4.restype = gchar_p
+ws_inet_ntop4.argtypes = [gconstpointer, gchar_p, guint]
+
+# const gchar* ws_inet_ntop6(gconstpointer src, gchar* dst, guint dst_size);
+ws_inet_ntop6 = libwsutil.ws_inet_ntop6
+ws_inet_ntop6.restype = gchar_p
+ws_inet_ntop6.argtypes = [gconstpointer, gchar_p, guint]
+
+# gboolean ws_inet_pton4(const gchar* src, ws_in4_addr* dst);
+ws_inet_pton4 = libwsutil.ws_inet_pton4
+ws_inet_pton4.restype = gboolean
+ws_inet_pton4argtypes = [gchar_p, POINTER(ws_in4_addr)]
+
+# gboolean ws_inet_pton6(const gchar* src, ws_in6_addr* dst);
+ws_inet_pton6 = libwsutil.ws_inet_pton4
+ws_inet_pton6.restype = gboolean
+ws_inet_pton6argtypes = [gchar_p, POINTER(ws_in6_addr)]
+
+################
+# ws_mempbrk.h #
+################
+
+# typedef struct {
+#     gchar patt[256];
+# #ifdef HAVE_SSE4_2
+#     gboolean use_sse42;
+#     __m128i mask;
+# #endif
+# } ws_mempbrk_pattern;
+
+
+class ws_mempbrk_pattern(Structure):
+    _fields_ = [('patt', gchar * 256),
+                ('use_sse42', gboolean),
+                ('mask', c_uint8 * 16)]
+
+
+# void ws_mempbrk_compile(ws_mempbrk_pattern* pattern, const gchar* needles);
+ws_mempbrk_compile = libwsutil.ws_mempbrk_compile
+ws_mempbrk_compile.restype = None
+ws_mempbrk_compile.argtypes = [POINTER(ws_mempbrk_pattern), gchar_p]
+
+# const guint8* ws_mempbrk_exec(const guint8* haystack,
+#                               size_t haystacklen,
+#                               const ws_mempbrk_pattern* pattern,
+#                               guchar* found_needle);
+ws_mempbrk_exec = libwsutil.ws_mempbrk_exec
+ws_mempbrk_exec.restype = POINTER(guint8)
+ws_mempbrk_exec.argtypes = [POINTER(guint8),
+                            c_size_t,
+                            POINTER(ws_mempbrk_pattern),
+                            guchar_p]
+
+
+#############
+# adler32.h #
+#############
+
+# guint32 update_adler32(guint32 adler, const guint8* buf, size_t len);
+update_adler32 = libwsutil.update_adler32
+update_adler32.restype = guint32
+update_adler32.argtypes = [guint32, POINTER(guint8), c_size_t]
+
+# guint32 adler32_bytes(const guint8* buf, size_t len);
+adler32_bytes = libwsutil.adler32_bytes
+adler32_bytes.restype = guint32
+adler32_bytes.argtypes = [POINTER(guint8), c_size_t]
+
+# guint32 adler32_str(const char* buf);
+adler32_str = libwsutil.adler32_str
+adler32_str.restype = guint32
+adler32_str.argtypes = [c_char_p]
+
+
+############
+# base32.h #
+############
+
+# #define Base32_BAD_INPUT -1
+Base32_BAD_INPUT = -1
+
+# #define Base32_TOO_BIG -2
+Base32_TOO_BIG = -2
+
+# int ws_base32_decode(guint8* output,
+#                      const guint32 outputLength,
+#                      const guint8* in,
+#                      const guint32 inputLength);
+ws_base32_decode = libwsutil.ws_base32_decode
+ws_base32_decode.restype = c_int
+ws_base32_decode.argtypes = [POINTER(guint8),
+                             guint32,
+                             POINTER(guint8),
+                             guint32]
+
+
+#####################
+# bits_count_ones.h #
+#####################
+
+# static inline int ws_count_ones(const guint64 x);
+def ws_count_ones(x):
+    bits = bits - ((bits >> 1) & guint64(0x5555555555555555))
+    bits = (bits & guint64(0x3333333333333333)) + \
+        ((bits >> 2) & guint64(0x3333333333333333))
+    bits = (bits + (bits >> 4)) & guint64(0x0F0F0F0F0F0F0F0F)
+    return c_int((bits * guint64(0x0101010101010101)) >> 56)
+
+
+##############
+# bits_ctz.h #
+##############
+
+# static inline int __ws_ctz32(guint32 x);
+__ws_ctz32_table = [0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8,
+                    31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9]
+
+
+def __ws_ctz32(x):
+    return c_int(__ws_ctz32_table[int(guint32(x & -gint32(x)) >> 27)])
+
+# static inline int ws_ctz(guint64 x);
+
+
+def ws_ctz(x):
+    hi = guint32(x >> 32)
+    lo = guint32(x)
+    if lo == 0:
+        return 32 + __ws_ctz32(hi)
+    else:
+        return __ws_ctz32(lo)
+
+
+# static inline int __ws_ilog2_32(guint32 x);
+__ws_ilog2_32_table = [
+    0,
+    9,
+    1,
+    10,
+    13,
+    21,
+    2,
+    29,
+    11,
+    14,
+    16,
+    18,
+    22,
+    25,
+    3,
+    30,
+    8,
+    12,
+    20,
+    28,
+    15,
+    17,
+    24,
+    7,
+    19,
+    27,
+    23,
+    6,
+    26,
+    5,
+    4,
+    31]
+
+
+def __ws_ilog2_32(x):
+    x |= x >> 1
+    x |= x >> 2
+    x |= x >> 4
+    x |= x >> 8
+    x |= x >> 16
+    return c_int(__ws_ilog2_32_table[int(guint32(x * 0x07C4ACDD) >> 27)])
+
+# static inline int ws_ilog2(guint64 x);
+
+
+def ws_ilog2(x):
+    hi = guint32(x >> 32)
+    lo = guint32(x)
+    if hi == 0:
+        return __ws_ilog2_32(lo)
+    else:
+        return 32 + __ws_ilog2_32(hi)
+
+
+#############
+# bitswap.h #
+#############
+
+# void bitswap_buf_inplace(guint8* buf, size_t len);
+bitswap_buf_inplace = libwsutil.bitswap_buf_inplace
+bitswap_buf_inplace.restype = None
+bitswap_buf_inplace.argtypes = [POINTER(guint8), c_size_t]
+
+
+############
+# buffer.h #
+############
+
+# typedef struct Buffer {
+#     guint8* data;
+#     gsize allocated;
+#     gsize start;
+#     gsize first_free;
+# } Buffer;
+class Buffer(Structure):
+    _fields_ = [('data', POINTER(guint8)),
+                ('allocated', gsize),
+                ('start', gsize),
+                ('first_free', gsize)]
+
+
+# void ws_buffer_init(Buffer* buffer, gsize space);
+ws_buffer_init = libwsutil.ws_buffer_init
+ws_buffer_init.restype = None
+ws_buffer_init.argtypes = [POINTER(Buffer), gsize]
+
+# void ws_buffer_free(Buffer* buffer);
+ws_buffer_free = libwsutil.ws_buffer_free
+ws_buffer_free.restype = None
+ws_buffer_free.argtypes = [POINTER(Buffer)]
+
+# void ws_buffer_assure_space(Buffer* buffer, gsize space);
+ws_buffer_assure_space = libwsutil.ws_buffer_assure_space
+ws_buffer_assure_space.restype = None
+ws_buffer_assure_space.argtypes = [POINTER(Buffer), gsize]
+
+# void ws_buffer_append(Buffer* buffer, guint8* from, gsize bytes);
+ws_buffer_append = libwsutil.ws_buffer_append
+ws_buffer_append.restype = None
+ws_buffer_append.argtypes = [POINTER(Buffer), POINTER(guint8), gsize]
+
+# void ws_buffer_remove_start(Buffer* buffer, gsize bytes);
+ws_buffer_remove_start = libwsutil.ws_buffer_remove_start
+ws_buffer_remove_start.restype = None
+ws_buffer_remove_start.argtypes = [POINTER(Buffer), gsize]
+
+# void ws_buffer_cleanup(void);
+ws_buffer_cleanup = libwsutil.ws_buffer_cleanup
+ws_buffer_cleanup.restype = None
+ws_buffer_cleanup.argtypes = []
+
+# #define ws_buffer_length(buffer) ((buffer)->first_free - (buffer)->start)
+
+
+def ws_buffer_length(buffer):
+    return buffer[0].first_free - buffer[0].start
+
+# #define ws_buffer_clean(buffer) ws_buffer_remove_start((buffer), ws_buffer_length(buffer))
+
+
+def ws_buffer_clean(buffer):
+    ws_buffer_remove_start(buffer, ws_buffer_length(buffer))
+
+# #define ws_buffer_increase_length(buffer,bytes) (buffer)->first_free += (bytes)
+
+
+def ws_buffer_increase_length(buffer, bytes):
+    buffer[0].first_free += bytes
+
+# #define ws_buffer_start_ptr(buffer) ((buffer)->data + (buffer)->start)
+
+
+def ws_buffer_start_ptr(buffer):
+    return buffer[0].data + buffer[0].start
+
+# #define ws_buffer_end_ptr(buffer) ((buffer)->data + (buffer)->first_free)
+
+
+def ws_buffer_end_ptr(buffer):
+    return buffer[0].data + buffer[0].first_free
+
+# #define ws_buffer_append_buffer(buffer,src_buffer) ws_buffer_append((buffer), ws_buffer_start_ptr(src_buffer), ws_buffer_length(src_buffer))
+
+
+def ws_buffer_append_buffer(buffer, src_buffer):
+    ws_buffer_append(buffer, ws_buffer_start_ptr(
+        src_buffer), ws_buffer_length(src_buffer))
+
+
+############
+# codecs.h #
+############
+
+# typedef struct {
+#     void (*register_codec_module)(void);
+# } codecs_plugin;
+class codecs_plugin(Structure):
+    _fields_ = [('register_codec_module', CFUNCTYPE(None))]
+
+
+# void codecs_register_plugin(const codecs_plugin* plug);
+codecs_register_plugin = libwsutil.codecs_register_plugin
+codecs_register_plugin.restype = None
+codecs_register_plugin.argtypes = [POINTER(codecs_plugin)]
+
+# void codecs_init(void);
+codecs_init = libwsutil.codecs_init
+codecs_init.restype = None
+codecs_init.argtypes = []
+
+# void codecs_cleanup(void);
+codecs_cleanup = libwsutil.codecs_cleanup
+codecs_cleanup.restype = None
+codecs_cleanup.argtypes = []
+
+# void codec_get_compiled_version_info(GString* str);
+#codec_get_compiled_version_info = libwsutil.codec_get_compiled_version_info
+#codec_get_compiled_version_info.restype = None
+#codec_get_compiled_version_info.argtypes = [POINTER(GString)]
+
+# struct codec_handle;
+# typedef struct codec_handle* codec_handle_t;
+codec_handle_t = c_void_p
+
+# typedef void* (*codec_init_fn)(void);
+codec_init_fn = CFUNCTYPE(c_void_p)
+
+# typedef void (*codec_release_fn)(void* context);
+codec_release_fn = CFUNCTYPE(None, c_void_p)
+
+# typedef unsigned (*codec_get_channels_fn)(void* context);
+codec_get_channels_fn = CFUNCTYPE(c_uint, c_void_p)
+
+# typedef unsigned (*codec_get_frequency_fn)(void* context);
+codec_get_frequency_fn = CFUNCTYPE(c_uint, c_void_p)
+
+# typedef size_t (*codec_decode_fn)(void* context,
+#                                   const void* inputBytes,
+#                                   size_t inputBytesSize,
+#                                   void* outputSamples,
+#                                   size_t* outputSamplesSize);
+codec_decode_fn = CFUNCTYPE(c_size_t,
+                            c_void_p,
+                            c_void_p,
+                            c_size_t,
+                            c_void_p,
+                            POINTER(c_size_t))
+
+# gboolean register_codec(const char* name,
+#                         codec_init_fn init_fn,
+#                         codec_release_fn release_fn,
+#                         codec_get_channels_fn channels_fn,
+#                         codec_get_frequency_fn frequency_fn,
+#                         codec_decode_fn decode_fn);
+register_codec = libwsutil.register_codec
+register_codec.restype = gboolean
+register_codec.argtypes = [c_char_p,
+                           codec_init_fn,
+                           codec_release_fn,
+                           codec_get_channels_fn,
+                           codec_get_frequency_fn,
+                           codec_decode_fn]
+
+# gboolean deregister_codec(const char* name);
+deregister_codec = libwsutil.deregister_codec
+deregister_codec.restype = gboolean
+deregister_codec.argtypes = [c_char_p]
+
+# codec_handle_t find_codec(const char* name);
+find_codec = libwsutil.find_codec
+find_codec.restype = codec_handle_t
+find_codec.argtypes = [c_char_p]
+
+# void* codec_init(codec_handle_t codec);
+codec_init = libwsutil.codec_init
+codec_init.restype = c_void_p
+codec_init.argtypes = [codec_handle_t]
+
+# void codec_release(codec_handle_t codec, void* context);
+codec_release = libwsutil.codec_release
+codec_release.restype = None
+codec_release.argtypes = [codec_handle_t, c_void_p]
+
+# unsigned codec_get_channels(codec_handle_t codec, void* context);
+codec_get_channels = libwsutil.codec_get_channels
+codec_get_channels.restype = c_uint
+codec_get_channels.argtypes = [codec_handle_t, c_void_p]
+
+# unsigned codec_get_frequency(codec_handle_t codec, void* context);
+codec_get_frequency = libwsutil.codec_get_frequency
+codec_get_frequency.restype = c_uint
+codec_get_frequency.argtypes = [codec_handle_t, c_void_p]
+
+# size_t codec_decode(codec_handle_t codec,
+#                     void* context,
+#                     const void* inputBytes,
+#                     size_t inputBytesSize,
+#                     void* outputSamples,
+#                     size_t* outputSamplesSize);
+codec_decode = libwsutil.codec_decode
+codec_decode.restype = c_size_t
+codec_decode.argtypes = [codec_handle_t,
+                         c_void_p,
+                         c_void_p,
+                         c_size_t,
+                         c_void_p,
+                         POINTER(c_size_t)]
+
+
+###########
+# color.h #
+###########
+
+# typedef struct {
+#     guint16 red;
+#     guint16 green;
+#     guint16 blue;
+# } color_t;
+class color_t(Structure):
+    _fields_ = [('red', guint16),
+                ('green', guint16),
+                ('blue', guint16)]
+
+# inline static unsigned int color_t_to_rgb(const color_t* color);
+
+
+def color_t_to_rgb(color):
+    return (
+        c_uint(
+            color[0].red >> 8) << 16) | (
+        c_uint(
+            color[0].green >> 8) << 8) | c_uint(
+        color[0].blue >> 8)
+
+
+##############
+# cpu_info.h #
+##############
+
+# void get_cpu_info(GString* str);
+get_cpu_info = libwsutil.get_cpu_info
+get_cpu_info.restype = None
+get_cpu_info.argtypes = [POINTER(GString)]
+
+
+################
+# crash_info.h #
+################
+
+# void ws_add_crash_info(const char* fmt, ...);
+def ws_add_crash_info(fmt, *argv):
+    args, types = c_va_list(*argv)
+    _ws_add_crash_info = libwsutil.ws_add_crash_info
+    _ws_add_crash_info.restype = None
+    _ws_add_crash_info.argtypes = [c_char_p] + types
+    _ws_add_crash_info(fmt, *args)
+
+
+###########
+# crc10.h #
+###########
+
+# guint16 update_crc10_by_bytes(guint16 crc10, const guint8* data_blk_ptr,
+# int data_blk_size);
+update_crc10_by_bytes = libwsutil.update_crc10_by_bytes
+update_crc10_by_bytes.restype = guint16
+update_crc10_by_bytes.argtypes = [guint16, POINTER(guint8), c_int]
+
+
+###########
+# crc11.h #
+###########
+
+# guint16 crc11_307_noreflect_noxor(const guint8* data, guint64 data_len);
+crc11_307_noreflect_noxor = libwsutil.crc11_307_noreflect_noxor
+crc11_307_noreflect_noxor.restype = guint16
+crc11_307_noreflect_noxor.argtypes = [POINTER(guint8), guint64]
+
+
+###########
+# crc16.h #
+###########
+
+# guint16 crc16_ccitt(const guint8* buf, guint len);
+crc16_ccitt = libwsutil.crc16_ccitt
+crc16_ccitt.restype = guint16
+crc16_ccitt.argtypes = [POINTER(guint8), guint]
+
+# guint16 crc16_x25_ccitt_seed(const guint8* buf, guint len, guint16 seed);
+crc16_x25_ccitt_seed = libwsutil.crc16_x25_ccitt_seed
+crc16_x25_ccitt_seed.restype = guint16
+crc16_x25_ccitt_seed.argtypes = [POINTER(guint8), guint, guint16]
+
+# guint16 crc16_ccitt_seed(const guint8* buf, guint len, guint16 seed);
+crc16_ccitt_seed = libwsutil.crc16_ccitt_seed
+crc16_ccitt_seed.restype = guint16
+crc16_ccitt_seed.argtypes = [POINTER(guint8), guint, guint16]
+
+# guint16 crc16_iso14443a(const guint8* buf, guint len);
+crc16_iso14443a = libwsutil.crc16_iso14443a
+crc16_iso14443a.restype = guint16
+crc16_iso14443a.argtypes = [POINTER(guint8), guint]
+
+# guint16 crc16_usb(const guint8* buf, guint len);
+crc16_usb = libwsutil.crc16_usb
+crc16_usb.restype = guint16
+crc16_usb.argtypes = [POINTER(guint8), guint]
+
+# guint16 crc16_0x5935(const guint8* buf, guint len, guint16 seed);
+crc16_0x5935 = libwsutil.crc16_0x5935
+crc16_0x5935.restype = guint16
+crc16_0x5935.argtypes = [POINTER(guint8), guint, guint16]
+
+# guint16 crc16_0x755B(const guint8* buf, guint len, guint16 seed);
+crc16_0x755B = libwsutil.crc16_0x755B
+crc16_0x755B.restype = guint16
+crc16_0x755B.argtypes = [POINTER(guint8), guint, guint16]
+
+# guint16 crc16_0x9949_seed(const guint8* buf, guint len, guint16 seed);
+crc16_0x9949_seed = libwsutil.crc16_0x9949_seed
+crc16_0x9949_seed.restype = guint16
+crc16_0x9949_seed.argtypes = [POINTER(guint8), guint, guint16]
+
+# guint16 crc16_0x3D65_seed(const guint8* buf, guint len, guint16 seed);
+crc16_0x3D65_seed = libwsutil.crc16_0x3D65_seed
+crc16_0x3D65_seed.restype = guint16
+crc16_0x3D65_seed.argtypes = [POINTER(guint8), guint, guint16]
+
+# guint16 crc16_0x080F_seed(const guint8* buf, guint len, guint16 seed);
+crc16_0x080F_seed = libwsutil.crc16_0x080F_seed
+crc16_0x080F_seed.restype = guint16
+crc16_0x080F_seed.argtypes = [POINTER(guint8), guint, guint16]
+
+
+#################
+# crc16-plain.h #
+#################
+
+# #define CRC_ALGO_TABLE_DRIVEN 1
+CRC_ALGO_TABLE_DRIVEN = 1
+
+# typedef guint16 crc16_plain_t;
+crc16_plain_t = guint16
+
+# static inline crc16_plain_t crc16_plain_init(void);
+
+
+def crc16_plain_init():
+    return crc16_plain_t(0)
+
+
+# crc16_plain_t crc16_plain_update(crc16_plain_t crc, const unsigned char*
+# data, size_t data_len);
+crc16_plain_update = libwsutil.crc16_plain_update
+crc16_plain_update.restype = crc16_plain_t
+crc16_plain_update.argtypes = [crc16_plain_t, POINTER(c_ubyte), c_size_t]
+
+# static inline crc16_plain_t crc16_plain_finalize(crc16_plain_t crc);
+
+
+def crc16_plain_finalize(crc):
+    return crc ^ crc16_plain_t(0)
+
+
+# guint16 crc16_8005_noreflect_noxor(const guint8* data, guint64 data_len);
+crc16_8005_noreflect_noxor = libwsutil.crc16_8005_noreflect_noxor
+crc16_8005_noreflect_noxor.restype = guint16
+crc16_8005_noreflect_noxor.argtypes = [POINTER(guint8), guint64]
+
+
+###########
+# crc32.h #
+###########
+
+# #define CRC32_CCITT_SEED 0xFFFFFFFF
+CRC32_CCITT_SEED = 0xFFFFFFFF
+
+# #define CRC32C_PRELOAD 0xFFFFFFFF
+CRC32C_PRELOAD = 0xFFFFFFFF
+
+# #define CRC32_MPEG2_SEED 0xFFFFFFFF
+CRC32_MPEG2_SEED = 0xFFFFFFFF
+
+# #define CRC32C_SWAP(crc32c_value)                       \
+#         (((crc32c_value & 0xff000000) >> 24)    |       \
+#          ((crc32c_value & 0x00ff0000) >>  8)    |       \
+#          ((crc32c_value & 0x0000ff00) <<  8)    |       \
+#          ((crc32c_value & 0x000000ff) << 24))
+
+
+def CRC32C_SWAP(crc32c_value):
+    return ((crc32c_value & 0xFF000000) >> 24) | ((crc32c_value & 0x00FF0000) >> 8) | (
+        (crc32c_value & 0x0000FF00) << 8) | ((crc32c_value & 0x000000FF) << 24)
+
+
+# guint32 crc32_ccitt_table_lookup(guchar pos);
+crc32_ccitt_table_lookup = libwsutil.crc32_ccitt_table_lookup
+crc32_ccitt_table_lookup.restype = guint32
+crc32_ccitt_table_lookup.argtypes = [guchar]
+
+# guint32 crc32c_table_lookup(guchar pos);
+crc32c_table_lookup = libwsutil.crc32c_table_lookup
+crc32c_table_lookup.restype = guint32
+crc32c_table_lookup.argtypes = [guchar]
+
+# guint32 crc32c_calculate(const void* buf, int len, guint32 crc);
+crc32c_calculate = libwsutil.crc32c_calculate
+crc32c_calculate.restype = guint32
+crc32c_calculate.argtypes = [c_void_p, c_int, guint32]
+
+# guint32 crc32c_calculate_no_swap(const void* buf, int len, guint32 crc);
+crc32c_calculate_no_swap = libwsutil.crc32c_calculate_no_swap
+crc32c_calculate_no_swap.restype = guint32
+crc32c_calculate_no_swap.argtypes = [c_void_p, c_int, guint32]
+
+# guint32 crc32_ccitt(const guint8* buf, guint len);
+crc32_ccitt = libwsutil.crc32_ccitt
+crc32_ccitt.restype = guint32
+crc32_ccitt.argtypes = [POINTER(guint8), guint]
+
+# guint32 crc32_ccitt_seed(const guint8* buf, guint len, guint32 seed);
+crc32_ccitt_seed = libwsutil.crc32_ccitt_seed
+crc32_ccitt_seed.restype = guint32
+crc32_ccitt_seed.argtypes = [POINTER(guint8), guint, guint32]
+
+# guint32 crc32_mpeg2_seed(const guint8* buf, guint len, guint32 seed);
+crc32_mpeg2_seed = libwsutil.crc32_mpeg2_seed
+crc32_mpeg2_seed.restype = guint32
+crc32_mpeg2_seed.argtypes = [POINTER(guint8), guint, guint32]
+
+# guint32 crc32_0x0AA725CF_seed(const guint8* buf, guint len, guint32 seed);
+crc32_0x0AA725CF_seed = libwsutil.crc32_0x0AA725CF_seed
+crc32_0x0AA725CF_seed.restype = guint32
+crc32_0x0AA725CF_seed.argtypes = [POINTER(guint8), guint, guint32]
+
+# guint32 crc32_0x5D6DCB_seed(const guint8* buf, guint len, guint32 seed);
+crc32_0x5D6DCB_seed = libwsutil.crc32_0x5D6DCB_seed
+crc32_0x5D6DCB_seed.restype = guint32
+crc32_0x5D6DCB_seed.argtypes = [POINTER(guint8), guint, guint32]
+
+# int Dot11DecryptWepDecrypt(const guchar* seed, const size_t seed_len,
+# guchar* cypher_text, const size_t data_len);
+Dot11DecryptWepDecrypt = libwsutil.Dot11DecryptWepDecrypt
+Dot11DecryptWepDecrypt.restype = c_int
+Dot11DecryptWepDecrypt.argtypes = [
+    POINTER(guchar),
+    c_size_t,
+    POINTER(guchar),
+    c_size_t]
+
+
+##########
+# crc5.h #
+##########
+
+# guint8 crc5_usb_11bit_input(guint16 input);
+crc5_usb_11bit_input = libwsutil.crc5_usb_11bit_input
+crc5_usb_11bit_input.restype = guint8
+crc5_usb_11bit_input.argtypes = [guint16]
+
+# guint8 crc5_usb_19bit_input(guint32 input);
+crc5_usb_19bit_input = libwsutil.crc5_usb_19bit_input
+crc5_usb_19bit_input.restype = guint8
+crc5_usb_19bit_input.argtypes = [guint32]
+
+
+##########
+# crc6.h #
+##########
+
+# guint16 crc6_0X6F(guint16 crc6, const guint8* data_blk_ptr, int
+# data_blk_size);
+crc6_0X6F = libwsutil.crc6_0X6F
+crc6_0X6F.restype = guint16
+crc6_0X6F.argtypes = [guint16, POINTER(guint8), c_int]
+
+
+##########
+# crc7.h #
+##########
+
+# static inline guint8 crc7init(void)
+def crc7init():
+    return guint8(0)
+
+
+# guint8 crc7update(guint8 crc, const unsigned char* data, int data_len);
+crc7update = libwsutil.crc7update
+crc7update.restype = guint8
+crc7update.argtypes = [guint8, POINTER(c_ubyte), c_int]
+
+# static inline guint8 crc7finalize(guint8 crc);
+
+
+def crc7finalize(crc):
+    return (crc >> 1) ^ 0
+
+
+##########
+# crc8.h #
+##########
+
+# guint8 crc8_0x2F(const guint8* buf, guint32 len, guint8 seed);
+crc8_0x2F = libwsutil.crc8_0x2F
+crc8_0x2F.restype = guint8
+crc8_0x2F.argtypes = [POINTER(guint8), guint32, guint8]
+
+# guint8 crc8_0x37(const guint8* buf, guint32 len, guint8 seed);
+crc8_0x37 = libwsutil.crc8_0x37
+crc8_0x37.restype = guint8
+crc8_0x37.argtypes = [POINTER(guint8), guint32, guint8]
+
+# guint8 crc8_0x3B(const guint8* buf, guint32 len, guint8 seed);
+crc8_0x3B = libwsutil.crc8_0x3B
+crc8_0x3B.restype = guint8
+crc8_0x3B.argtypes = [POINTER(guint8), guint32, guint8]
+
+
+################
+# curve25519.h #
+################
+
+# int crypto_scalarmult_curve25519(unsigned char* q, const unsigned char*
+# n, const unsigned char* p);
+crypto_scalarmult_curve25519 = libwsutil.crypto_scalarmult_curve25519
+crypto_scalarmult_curve25519.restype = c_int
+crypto_scalarmult_curve25519.argtypes = [
+    POINTER(c_ubyte), POINTER(c_ubyte), POINTER(c_ubyte)]
+
+# int crypto_scalarmult_curve25519_base(const unsigned char* n, const
+# unsigned char* p);
+crypto_scalarmult_curve25519_base = libwsutil.crypto_scalarmult_curve25519_base
+crypto_scalarmult_curve25519_base.restype = c_int
+crypto_scalarmult_curve25519_base.argtypes = [
+    POINTER(c_ubyte), POINTER(c_ubyte)]
+
+
+#########
+# eax.h #
+#########
+
+# typedef struct tagMAC_T {
+#     guint8 Mac[4];
+# } MAC_T;
+class tagMAC_T(Structure):
+    _fields_ = [('Mac', guint8 * 4)]
+
+
+MAC_T = tagMAC_T
+
+# #define EAX_MODE_CLEARTEXT_AUTH     1
+EAX_MODE_CLEARTEXT_AUTH = 1
+
+# #define EAX_MODE_CIPHERTEXT_AUTH    2
+EAX_MODE_CIPHERTEXT_AUTH = 2
+
+# #define EAX_SIZEOF_KEY              16
+EAX_SIZEOF_KEY = 16
+
+# gboolean Eax_Decrypt(guint8* pN, guint8* pK, guint8* pC,
+#                      guint32 SizeN, guint32 SizeK, guint32 SizeC,
+#                      MAC_T* pMac, guint8 Mode);
+Eax_Decrypt = libwsutil.Eax_Decrypt
+Eax_Decrypt.restype = gboolean
+Eax_Decrypt.argtypes = [POINTER(guint8), POINTER(guint8), POINTER(guint8),
+                        guint32, guint32, guint32,
+                        POINTER(MAC_T), guint8]
+
+
+############
+# epochs.h #
+############
+
+# #define EPOCH_DELTA_1900_01_01_00_00_00_UTC 2208988800U
+EPOCH_DELTA_1900_01_01_00_00_00_UTC = 2208988800
+
+# #define EPOCH_DELTA_1904_01_01_00_00_00_UTC  2082844800U
+EPOCH_DELTA_1904_01_01_00_00_00_UTC = 2082844800
+
+# #define EPOCH_DELTA_1601_01_01_00_00_00_UTC G_GUINT64_CONSTANT(11644473600)
+EPOCH_DELTA_1601_01_01_00_00_00_UTC = 11644473600
+
+
+################
+# filesystem.h #
+################
+
+# #define DEFAULT_PROFILE      "Default"
+DEFAULT_PROFILE = b'Default'
+
+# char* init_progfile_dir(const char* arg0);
+init_progfile_dir = libwsutil.init_progfile_dir
+init_progfile_dir.restype = c_char_p
+init_progfile_dir.argtypes = [c_char_p]
+
+# const char* get_progfile_dir(void);
+get_progfile_dir = libwsutil.get_progfile_dir
+get_progfile_dir.restype = c_char_p
+get_progfile_dir.argtypes = []
+
+# const char* get_plugins_dir(void);
+get_plugins_dir = libwsutil.get_plugins_dir
+get_plugins_dir.restype = c_char_p
+get_plugins_dir.argtypes = []
+
+# const char* get_plugins_dir_with_version(void);
+get_plugins_dir_with_version = libwsutil.get_plugins_dir_with_version
+get_plugins_dir_with_version.restype = c_char_p
+get_plugins_dir_with_version.argtypes = []
+
+# const char* get_plugins_pers_dir(void);
+get_plugins_pers_dir = libwsutil.get_plugins_pers_dir
+get_plugins_pers_dir.restype = c_char_p
+get_plugins_pers_dir.argtypes = []
+
+# const char* get_plugins_pers_dir_with_version(void);
+get_plugins_pers_dir_with_version = libwsutil.get_plugins_pers_dir_with_version
+get_plugins_pers_dir_with_version.restype = c_char_p
+get_plugins_pers_dir_with_version.argtypes = []
+
+# const char* get_extcap_dir(void);
+get_extcap_dir = libwsutil.get_extcap_dir
+get_extcap_dir.restype = c_char_p
+get_extcap_dir.argtypes = []
+
+# gboolean running_in_build_directory(void);
+running_in_build_directory = libwsutil.running_in_build_directory
+running_in_build_directory.restype = gboolean
+running_in_build_directory.argtypes = []
+
+# const char* get_datafile_dir(void);
+get_datafile_dir = libwsutil.get_datafile_dir
+get_datafile_dir.restype = c_char_p
+get_datafile_dir.argtypes = []
+
+# const char* get_datafile_path(const char* filename);
+get_datafile_path = libwsutil.get_datafile_path
+get_datafile_path.restype = c_char_p
+get_datafile_path.argtypes = [c_char_p]
+
+# const char* get_systemfile_dir(void);
+get_systemfile_dir = libwsutil.get_systemfile_dir
+get_systemfile_dir.restype = c_char_p
+get_systemfile_dir.argtypes = []
+
+# void set_profile_name(const gchar* profilename);
+set_profile_name = libwsutil.set_profile_name
+set_profile_name.restype = None
+set_profile_name.argtypes = [gchar_p]
+
+# const char* get_profile_name(void);
+get_profile_name = libwsutil.get_profile_name
+get_profile_name.restype = c_char_p
+get_profile_name.argtypes = []
+
+# gboolean is_default_profile(void);
+is_default_profile = libwsutil.is_default_profile
+is_default_profile.restype = gboolean
+is_default_profile.argtypes = []
+
+# gboolean has_global_profiles(void);
+has_global_profiles = libwsutil.has_global_profiles
+has_global_profiles.restype = gboolean
+has_global_profiles.argtypes = []
+
+# const char* get_profiles_dir(void);
+get_profiles_dir = libwsutil.get_profiles_dir
+get_profiles_dir.restype = c_char_p
+get_profiles_dir.argtypes = []
+
+# const char* get_profile_dir(const char* profilename, gboolean is_global);
+get_profile_dir = libwsutil.get_profile_dir
+get_profile_dir.restype = c_char_p
+get_profile_dir.argtypes = [c_char_p, gboolean]
+
+# int create_profiles_dir(char** pf_dir_path_return);
+create_profiles_dir = libwsutil.create_profiles_dir
+create_profiles_dir.restype = c_int
+create_profiles_dir.argtypes = [POINTER(c_char_p)]
+
+# const char* get_global_profiles_dir(void);
+get_global_profiles_dir = libwsutil.get_global_profiles_dir
+get_global_profiles_dir.restype = c_char_p
+get_global_profiles_dir.argtypes = []
+
+# void profile_store_persconffiles(gboolean store);
+profile_store_persconffiles = libwsutil.profile_store_persconffiles
+profile_store_persconffiles.restype = None
+profile_store_persconffiles.argtypes = [gboolean]
+
+# gboolean profile_exists(const gchar* profilename, gboolean global);
+profile_exists = libwsutil.profile_exists
+profile_exists.restype = gboolean
+profile_exists.argtypes = [gchar_p, gboolean]
+
+# int create_persconffile_profile(const char* profilename, char**
+# pf_dir_path_return);
+create_persconffile_profile = libwsutil.create_persconffile_profile
+create_persconffile_profile.restype = c_int
+create_persconffile_profile.argtypes = [c_char_p, POINTER(c_char_p)]
+
+# const GHashTable* allowed_profile_filenames(void);
+allowed_profile_filenames = libwsutil.allowed_profile_filenames
+allowed_profile_filenames.restype = GHashTable_p
+allowed_profile_filenames.argtypes = []
+
+# int delete_perconffile_profile(const char* profilename, char**
+# pf_dir_path_return);
+delete_persconffile_profile = libwsutil.delete_persconffile_profile
+delete_persconffile_profile.restype = c_int
+delete_persconffile_profile.argtypes = [c_char_p, POINTER(c_char_p)]
+
+# int rename_persconffile_profile(const char* fromname, const char* toname,
+#                                 char** pf_from_dir_path_return,
+#                                 char** pf_to_dir_path_return);
+rename_persconffile_profile = libwsutil.rename_persconffile_profile
+rename_persconffile_profile.restype = c_int
+rename_persconffile_profile.argtypes = [
+    c_char_p, c_char_p, POINTER(c_char_p), POINTER(c_char_p)]
+
+# int copy_persconffile_profile(const char* toname, const char* fromname,
+#                               gboolean from_global,
+#                               char** pf_filename_return,
+#                               char** pf_to_dir_path_return,
+#                               char** pf_from_dir_path_return);
+copy_persconffile_profile = libwsutil.copy_persconffile_profile
+copy_persconffile_profile.restype = c_int
+copy_persconffile_profile.argtypes = [c_char_p,
+                                      c_char_p,
+                                      gboolean,
+                                      POINTER(c_char_p),
+                                      POINTER(c_char_p),
+                                      POINTER(c_char_p)]
+
+# int create_persconffile_dir(char** pf_dir_path_return);
+create_persconffile_dir = libwsutil.create_persconffile_dir
+create_persconffile_dir.restype = c_int
+create_persconffile_dir.argtypes = [POINTER(c_char_p)]
+
+# char* get_persconffile_path(const char* filename, gboolean from_profile);
+get_persconffile_path = libwsutil.get_persconffile_path
+get_persconffile_path.restype = c_char_p
+get_persconffile_path.argtypes = [c_char_p, gboolean]
+
+# void set_persconffile_dir(const char* p);
+set_persconffile_dir = libwsutil.set_persconffile_dir
+set_persconffile_dir.restype = None
+set_persconffile_dir.argtypes = [c_char_p]
+
+# const char* get_persdatafile_dir(void);
+get_persdatafile_dir = libwsutil.get_persdatafile_dir
+get_persdatafile_dir.restype = c_char_p
+get_persdatafile_dir.argtypes = []
+
+# void set_persdatafile_dir(const char* p);
+set_persdatafile_dir = libwsutil.set_persdatafile_dir
+set_persdatafile_dir.restype = None
+set_persdatafile_dir.argtypes = [c_char_p]
+
+# const char* file_open_error_message(int err, gboolean for_writing);
+file_open_error_message = libwsutil.file_open_error_message
+file_open_error_message.restype = c_char_p
+file_open_error_message.argtypes = [c_int, gboolean]
+
+# const char* file_write_error_message(int err);
+file_write_error_message = libwsutil.file_write_error_message
+file_write_error_message.restype = c_char_p
+file_write_error_message.argtypes = [c_int]
+
+# const char* get_basename(const char*);
+get_basename = libwsutil.get_basename
+get_basename.restype = c_char_p
+get_basename.argtypes = [c_char_p]
+
+# const char* find_last_pathname_separator(const char* path);
+find_last_pathname_separator = libwsutil.find_last_pathname_separator
+find_last_pathname_separator.restype = c_char_p
+find_last_pathname_separator.argtypes = [c_char_p]
+
+# char* get_dirname(char*);
+get_dirname = libwsutil.get_dirname
+get_dirname.restype = c_char_p
+get_dirname.argtypes = [c_char_p]
+
+# int test_for_directory(const char*);
+test_for_directory = libwsutil.test_for_directory
+test_for_directory.restype = c_int
+test_for_directory.argtypes = [c_char_p]
+
+# int test_for_fifo(const char*);
+test_for_fifo = libwsutil.test_for_fifo
+test_for_fifo.restype = c_int
+test_for_fifo.argtypes = [c_char_p]
+
+# gboolean file_exists(const char* fname);
+file_exists = libwsutil.file_exists
+file_exists.restype = gboolean
+file_exists.argtypes = [c_char_p]
+
+# gboolean config_file_exists_with_entries(const char* fname, char
+# comment_char);
+config_file_exists_with_entries = libwsutil.config_file_exists_with_entries
+config_file_exists_with_entries.restype = gboolean
+config_file_exists_with_entries.argtypes = [c_char_p, c_char]
+
+# gboolean files_identical(const char* fname1, const char* fname2);
+files_identical = libwsutil.files_identical
+files_identical.restype = gboolean
+files_identical.argtypes = [c_char_p, c_char_p]
+
+# gboolean file_needs_reopen(int fd, const char* filename);
+file_needs_reopen = libwsutil.file_needs_reopen
+file_needs_reopen.restype = gboolean
+file_needs_reopen.argtypes = [c_int, c_char_p]
+
+# gboolean copy_file_binary_mode(const char* from_filename, const char*
+# to_filename);
+copy_file_binary_mode = libwsutil.copy_file_binary_mode
+copy_file_binary_mode.restype = gboolean
+copy_file_binary_mode.argtypes = [c_char_p, c_char_p]
+
+# gchar* data_file_url(const gchar* filename);
+data_file_url = libwsutil.data_file_url
+data_file_url.restype = gchar_p
+data_file_url.argtypes = [gchar_p]
+
+# void free_progdirs(void)
+free_progdirs = libwsutil.free_progdirs
+free_progdirs.restype = None
+free_progdirs.argtypes = []
+
+
+#####################
+# frequency-utils.h #
+#####################
+
+# gint ieee80211_mhz_to_chan(guint freq);
+ieee80211_mhz_to_chan = libwsutil.ieee80211_mhz_to_chan
+ieee80211_mhz_to_chan.restype = gint
+ieee80211_mhz_to_chan.argtypes = [guint]
+
+# guint ieee80211_chan_to_mhz(gint chan, gboolean is_bg)
+ieee80211_chan_to_mhz = libwsutil.ieee80211_chan_to_mhz
+ieee80211_chan_to_mhz.restype = guint
+ieee80211_chan_to_mhz.argtypes = [gint, gboolean]
+
+# gchar* ieee80211_mhz_to_str(guint freq);
+ieee80211_mhz_to_str = libwsutil.ieee80211_mhz_to_str
+ieee80211_mhz_to_str.restype = gchar_p
+ieee80211_mhz_to_str.argtypes = [guint]
+
+# #define FREQ_IS_BG(freq) (freq <= 2484)
+
+
+def FREQ_IS_BG(freq):
+    return freq <= 2484
+
+
+##########
+# g711.h #
+##########
+
+# unsigned char linear2alaw(int);
+linear2alaw = libwsutil.linear2alaw
+linear2alaw.restype = c_ubyte
+linear2alaw.argtypes = [c_int]
+
+# int alaw2linear(unsigned char);
+alaw2linear = libwsutil.alaw2linear
+alaw2linear.restype = c_int
+alaw2linear.argtypes = [c_ubyte]
+
+# unsigned char linear2ulaw(int);
+linear2ulaw = libwsutil.linear2ulaw
+linear2ulaw.restype = c_ubyte
+linear2ulaw.argtypes = [c_int]
+
+# int ulaw2linear(unsigned char);
+ulaw2linear = libwsutil.ulaw2linear
+ulaw2linear.restype = c_int
+ulaw2linear.argtypes = [c_ubyte]
+
+
+###############
+# interface.h #
+###############
+
+# GList* local_interfaces_to_list(void);
+local_interfaces_to_list = libwsutil.local_interfaces_to_list
+local_interfaces_to_list.restype = POINTER(GList)
+local_interfaces_to_list.argtypes = []
+
+
+##########
+# jsmn.h #
+##########
+
+# typedef enum {
+#     JSMN_UNDEFINED = 0,
+#     JSMN_OBJECT = 1,
+#     JSMN_ARRAY = 2,
+#     JSMN_STRING = 3,
+#     JSMN_PRIMITIVE = 4
+# } jsmntype_t;
+jsmntype_t = c_int
+JSMN_UNDEFINED = c_int(0)
+JSMN_OBJECT = c_int(1)
+JSMN_ARRAY = c_int(2)
+JSMN_STRING = c_int(3)
+JSMN_PRIMITIVE = c_int(4)
+
+# enum jsmnerr {
+#     JSMN_ERROR_NOMEM = -1,
+#     JSMN_ERROR_INVAL = -2,
+#     JSMN_ERROR_PART = -3
+# };
+jsmnerr = c_int
+JSMN_ERROR_NOMEM = -1
+JSMN_ERROR_INVAL = -2
+JSMN_ERROR_PART = -3
+
+# typedef struct {
+#     jsmntype_t type;
+#     int start;
+#     int end;
+#     int size;
+#     int parent;
+# } jsmntok_t;
+
+
+class jsmntok_t(Structure):
+    _fields_ = [('type', jsmntype_t),
+                ('start', c_int),
+                ('end', c_int),
+                ('size', c_int),
+                ('parent', c_int)]
+
+# typedef struct {
+#     unsigned int pos;
+#     unsigned int toknext;
+#     int toksuper;
+# } jsmn_parser;
+
+
+class jsmn_parser(Structure):
+    _fields_ = [('pos', c_uint),
+                ('toknext', c_uint),
+                ('toksuper', c_int)]
+
+
+#################
+# json_dumper.h #
+#################
+
+# #define JSON_DUMPER_MAX_DEPTH   1100
+JSON_DUMPER_MAX_DEPTH = 1100
+
+# typedef struct json_dumper {
+#     FILE* output_file;
+#     int flags;
+#     int current_depth;
+#     gint base64_state;
+#     gint base64_save;
+#     guint8 state[JSON_DUMPER_MAX_DEPTH];
+# } json_dumper;
+
+
+class json_dumper(Structure):
+    _fields_ = [('output_file', c_void_p),
+                ('flags', c_int),
+                ('current_depth', c_int),
+                ('base64_state', gint),
+                ('base64_save', gint),
+                ('state', guint8 * JSON_DUMPER_MAX_DEPTH)]
+
+
+# #define JSON_DUMPER_FLAGS_PRETTY_PRINT  (1 << 0)
+JSON_DUMPER_FLAGS_PRETTY_PRINT = 1
+
+# #define JSON_DUMPER_DOT_TO_UNDERSCORE   (1 << 1)
+JSON_DUMPER_DOT_TO_UNDERSCORE = 2
+
+# void json_dumper_begin_object(json_dumper* dumper);
+json_dumper_begin_object = libwsutil.json_dumper_begin_object
+json_dumper_begin_object.restype = None
+json_dumper_begin_object.argtypes = [POINTER(json_dumper)]
+
+# void json_dumper_set_member_name(json_dumper* dumper, const char* name);
+json_dumper_set_member_name = libwsutil.json_dumper_set_member_name
+json_dumper_set_member_name.restype = None
+json_dumper_set_member_name.argtypes = [POINTER(json_dumper), c_char_p]
+
+# void json_dumper_end_object(json_dumper* dumper);
+json_dumper_end_object = libwsutil.json_dumper_end_object
+json_dumper_end_object.restype = None
+json_dumper_end_object.argtypes = [POINTER(json_dumper)]
+
+# void json_dumper_begin_array(json_dumper* dumper);
+json_dumper_begin_array = libwsutil.json_dumper_begin_array
+json_dumper_begin_array.restype = None
+json_dumper_begin_array.argtypes = [POINTER(json_dumper)]
+
+# void json_dumper_end_array(json_dumper* dumper);
+json_dumper_end_array = libwsutil.json_dumper_end_array
+json_dumper_end_array.restype = None
+json_dumper_end_array.argtypes = [POINTER(json_dumper)]
+
+# void json_dumper_value_string(json_dumper* dumper, const char* value);
+json_dumper_value_string = libwsutil.json_dumper_value_string
+json_dumper_value_string.restype = None
+json_dumper_value_string.argtypes = [POINTER(json_dumper), c_char_p]
+
+# void json_dumper_value_double(json_dumper* dumper, double value);
+json_dumper_value_double = libwsutil.json_dumper_value_double
+json_dumper_value_double.restype = None
+json_dumper_value_double.argtypes = [POINTER(json_dumper), c_double]
+
+# void json_dumper_begin_base64(json_dumper* dumper);
+json_dumper_begin_base64 = libwsutil.json_dumper_begin_base64
+json_dumper_begin_base64.restype = None
+json_dumper_begin_base64.argtypes = [POINTER(json_dumper)]
+
+# void json_dumper_end_base64(json_dumper* dumper);
+json_dumper_end_base64 = libwsutil.json_dumper_end_base64
+json_dumper_end_base64.restype = None
+json_dumper_end_base64.argtypes = [POINTER(json_dumper)]
+
+# void json_dumper_write_base64(json_dumper* dumper, const guchar* data,
+# size_t len);
+json_dumper_write_base64 = libwsutil.json_dumper_write_base64
+json_dumper_write_base64.restype = None
+json_dumper_write_base64.argtypes = [
+    POINTER(json_dumper), POINTER(guchar), c_size_t]
+
+# gboolean json_dumper_finish(json_dumper* dumper);
+json_dumper_finish = libwsutil.json_dumper_finish
+json_dumper_finish.restype = gboolean
+json_dumper_finish.argtypes = [POINTER(json_dumper)]
+
+
+################
+# mpeg-audio.h #
+################
+
+# #define MPA_UNMARSHAL_SYNC(n)       ((n) >> 21 & 0x7ff)
+def MPA_UNMARHAL_SYNC(n):
+    return c_uint((n >> 21) & 0x7ff)
+
+# #define MPA_UNMARSHAL_VERSION(n)    ((n) >> 19 & 0x3)
+
+
+def MPA_UNMARSHAL_VERSION(n):
+    return c_uint((n >> 19) & 0x3)
+
+# #define MPA_UNMARSHAL_LAYER(n)      ((n) >> 17 & 0x3)
+
+
+def MPA_UNMARSHAL_LAYER(n):
+    return c_uint((n >> 17) & 0x3)
+
+# #define MPA_UNMARSHAL_PROTECTION(n) ((n) >> 16 & 0x1)
+
+
+def MPA_UNMARSHAL_PROTECTION(n):
+    return c_uint((n >> 16) & 0x1)
+
+# #define MPA_UNMARSHAL_BITRATE(n)    ((n) >> 12 & 0xf)
+
+
+def MPA_UNMARSHAL_BITRATE(n):
+    return c_uint((n >> 12) & 0xf)
+
+# #define MPA_UNMARSHAL_FREQUENCY(n)  ((n) >> 10 & 0x3)
+
+
+def MPA_UNMARSHAL_FREQUENCY(n):
+    return c_uint((n >> 10) & 0x3)
+
+# #define MPA_UNMARSHAL_PADDING(n)    ((n) >>  9 & 0x1)
+
+
+def MPA_UNMARSHAL_PADDING(n):
+    return c_uint((n >> 9) & 0x1)
+
+# #define MPA_UNMARSHAL_PRIVATE(n)    ((n) >>  8 & 0x1)
+
+
+def MPA_UNMARSHAL_PRIVATE(n):
+    return c_uint((n >> 8) & 0x1)
+
+# #define MPA_UNMARSHAL_MODE(n)       ((n) >>  6 & 0x3)
+
+
+def MPA_UNMARSHAL_MODE(n):
+    return c_uint((n >> 6) & 0x3)
+
+# #define MPA_UNMARSHAL_MODEEXT(n)    ((n) >>  4 & 0x3)
+
+
+def MPA_UNMARSHAL_MODEEXT(n):
+    return c_uint((n >> 4) & 0x3)
+
+# #define MPA_UNMARSHAL_COPYRIGHT(n)  ((n) >>  3 & 0x1)
+
+
+def MPA_UNMARSHAL_COPYRIGHT(n):
+    return c_uint((n >> 3) & 0x1)
+
+# #define MPA_UNMARSHAL_ORIGINAL(n)   ((n) >>  2 & 0x1)
+
+
+def MPA_UNMARSHAL_ORIGINAL(n):
+    return c_uint((n >> 2) & 0x1)
+
+# #define MPA_UNMARSHAL_EMPHASIS(n)   ((n) >>  0 & 0x3)
+
+
+def MPA_UNMARSHAL_EMPHASIS(n):
+    return c_uint(n & 0x3)
+
+# struct mpa {
+#     unsigned int emphasis   :2;
+#     unsigned int original   :1;
+#     unsigned int copyright  :1;
+#     unsigned int modeext    :2;
+#     unsigned int mode       :2;
+#     unsigned int priv       :1;
+#     unsigned int padding    :1;
+#     unsigned int frequency  :2;
+#     unsigned int bitrate    :4;
+#     unsigned int protection :1;
+#     unsigned int layer      :2;
+#     unsigned int version    :2;
+#     unsigned int sync       :11;
+# };
+
+
+class mpa(Structure):
+    _fields_ = [('emphasis', c_uint, 2),
+                ('original', c_uint, 1),
+                ('copyright', c_uint, 1),
+                ('modeext', c_uint, 2),
+                ('mode', c_uint, 2),
+                ('priv', c_uint, 1),
+                ('padding', c_uint, 1),
+                ('frequency', c_uint, 2),
+                ('bitrate', c_uint, 4),
+                ('protection', c_uint, 1),
+                ('layer', c_uint, 2),
+                ('version', c_uint, 2),
+                ('sync', c_uint, 11)]
+
+# #define MPA_UNMARSHAL(mpa, n) do { \
+#         (mpa)->sync       = MPA_UNMARSHAL_SYNC(n);       \
+#         (mpa)->version    = MPA_UNMARSHAL_VERSION(n);    \
+#         (mpa)->layer      = MPA_UNMARSHAL_LAYER(n);      \
+#         (mpa)->protection = MPA_UNMARSHAL_PROTECTION(n); \
+#         (mpa)->bitrate    = MPA_UNMARSHAL_BITRATE(n);    \
+#         (mpa)->frequency  = MPA_UNMARSHAL_FREQUENCY(n);  \
+#         (mpa)->padding    = MPA_UNMARSHAL_PADDING(n);    \
+#         (mpa)->priv       = MPA_UNMARSHAL_PRIVATE(n);    \
+#         (mpa)->mode       = MPA_UNMARSHAL_MODE(n);       \
+#         (mpa)->modeext    = MPA_UNMARSHAL_MODEEXT(n);    \
+#         (mpa)->copyright  = MPA_UNMARSHAL_COPYRIGHT(n);  \
+#         (mpa)->original   = MPA_UNMARSHAL_ORIGINAL(n);   \
+#         (mpa)->emphasis   = MPA_UNMARSHAL_EMPHASIS(n);   \
+#         } while (0)
+
+
+def MPA_UNMARSHAL(mpa, n):
+    mpa[0].sync = MPA_UNMARSHAL_SYNC(n)
+    mpa[0].version = MPA_UNMARSHAL_VERSION(n)
+    mpa[0].layer = MPA_UNMARSHAL_LAYER(n)
+    mpa[0].protection = MPA_UNMARSHAL_PROTECTION(n)
+    mpa[0].bitrate = MPA_UNMARSHAL_BITRATE(n)
+    mpa[0].frequency = MPA_UNMARSHAL_FREQUENCY(n)
+    mpa[0].padding = MPA_UNMARSHAL_PADDING(n)
+    mpa[0].priv = MPA_UNMARSHAL_PRIVATE(n)
+    mpa[0].mode = MPA_UNMARSHAL_MODE(n)
+    mpa[0].modeext = MPA_UNMARSHAL_MODEEXT(n)
+    mpa[0].copyright = MPA_UNMARSHAL_COPYRIGHT(n)
+    mpa[0].original = MPA_UNMARSHAL_ORIGINAL(n)
+    mpa[0].emphasis = MPA_UNMARSHAL_EMPHASIS(n)
+
+
+# int mpa_version(const struct mpa*);
+mpa_version = libwsutil.mpa_version
+mpa_version.restype = c_int
+mpa_version.argtypes = [POINTER(mpa)]
+
+# int mpa_layer(const struct mpa*);
+mpa_layer = libwsutil.mpa_layer
+mpa_layer.restype = c_int
+mpa_layer.argtypes = [POINTER(mpa)]
+
+# unsigned int mpa_samples(const struct mpa*);
+mpa_samples = libwsutil.mpa_samples
+mpa_samples.restype = c_uint
+mpa_samples.argtypes = [POINTER(mpa)]
+
+# unsigned int mpa_bitrate(const struct mpa*);
+mpa_bitrate = libwsutil.mpa_bitrate
+mpa_bitrate.restype = c_uint
+mpa_bitrate.argtypes = [POINTER(mpa)]
+
+# unsigned int mpa_frequency(const struct mpa*);
+mpa_frequency = libwsutil.mpa_frequency
+mpa_frequency.restype = c_uint
+mpa_frequency.argtypes = [POINTER(mpa)]
+
+# unsigned int mpa_padding(const struct mpa*);
+mpa_padding = libwsutil.mpa_padding
+mpa_padding.restype = c_uint
+mpa_padding.argtypes = [POINTER(mpa)]
+
+# #define MPA_DATA_BYTES(mpa) (mpa_bitrate(mpa) * mpa_samples(mpa) \
+#                 / mpa_frequency(mpa) / 8)
+
+
+def MPA_DATA_BYTES(mpa):
+    return mpa_bitrate(mpa) * mpa_samples(mpa) / mpa_frequency(mpa) / 8
+
+# #define MPA_BYTES(mpa) (MPA_DATA_BYTES(mpa) + mpa_padding(mpa))
+
+
+def MPA_BYTES(mpa):
+    return MPA_DATA_BYTES(mpa) + mpa_padding(mpa)
+
+# #define MPA_DURATION_NS(mpa) \
+#         (1000000000 / mpa_frequency(mpa) * mpa_samples(mpa))
+
+
+def MPA_DURATION_NS(mpa):
+    return 1000000000 / mpa_frequency(mpa) * mpa_samples(mpa)
+
+
+# enum { MPA_SYNC = 0x7ff };
+MPA_SYNC = 0x7ff
+
+# #define MPA_SYNC_VALID(mpa)      ((mpa)->sync == MPA_SYNC)
+
+
+def MPA_SYNC_VALID(mpa):
+    return mpa[0].sync == MPA_SYNC
+
+# #define MPA_VERSION_VALID(mpa)   (mpa_version(mpa) >= 0)
+
+
+def MPA_VERSION_VALID(mpa):
+    return mpa_version(mpa) >= 0
+
+# #define MPA_LAYER_VALID(mpa)     (mpa_layer(mpa) >= 0)
+
+
+def MPA_LAYER_VALID(mpa):
+    return mpa_layer(mpa) >= 0
+
+# #define MPA_BITRATE_VALID(mpa)   (mpa_bitrate(mpa) > 0)
+
+
+def MPA_BITRATE_VALID(mpa):
+    return mpa_bitrate(mpa) > 0
+
+# #define MPA_FREQUENCY_VALID(mpa) (mpa_frequency(mpa) > 0)
+
+
+def MPA_FREQUENCY_VALID(mpa):
+    return mpa_frequency(mpa) > 0
+
+# #define MPA_VALID(mpa) (MPA_SYNC_VALID(mpa) \
+#                 && MPA_VERSION_VALID(mpa) && MPA_LAYER_VALID(mpa) \
+#                 && MPA_BITRATE_VALID(mpa) && MPA_FREQUENCY_VALID(mpa))
+
+
+def MPA_VALID(mpa):
+    return MPA_SYNC_VALID(mpa) and MPA_VERSION_VALID(mpa) and MPA_LAYER_VALID(
+        mpa) and MPA_BITRATE_VALID(mpa) and MPA_FREQUENCY_VALID(mpa)
+
+
+############
+# nstime.h #
+############
+
+# typedef struct {
+#     time_t secs;
+#     int nsecs;
+# } nstime_t;
+class nstime_t(Structure):
+    _fields_ = [('secs', c_long), ('nsecs', c_int)]
+
+
+# #define NSTIME_INIT_ZERO {0, 0}
+NSTIME_INIT_ZERO = nstime_t(0, 0)
+
+# #define NSTIME_INIT_UNSET {0, G_MAXINT}
+NSTIME_INIT_UNSET = nstime_t(0, 0x7FFFFFFF)
+
+# #define NSTIME_INIT_SECS_NSECS(secs, nsecs)     {secs, nsecs}
+
+
+def NSTIME_INIT_SECS_NSECS(secs, nsecs):
+    return nstime_t(secs, nsecs)
+
+# #define NSTIME_INIT_SECS_USECS(secs, usecs)     {secs, usecs*1000}
+
+
+def NSTIME_INIT_SECS_USECS(secs, usecs):
+    return nstime_t(secs, usecs * 1000)
+
+# #define NSTIME_INIT_SECS_MSECS(secs, msecs)     {secs, msecs*1000000}
+
+
+def NSTIME_INIT_SECS_MSECS(secs, msecs):
+    return nstime_t(secs, msecs * 1000000)
+
+# #define NSTIME_INIT_SECS(secs)                  {secs, 0}
+
+
+def NSTIME_INIT_SECS(secs):
+    return nstime_t(secs, 0)
+
+
+# #define NSTIME_INIT_MAX {sizeof(time_t) > sizeof(int) ? LONG_MAX : INT_MAX, INT_MAX}
+NSTIME_INIT_MAX = nstime_t(0x7FFFFFFFFFFFFFFF, 0x7FFFFFFF)
+
+# void nstime_set_zero(nstime_t* nstime);
+nstime_set_zero = libwsutil.nstime_set_zero
+nstime_set_zero.restype = None
+nstime_set_zero.argtypes = [POINTER(nstime_t)]
+
+# gboolean nstime_is_zero(nstime_t* nstime);
+nstime_is_zero = libwsutil.nstime_is_zero
+nstime_is_zero.restype = gboolean
+nstime_is_zero.argtypes = [POINTER(nstime_t)]
+
+# void nstime_set_unset(nstime_t* nstime);
+nstime_set_unset = libwsutil.nstime_set_unset
+nstime_set_unset.restype = None
+nstime_set_unset.argtypes = [POINTER(nstime_t)]
+
+# gboolean nstime_copy(nstime_t* a, const nstime_t* b);
+nstime_copy = libwsutil.nstime_copy
+nstime_copy.restype = gboolean
+nstime_copy.argtypes = [POINTER(nstime_t), POINTER(nstime_t)]
+
+# void nstime_delta(nstime_t* delta, const nstime_t* b, const nstime_t* a);
+nstime_delta = libwsutil.nstime_delta
+nstime_delta.restype = None
+nstime_delta.argtypes = [
+    POINTER(nstime_t),
+    POINTER(nstime_t),
+    POINTER(nstime_t)]
+
+# void nstime_sum(nstime_t* sum, const nstime_t* a, const nstime_t* b);
+nstime_sum = libwsutil.nstime_sum
+nstime_sum.restype = None
+nstime_sum.argtypes = [POINTER(nstime_t), POINTER(nstime_t), POINTER(nstime_t)]
+
+# #define nstime_add(sum, a) nstime_sum(sum, sum, a)
+
+
+def nstime_add(sum, a):
+    nstime_sum(sum, sum, a)
+
+# #define nstime_subtract(sum, a) nstime_delta(sum, sum, a)
+
+
+def nstime_subtract(sum, a):
+    nstime_delta(sum, sum, a)
+
+
+# int nstime_cmp(const nstime_t* a, const nstime_t* b);
+nstime_cmp = libwsutil.nstime_cmp
+nstime_cmp.restype = c_int
+nstime_cmp.argtypes = [POINTER(nstime_t), POINTER(nstime_t)]
+
+# double nstime_to_msec(const nstime_t* nstime);
+nstime_to_msec = libwsutil.nstime_to_msec
+nstime_to_msec.restype = c_double
+nstime_to_msec.argtypes = [POINTER(nstime_t)]
+
+# double nstime_to_sec(const nstime_t* nstime);
+nstime_to_sec = libwsutil.nstime_to_sec
+nstime_to_sec.restype = c_double
+nstime_to_sec.argtypes = [POINTER(nstime_t)]
+
+# gboolean filetime_to_nstime(nstime_t* nstime, guint64 filetime);
+filetime_to_nstime = libwsutil.filetime_to_nstime
+filetime_to_nstime.restype = gboolean
+filetime_to_nstime.argtypes = [POINTER(nstime_t), guint64]
+
+# gboolean nsfiletime_to_nstime(nstime_t* nstime, guint64 nsfiletime);
+nsfiletime_to_nstime = libwsutil.nsfiletime_to_nstime
+nsfiletime_to_nstime.restype = gboolean
+nsfiletime_to_nstime.argtypes = [POINTER(nstime_t), guint64]
+
+
+#####################
+# os_version_info.h #
+#####################
+
+# void get_os_version_info(GString* str);
+get_os_version_info = libwsutil.get_os_version_info
+get_os_version_info.restype = None
+get_os_version_info.argtypes = [POINTER(GString)]
+
+
+# static inline guint16 pntoh16(const void *p)
+def pntoh16(p):
+    tmp = cast(p, POINTER(guint8))
+    return (cast(tmp[0], guint16) << 8) | tmp[1]
+
+# static inline guint32 pntoh24(const void *p)
+
+
+def pntoh24(p):
+    tmp = cast(p, POINTER(guint8))
+    return (cast(tmp[0], guint32) << 16) | (
+        cast(tmp[1], guint32) << 8) | tmp[2]
+
+# static inline guint32 pntoh32(const void *p)
+
+
+def pntoh32(p):
+    tmp = cast(p, POINTER(guint8))
+    return (
+        cast(
+            tmp[0],
+            guint32) << 24) | (
+        cast(
+            tmp[1],
+            guint32) << 16) | (
+        cast(
+            tmp[2],
+            guint32) << 8) | tmp[3]
+
+# static inline guint64 pntoh40(const void *p)
+
+
+def pntoh40(p):
+    tmp = cast(p, POINTER(guint8))
+    return (
+        cast(
+            tmp[0],
+            guint64) << 32) | (
+        cast(
+            tmp[1],
+            guint64) << 24) | (
+        cast(
+            tmp[2],
+            guint64) << 16) | (
+        cast(
+            tmp[3],
+            guint64) << 8) | tmp[4]
+
+# static inline guint64 pntoh48(const void *p)
+
+
+def pntoh48(p):
+    tmp = cast(p, POINTER(guint8))
+    return (
+        cast(
+            tmp[0],
+            guint64) << 40) | (
+        cast(
+            tmp[1],
+            guint64) << 32) | (
+        cast(
+            tmp[2],
+            guint64) << 24) | (
+        cast(
+            tmp[3],
+            guint64) << 16) | (
+        cast(
+            tmp[4],
+            guint64) << 8) | tmp[5]
+
+# static inline guint64 pntoh56(const void *p)
+
+
+def pntoh56(p):
+    tmp = cast(p, POINTER(guint8))
+    return (
+        cast(
+            tmp[0],
+            guint64) << 48) | (
+        cast(
+            tmp[1],
+            guint64) << 40) | (
+        cast(
+            tmp[2],
+            guint64) << 32) | (
+        cast(
+            tmp[3],
+            guint64) << 24) | (
+        cast(
+            tmp[4],
+            guint64) << 16) | (
+        cast(
+            tmp[5],
+            guint64) << 8) | tmp[6]
+
+# static inline guint64 pntoh64(const void *p)
+
+
+def pntoh64(p):
+    tmp = cast(p, POINTER(guint8))
+    return (
+        cast(
+            tmp[0],
+            guint64) << 56) | (
+        cast(
+            tmp[1],
+            guint64) << 48) | (
+        cast(
+            tmp[2],
+            guint64) << 40) | (
+        cast(
+            tmp[3],
+            guint64) << 32) | (
+        cast(
+            tmp[4],
+            guint64) << 24) | (
+        cast(
+            tmp[5],
+            guint64) << 16) | (
+        cast(
+            tmp[6],
+            guint64) << 8) | tmp[7]
+
+# static inline guint16 pletoh16(const void *p)
+
+
+def pletoh16(p):
+    tmp = cast(p, POINTER(guint8))
+    return (cast(tmp[1], guint16) << 8) | tmp[0]
+
+# static inline guint32 pletoh24(const void *p)
+
+
+def pletoh24(p):
+    tmp = cast(p, POINTER(guint8))
+    return (cast(tmp[2], guint32) << 16) | (
+        cast(tmp[1], guint32) << 8) | tmp[0]
+
+# static inline guint32 pletoh32(const void *p)
+
+
+def pletoh32(p):
+    tmp = cast(p, POINTER(guint8))
+    return (
+        cast(
+            tmp[3],
+            guint32) << 24) | (
+        cast(
+            tmp[2],
+            guint32) << 16) | (
+        cast(
+            tmp[1],
+            guint32) << 8) | tmp[0]
+
+# static inline guint64 pletoh40(const void *p)
+
+
+def pletoh40(p):
+    tmp = cast(p, POINTER(guint8))
+    return (
+        cast(
+            tmp[4],
+            guint64) << 32) | (
+        cast(
+            tmp[3],
+            guint64) << 24) | (
+        cast(
+            tmp[2],
+            guint64) << 16) | (
+        cast(
+            tmp[1],
+            guint64) << 8) | tmp[0]
+
+# static inline guint64 pletoh48(const void *p)
+
+
+def pletoh48(p):
+    tmp = cast(p, POINTER(guint8))
+    return (
+        cast(
+            tmp[5],
+            guint64) << 40) | (
+        cast(
+            tmp[4],
+            guint64) << 32) | (
+        cast(
+            tmp[3],
+            guint64) << 24) | (
+        cast(
+            tmp[2],
+            guint64) << 16) | (
+        cast(
+            tmp[1],
+            guint64) << 8) | tmp[0]
+
+# static inline guint64 pletoh56(const void *p)
+
+
+def pletoh56(p):
+    tmp = cast(p, POINTER(guint8))
+    return (
+        cast(
+            tmp[6],
+            guint64) << 48) | (
+        cast(
+            tmp[5],
+            guint64) << 40) | (
+        cast(
+            tmp[4],
+            guint64) << 32) | (
+        cast(
+            tmp[3],
+            guint64) << 24) | (
+        cast(
+            tmp[2],
+            guint64) << 16) | (
+        cast(
+            tmp[1],
+            guint64) << 8) | tmp[0]
+
+# static inline guint64 pletoh64(const void *p)
+
+
+def pntoh64(p):
+    tmp = cast(p, POINTER(guint8))
+    return (
+        cast(
+            tmp[7],
+            guint64) << 56) | (
+        cast(
+            tmp[6],
+            guint64) << 48) | (
+        cast(
+            tmp[5],
+            guint64) << 40) | (
+        cast(
+            tmp[4],
+            guint64) << 32) | (
+        cast(
+            tmp[3],
+            guint64) << 24) | (
+        cast(
+            tmp[2],
+            guint64) << 16) | (
+        cast(
+            tmp[1],
+            guint64) << 8) | tmp[0]
+
+# static inline void phton16(guint8 *p, guint16 v)
+
+
+def phton16(p, v):
+    tmp = cast(p, POINTER(guint8))
+    tmp[0] = cast(v >> 8, guint8)
+    tmp[1] = cast(v, guint8)
+
+# static inline void phton32(guint8 *p, guint32 v)
+
+
+def phton32(p, v):
+    tmp = cast(p, POINTER(guint8))
+    tmp[0] = cast(v >> 24, guint8)
+    tmp[1] = cast(v >> 16, guint8)
+    tmp[2] = cast(v >> 8, guint8)
+    tmp[3] = cast(v, guint8)
+
+# static inline void phton64(guint8 *p, guint64 v) {
+
+
+def phton64(p, v):
+    tmp = cast(p, POINTER(guint8))
+    tmp[0] = cast(v >> 56, guint8)
+    tmp[1] = cast(v >> 48, guint8)
+    tmp[2] = cast(v >> 40, guint8)
+    tmp[3] = cast(v >> 32, guint8)
+    tmp[4] = cast(v >> 24, guint8)
+    tmp[5] = cast(v >> 16, guint8)
+    tmp[6] = cast(v >> 8, guint8)
+    tmp[7] = cast(v, guint8)
+
+# static inline void phtole32(guint8 *p, guint32 v) {
+
+
+def phtole32(p, v):
+    tmp = cast(p, POINTER(guint8))
+    tmp[0] = cast(v, guint8)
+    tmp[1] = cast(v >> 8, guint8)
+    tmp[2] = cast(v >> 16, guint8)
+    tmp[3] = cast(v >> 24, guint8)
+
+# static inline void phtole64(guint8 *p, guint64 v) {
+
+
+def phtole64(p, v):
+    tmp = cast(p, POINTER(guint8))
+    tmp[0] = cast(v, guint8)
+    tmp[1] = cast(v >> 8, guint8)
+    tmp[2] = cast(v >> 16, guint8)
+    tmp[3] = cast(v >> 24, guint8)
+    tmp[4] = cast(v >> 32, guint8)
+    tmp[5] = cast(v >> 40, guint8)
+    tmp[6] = cast(v >> 48, guint8)
+    tmp[7] = cast(v >> 56, guint8)
+
+# #define guint32_wraparound_diff(higher, lower) ((higher>lower)?(higher-lower):(higher+0xffffffff-lower+1))
+
+
+def guint32_wraparound_diff(higher, lower):
+    if higher > lower:
+        return higher - lower
+    else:
+        return higher + 0xffffffff - lower + 1
+
+
+#######################
+# please_report_bug.h #
+#######################
+
+# const char* please_report_bug(void);
+please_report_bug = libwsutil.please_report_bug
+please_report_bug.restype = c_char_p
+please_report_bug.argtypes = []
+
+# const char* please_report_bug_short(void);
+please_report_bug_short = libwsutil.please_report_bug_short
+please_report_bug_short.restype = c_char_p
+please_report_bug_short.argtypes = []
+
+
+#############
+# plugins.h #
+#############
+
+# typedef void (*plugin_register_func)(void);
+plugin_register_func = CFUNCTYPE(None)
+
+# typedef void plugins_t;
+plugins_t_p = c_void_p
+
+# typedef enum {
+#     WS_PLUGIN_EPAN,
+#     WS_PLUGIN_WIRETAP,
+#     WS_PLUGIN_CODEC
+# } plugin_type_e;
+plugin_type_e = c_int
+WS_PLUGIN_EPAN = c_int(0)
+WS_PLUGIN_WIRETAP = c_int(1)
+WS_PLUGIN_CODEC = c_int(2)
+
+# plugins_t* plugins_init(plugin_type_e type);
+plugins_init = libwsutil.plugins_init
+plugins_init.restype = plugins_t_p
+plugins_init.argtypes = [plugin_type_e]
+
+# typedef void (*plugin_description_callback)(const char* name, const char* version,
+#                                             const char* types, const char* filename,
+#                                             void* user_data);
+plugin_description_callback = CFUNCTYPE(
+    None, c_char_p, c_char_p, c_char_p, c_char_p, c_void_p)
+
+# void plugins_get_descriptions(plugin_description_callback callback,
+# void* user_data);
+plugins_get_descriptions = libwsutil.plugins_get_descriptions
+plugins_get_descriptions.restype = None
+plugins_get_descriptions.argtypes = [plugin_description_callback, c_void_p]
+
+# void plugins_dump_all(void);
+plugins_dump_all = libwsutil.plugins_dump_all
+plugins_dump_all.restype = None
+plugins_dump_all.argtypes = []
+
+# int plugins_get_count(void);
+plugins_get_count = libwsutil.plugins_get_count
+plugins_get_count.restype = c_int
+plugins_get_count.argtypes = []
+
+# void plugins_cleanup(plugins_t* plugins);
+plugins_cleanup = libwsutil.plugins_cleanup
+plugins_cleanup.restype = None
+plugins_cleanup.argtypes = [plugins_t_p]
+
+
+##########
+# pow2.h #
+##########
+
+# #define pow2(type, m)     (((type)1U) << (m))
+def pow2(type, m):
+    return cast(c_uint(1), type) << m
+
+# #define pow4(type, m)     (((type)1U) << (2*(m)))
+
+
+def pow4(type, m):
+    return cast(c_uint(1), type) << (2 * m)
+
+# #define pow8(type, m)     (((type)1U) << (3*(m)))
+
+
+def pow8(type, m):
+    return cast(c_uint(1), type) << (3 * m)
+
+# #define pow16(type, m)    (((type)1U) << (4*(m)))
+
+
+def pow16(type, m):
+    return cast(c_uint(1), type) << (4 * m)
+
+# #define pow32(type, m)    (((type)1U) << (5*(m)))
+
+
+def pow32(type, m):
+    return cast(c_uint(1), type) << (5 * m)
+
+# #define pow64(type, m)    (((type)1U) << (6*(m)))
+
+
+def pow64(type, m):
+    return cast(c_uint(1), type) << (6 * m)
+
+# #define pow128(type, m)   (((type)1U) << (7*(m)))
+
+
+def pow128(type, m):
+    return cast(c_uint(1), type) << (7 * m)
+
+# #define pow256(type, m)   (((type)1U) << (8*(m)))
+
+
+def pow256(type, m):
+    return cast(c_uint(1), type) << (8 * m)
+
+
+################
+# privileges.h #
+################
+
+# void init_process_policies(void);
+init_process_policies = libwsutil.init_process_policies
+init_process_policies.restype = None
+init_process_policies.argtypes = []
+
+# gboolean started_with_special_privs(void);
+started_with_special_privs = libwsutil.started_with_special_privs
+started_with_special_privs.restype = gboolean
+started_with_special_privs.argtypes = []
+
+# gboolean running_with_special_privs(void);
+running_with_special_privs = libwsutil.running_with_special_privs
+running_with_special_privs.restype = gboolean
+running_with_special_privs.argtypes = []
+
+# void relinquish_special_privs_perm(void);
+relinquish_special_privs_perm = libwsutil.relinquish_special_privs_perm
+relinquish_special_privs_perm.restype = None
+relinquish_special_privs_perm.argtypes = []
+
+# gchar* get_cur_username(void);
+get_cur_username = libwsutil.get_cur_username
+get_cur_username.restype = gchar_p
+get_cur_username.argtypes = []
+
+# gchar* get_cur_groupname(void);
+get_cur_groupname = libwsutil.get_cur_groupname
+get_cur_groupname.restype = gchar_p
+get_cur_groupname.argtypes = []
+
+
+###############
+# processes.h #
+###############
+
+if os.name == 'nt':
+    # typedef HANDLE ws_process_id
+    ws_process_id = c_void_p
+
+    # #define WS_INVALID_PID INVALID_HANDLE_VALUE
+    WS_INVALID_PID = cast(c_int(-1), ws_process_id)
+
+else:
+    # typedef pid_t ws_process_id
+    ws_process_id = c_int32
+    WS_INVALID_PID = ws_process_id(-1)
+
+
+##############
+# wsgcrypt.h #
+##############
+
+# #define HASH_MD5_LENGTH      16
+HASH_MD5_LENGTH = 16
+
+# #define HASH_SHA1_LENGTH     20
+HASH_SHA1_LENGTH = 20
+
+# #define HASH_SHA2_224_LENGTH 28
+HASH_SHA2_244_LENGTH = 28
+
+# #define HASH_SHA2_256_LENGTH 32
+HASH_SHA2_256_LENGTH = 32
+
+# #define HASH_SHA2_384_LENGTH 48
+HASH_SHA2_384_LENGTH = 48
+
+# #define HASH_SHA2_512_LENGTH 64
+HASH_SHA2_512_LENGTH = 64
+
+# (from gpg-error.h)
+# typedef unsigned int gpg_error_t;
+# (from gcrypt.h)
+# typedef gpg_error_t gcry_error_t;
+gcry_error_t = c_uint
+
+# (from gcrypt.h)
+# struct gcry_sexp;
+# typedef struct gcry_sexp* gcry_sexp_t;
+gcry_sexp_t = c_void_p
+
+# gcry_error_t ws_hmac_buffer(int algo, void* digest, const void* buffer,
+# size_t length, const void *key, size_t keylen);
+ws_hmac_buffer = libwsutil.ws_hmac_buffer
+ws_hmac_buffer.restype = gcry_error_t
+ws_hmac_buffer.argtypes = [
+    c_int,
+    c_void_p,
+    c_void_p,
+    c_size_t,
+    c_void_p,
+    c_size_t]
+
+# gcry_error_t ws_cmac_buffer(int algo, void* digest, const void* buffer,
+# size_t length, const void* key, size_t keylen);
+ws_cmac_buffer = libwsutil.ws_cmac_buffer
+ws_cmac_buffer.restype = gcry_error_t
+ws_cmac_buffer.argtypes = [
+    c_int,
+    c_void_p,
+    c_void_p,
+    c_size_t,
+    c_void_p,
+    c_size_t]
+
+# void crypt_des_ecb(guint8* output, const guint8* buffer, const guint8*
+# key56);
+crypt_des_ecb = libwsutil.crypt_des_ecb
+crypt_des_ecb.restype = None
+crypt_des_ecb.argtypes = [POINTER(guint8), POINTER(guint8), POINTER(guint8)]
+
+# size_t rsa_decrypt_inplace(const guint len, guchar* data, gcry_sexp_t
+# pk, gboolean pkcs1_padding, char** err);
+rsa_decrypt_inplace = libwsutil.rsa_decrypt_inplace
+rsa_decrypt_inplace.restype = c_size_t
+rsa_decrypt_inplace.argtypes = [
+    guint,
+    POINTER(guchar),
+    gcry_sexp_t,
+    gboolean,
+    POINTER(c_char_p)]
+
+# gcry_error_t hkdf_expand(int hashalgo, const guint8* prk, guint prk_len,
+# const guint8* info, guint info_len, guint8* out, guint out_len);
+hkdf_expand = libwsutil.hkdf_expand
+hkdf_expand.restype = gcry_error_t
+hkdf_expand.argtypes = [
+    c_int,
+    POINTER(guint8),
+    guint,
+    POINTER(guint8),
+    guint,
+    POINTER(guint8),
+    guint]
+
+# static inline gcry_error_t hkdf_extract(int hashalgo, const guint8*
+# salt, size_t salt_len, const guint8* ikm, size_t ikm_len, guint8* prk);
+
+
+def hkdf_extract(hashalgo, salt, salt_len, ikm, ikm_len, prk):
+    return ws_hmac_buffer(hashalgo, prk, ikm, ikm_len, salt, salt_len)
+
+
+####################
+# report_message.h #
+####################
+
+# void report_failure(const char* msg_format, ...);
+def report_failure(msg_format, *argv):
+    args, types = c_va_list(*argv)
+    _report_failure = libwsutil.report_failure
+    _report_failure.restype = None
+    _report_failure.argtypes = [c_char_p] + types
+    _report_failure(msg_format, *argv)
+
+# void report_warning(const char* msg_format, ...);
+
+
+def report_warning(msg_format, *argv):
+    args, types = c_va_list(*argv)
+    print(types)
+    _report_warning = libwsutil.report_warning
+    _report_warning.restype = None
+    _report_warning.argtypes = [c_char_p] + types
+    _report_warning(msg_format, *argv)
+
+
+# void report_open_failure(const char* filename, int err, gboolean
+# for_writing);
+report_open_failure = libwsutil.report_open_failure
+report_open_failure.restype = None
+report_open_failure.argtypes = [c_char_p, c_int, gboolean]
+
+# void report_read_failure(const char* filename, int err);
+report_read_failure = libwsutil.report_read_failure
+report_read_failure.restype = None
+report_read_failure.argtypes = [c_char_p, c_int]
+
+# void report_write_failure(const char* filename, int err);
+report_write_failure = libwsutil.report_write_failure
+report_write_failure.restype = None
+report_write_failure.argtypes = [c_char_p, c_int]
+
+
+#########
+# rsa.h #
+#########
+
+# (from gnutls.h)
+# struct gnutls_x509_privkey_int;
+# typedef gnutls_x509_privkey_int* gnutls_x509_privkey_t;
+gnutls_x509_privkey_t = c_void_p
+
+# gcry_sexp_t rsa_privkey_to_sexp(gnutls_x509_privkey_t priv_key, char** err);
+rsa_privkey_to_sexp = libwsutil.rsa_privkey_to_sexp
+rsa_privkey_to_sexp.restype = gcry_sexp_t
+rsa_privkey_to_sexp.argtypes = [gnutls_x509_privkey_t, POINTER(c_char_p)]
+
+# gnutls_x509_privkey_t rsa_load_pem_key(FILE* fp, char** err);
+rsa_load_pem_key = libwsutil.rsa_load_pem_key
+rsa_load_pem_key.restype = gnutls_x509_privkey_t
+rsa_load_pem_key.argtypes = [c_void_p, POINTER(c_char_p)]
+
+# gnutls_x509_privkey_t rsa_load_pkcs12(FILE* fp, const char* cert_passwd,
+# char** err);
+rsa_load_pkcs12 = libwsutil.rsa_load_pkcs12
+rsa_load_pkcs12.restype = gnutls_x509_privkey_t
+rsa_load_pkcs12.argtypes = [c_void_p, c_char_p, POINTER(c_char_p)]
+
+# void rsa_private_key_free(gpointer key);
+rsa_private_key_free = libwsutil.rsa_private_key_free
+rsa_private_key_free.restype = None
+rsa_private_key_free.argtypes = [gpointer]
+
+
+##############
+# sign_ext.h #
+##############
+
+# static inline guint32 ws_sign_ext32(guint32 val, int no_of_bits);
+def ws_sign_ext32(val, no_of_bits):
+    if no_of_bits == 0 or no_of_bits == 32:
+        return val
+    if val & (1 << (no_of_bits - 1)):
+        val |= 0xFFFFFFFF << no_of_bits
+    return val
+
+# static inline guint64 ws_sign_ext64(guint64 val, int no_of_bits);
+
+
+def ws_sign_ext64(val, no_of_bits):
+    if no_of_bits == 0 or no_of_bits == 64:
+        return val
+    if val & (1 << (no_of_bits - 1)):
+        val |= 0xFFFFFFFFFFFFFFFF << no_of_bits
+    return val
+
+
+##############
+# sober128.h #
+##############
+
+# typedef struct _sober128_prng {
+#     unsigned long R[17];
+#     unsigned long initR[17];
+#     unsigned long konst;
+#     unsigned long sbuf;
+#     int nbuf;
+#     int flag;
+#     int set;
+# } sober128_prng;
+class sober128_prng(Structure):
+    _fields_ = [('R', c_ulong * 17),
+                ('initR', c_ulong * 17),
+                ('konst', c_ulong),
+                ('sbuf', c_ulong),
+                ('nbuf', c_int),
+                ('flag', c_int),
+                ('set', c_int)]
+
+
+# int sober128_start(sober128_prng* prng);
+sober128_start = libwsutil.sober128_start
+sober128_start.restype = c_int
+sober128_start.argtypes = [POINTER(sober128_prng)]
+
+# int sober128_add_entropy(const unsigned char* buf, unsigned long len,
+# sober128_prng* prng);
+sober128_add_entropy = libwsutil.sober128_add_entropy
+sober128_add_entropy.restype = c_int
+sober128_add_entropy.argtypes = [
+    POINTER(c_ubyte),
+    c_ulong,
+    POINTER(sober128_prng)]
+
+# unsigned long sober128_read(unsigned char* buf, unsigned long len,
+# sober128_prng* prng);
+sober128_read = libwsutil.sober128_read
+sober128_read.restype = c_ulong
+sober128_read.argtypes = [POINTER(c_ubyte), c_ulong, POINTER(sober128_prng)]
+
+
+###############
+# strnatcmp.h #
+###############
+
+# typedef char nat_char
+nat_char = c_char
+
+# int ws_ascii_strnatcmp(nat_char const* a, nat_char const* b);
+ws_ascii_strnatcmp = libwsutil.ws_ascii_strnatcmp
+ws_ascii_strnatcmp.restype = c_int
+ws_ascii_strnatcmp.argtypes = [POINTER(nat_char), POINTER(nat_char)]
+
+# int ws_ascii_strnatcasecmp(nat_char const* a, nat_char const* b);
+ws_ascii_strnatcasecmp = libwsutil.ws_ascii_strnatcasecmp
+ws_ascii_strnatcasecmp.restype = c_int
+ws_ascii_strnatcasecmp.argtypes = [POINTER(nat_char), POINTER(nat_char)]
+
+
+##############
+# strptime.h #
+##############
+
+tm_p = c_void_p
+
+# char* strptime(const char*, const char*, struct tm*);
+strptime = libwsutil.strptime
+strptime.restype = c_char_p
+strptime.argtypes = [c_char_p, c_char_p, tm_p]
+
+
+############
+# strtoi.h #
+############
+
+# gboolean ws_strtoi64(const gchar* str, const gchar** endptr, gint64* cint);
+ws_strtoi64 = libwsutil.ws_strtoi64
+ws_strtoi64.restype = gboolean
+ws_strtoi64.argtypes = [gchar_p, POINTER(gchar_p), POINTER(gint64)]
+
+# gboolean ws_strtoi32(const gchar* str, const gchar** endptr, gint32* cint);
+ws_strtoi32 = libwsutil.ws_strtoi32
+ws_strtoi32.restype = gboolean
+ws_strtoi32.argtypes = [gchar_p, POINTER(gchar_p), POINTER(gint32)]
+
+# gboolean ws_strtoi16(const gchar* str, const gchar** endptr, gint16* cint);
+ws_strtoi16 = libwsutil.ws_strtoi16
+ws_strtoi16.restype = gboolean
+ws_strtoi16.argtypes = [gchar_p, POINTER(gchar_p), POINTER(gint16)]
+
+# gboolean ws_strtoi8(const gchar* str, const gchar** endptr, gint8* cint);
+ws_strtoi8 = libwsutil.ws_strtoi8
+ws_strtoi8.restype = gboolean
+ws_strtoi8.argtypes = [gchar_p, POINTER(gchar_p), POINTER(gint8)]
+
+# gboolean ws_strtoi(const gchar* str, const gchar** endptr, gint* cint);
+#ws_strtoi = libwsutil.ws_strtoi
+#ws_strtoi.restype = gboolean
+#ws_strtoi.argtypes = [gchar_p, POINTER(gchar_p), POINTER(gint)]
+
+# gboolean ws_strtou64(const gchar* str, const gchar** endptr, guint64* cint);
+ws_strtou64 = libwsutil.ws_strtou64
+ws_strtou64.restype = gboolean
+ws_strtou64.argtypes = [gchar_p, POINTER(gchar_p), POINTER(guint64)]
+
+# gboolean ws_strtou32(const gchar* str, const gchar** endptr, guint32* cint);
+ws_strtou32 = libwsutil.ws_strtou32
+ws_strtou32.restype = gboolean
+ws_strtou32.argtypes = [gchar_p, POINTER(gchar_p), POINTER(guint32)]
+
+# gboolean ws_strtou16(const gchar* str, const gchar** endptr, guint16* cint);
+ws_strtou16 = libwsutil.ws_strtou16
+ws_strtou16.restype = gboolean
+ws_strtou16.argtypes = [gchar_p, POINTER(gchar_p), POINTER(guint16)]
+
+# gboolean ws_strtou8(const gchar* str, const gchar** endptr, guint8* cint);
+ws_strtou8 = libwsutil.ws_strtou8
+ws_strtou8.restype = gboolean
+ws_strtou8.argtypes = [gchar_p, POINTER(gchar_p), POINTER(guint8)]
+
+# gboolean ws_strtou(const gchar* str, const gchar** endptr, guint* cint);
+#ws_strtou = libwsutil.ws_strtou
+#ws_strtou.restype = gboolean
+#ws_strtou.argtypes = [gchar_p, POINTER(gchar_p), POINTER(guint)]
+
+# gboolean ws_hexstrtou64(const gchar* str, const gchar** endptr, guint64*
+# cint);
+ws_hexstrtou64 = libwsutil.ws_hexstrtou64
+ws_hexstrtou64.restype = gboolean
+ws_hexstrtou64.argtypes = [gchar_p, POINTER(gchar_p), POINTER(guint64)]
+
+# gboolean ws_hexstrtou32(const gchar* str, const gchar** endptr, guint32*
+# cint);
+ws_hexstrtou32 = libwsutil.ws_hexstrtou32
+ws_hexstrtou32.restype = gboolean
+ws_hexstrtou32.argtypes = [gchar_p, POINTER(gchar_p), POINTER(guint32)]
+
+# gboolean ws_hexstrtou16(const gchar* str, const gchar** endptr, guint16*
+# cint);
+ws_hexstrtou16 = libwsutil.ws_hexstrtou16
+ws_hexstrtou16.restype = gboolean
+ws_hexstrtou16.argtypes = [gchar_p, POINTER(gchar_p), POINTER(guint16)]
+
+# gboolean ws_hexstrtou8(const gchar* str, const gchar** endptr, guint8* cint);
+ws_hexstrtou8 = libwsutil.ws_hexstrtou8
+ws_hexstrtou8.restype = gboolean
+ws_hexstrtou8.argtypes = [gchar_p, POINTER(gchar_p), POINTER(guint8)]
+
+# gboolean ws_hexstrtou(const gchar* str, const gchar** endptr, guint* cint);
+#ws_hexstrtou = libwsutil.ws_hexstrtou
+#ws_hexstrtou.restype = gboolean
+#ws_hexstrtou.argtypes = [gchar_p, POINTER(gchar_p), POINTER(guint)]
+
+# gboolean ws_basestrtou64(const gchar* str, const gchar** endptr,
+# guint64* cint, int base);
+ws_basestrtou64 = libwsutil.ws_basestrtou64
+ws_basestrtou64.restype = gboolean
+ws_basestrtou64.argtypes = [gchar_p, POINTER(gchar_p), POINTER(guint64), c_int]
+
+# gboolean ws_basestrtou32(const gchar* str, const gchar** endptr,
+# guint32* cint, int base);
+ws_basestrtou32 = libwsutil.ws_basestrtou32
+ws_basestrtou32.restype = gboolean
+ws_basestrtou32.argtypes = [gchar_p, POINTER(gchar_p), POINTER(guint32), c_int]
+
+# gboolean ws_basestrtou16(const gchar* str, const gchar** endptr,
+# guint16* cint, int base);
+ws_basestrtou16 = libwsutil.ws_basestrtou16
+ws_basestrtou16.restype = gboolean
+ws_basestrtou16.argtypes = [gchar_p, POINTER(gchar_p), POINTER(guint16), c_int]
+
+# gboolean ws_basestrtou8(const gchar* str, const gchar** endptr, guint8*
+# cint, int base);
+ws_basestrtou8 = libwsutil.ws_basestrtou8
+ws_basestrtou8.restype = gboolean
+ws_basestrtou8.argtypes = [gchar_p, POINTER(gchar_p), POINTER(guint8), c_int]
+
+# gboolean ws_basestrtou(const gchar* str, const gchar** endptr, guint* cint, int base);
+#ws_basestrtou = libwsutil.ws_basestrtou
+#ws_basestrtou.restype = gboolean
+#ws_basestrtou.argtypes = [gchar_p, POINTER(gchar_p), POINTER(guint), c_int]
+
+
+##############
+# str_util.h #
+##############
+
+# char* ascii_strdown_inplace(gchar* str);
+ascii_strdown_inplace = libwsutil.ascii_strdown_inplace
+ascii_strdown_inplace.restype = c_char_p
+ascii_strdown_inplace.argtypes = [gchar_p]
+
+# gchar* ascii_strup_inplace(gchar* str);
+ascii_strup_inplace = libwsutil.ascii_strup_inplace
+ascii_strup_inplace.restype = gchar_p
+ascii_strup_inplace.argtypes = [gchar_p]
+
+# gboolean isprint_string(const gchar* str);
+isprint_string = libwsutil.isprint_string
+isprint_string.restype = gboolean
+isprint_string.argtypes = [gchar_p]
+
+# gboolean isprint_utf8_string(const gchar* str, guint length);
+isprint_utf8_string = libwsutil.isprint_utf8_string
+isprint_utf8_string.restype = gboolean
+isprint_utf8_string.argtypes = [gchar_p, guint]
+
+# gboolean isdigit_string(const guchar* str);
+isdigit_string = libwsutil.isdigit_string
+isdigit_string.restype = gboolean
+isdigit_string.argtypes = [POINTER(guchar)]
+
+# int ws_xton(char ch)
+ws_xton = libwsutil.ws_xton
+ws_xton.restype = c_int
+ws_xton.argtypes = [c_char]
+
+# typedef enum {
+#     format_size_unit_none = 0,
+#     format_size_unit_bytes = 1,
+#     format_size_unit_bits = 2,
+#     format_size_unit_bits_s = 3,
+#     format_size_unit_bytes_s = 4,
+#     format_size_unit_packets = 5,
+#     format_size_unit_packets_s = 6,
+#     format_size_prefix_si = 0 << 8,
+#     format_size_prefix_iec = 1 << 8,
+#     format_size_suffix_no_space = 1 << 16
+# } format_size_flags_e;
+format_size_flags_e = c_int
+format_size_unit_none = c_int(0)
+format_size_unit_bytes = c_int(1)
+format_size_unit_bits = c_int(2)
+format_size_uint_bits_s = c_int(3)
+format_size_unit_bytes_s = c_int(4)
+format_size_unit_packets = c_int(5)
+format_size_unit_packets_s = c_int(6)
+format_size_prefix_si = c_int(0)
+format_size_prefix_iec = c_int(0x100)
+format_size_suffix_no_space = c_int(0x10000)
+
+# gchar* format_size(gint64 size, format_size_flags_e flags);
+format_size = libwsutil.format_size
+format_size.restype = gchar_p
+format_size.argtypes = [gint64, format_size_flags_e]
+
+# gchar printable_char_or_period(gchar c);
+printable_char_or_period = libwsutil.printable_char_or_period
+printable_char_or_period.restype = gchar
+printable_char_or_period.argtypes = [gchar]
+
+# #define plurality(d,s,p) ((d) == 1 ? (s) : (p))
+
+
+def plurality(d, s, p):
+    if d == 1:
+        return s
+    else:
+        return p
+
+
+##############
+# tempfile.h #
+##############
+
+# int create_tempfile(gchar** namebuf, const char* pfx, const char* sfx,
+# GError** err);
+create_tempfile = libwsutil.create_tempfile
+create_tempfile.restype = c_int
+create_tempfile.argtypes = [
+    POINTER(gchar_p),
+    c_char_p,
+    c_char_p,
+    POINTER(
+        POINTER(GError))]
+
+
+###############
+# time_util.h #
+###############
+
+# time_t mktime_utc(struct tm* tm);
+mktime_utc = libwsutil.mktime_utc
+mktime_utc.restype = c_ulong
+mktime_utc.argtypes = [tm_p]
+
+# void get_resource_usage(double* user_time, double* sys_time);
+get_resource_usage = libwsutil.get_resource_usage
+get_resource_usage.restype = None
+get_resource_usage.argtypes = [POINTER(c_double), POINTER(c_double)]
+
+# void log_resource_usage(gboolean reset_delta, const char* format, ...);
+
+
+def log_resource_usage(reset_delta, format, *argv):
+    args, types = c_va_list(*argv)
+    _log_resource_usage = libwsutil.log_resource_usage
+    _log_resource_usage.restype = None
+    _log_resource_usage.argtypes = [gboolean, c_char_p] + types
+    _log_resource_usage(reset_delta, format, *args)
+
+
+# guint64 create_timestamp(void);
+create_timestamp = libwsutil.create_timestamp
+create_timestamp.restype = guint64
+create_timestamp.argtypes = []
+
+
+###############
+# type_util.h #
+###############
+
+# guint64 type_util_gdouble_to_guint64(gdouble value);
+type_util_gdouble_to_guint64 = libwsutil.type_util_gdouble_to_guint64
+type_util_gdouble_to_guint64.restype = guint64
+type_util_gdouble_to_guint64.argtypes = [gdouble]
+
+# gdouble type_util_guint64_to_gdouble(guint64 value);
+type_util_guint64_to_gdouble = libwsutil.type_util_guint64_to_gdouble
+type_util_guint64_to_gdouble.restype = gdouble
+type_util_guint64_to_gdouble.argtypes = [guint64]
+
+# #define         gdouble_to_guint64(value)   type_util_gdouble_to_guint64(value)
+
+
+def gdouble_to_guint64(value):
+    return type_util_gdouble_to_guint64(value)
+
+# #define         guint64_to_gdouble(value)   type_util_guint64_to_gdouble(value)
+
+
+def guint64_to_gdouble(value):
+    return type_util_guint64_to_gdouble(value)
+
+
+##############
+# wsgetopt.h #
+##############
+
+optarg = c_char_p.in_dll(libwsutil, 'optarg')
+
+optind = c_int.in_dll(libwsutil, 'optind')
+
+opterr = c_int.in_dll(libwsutil, 'opterr')
+
+optopt = c_int.in_dll(libwsutil, 'optopt')
+
+# struct option {
+#     const char* name;
+#     int has_arg;
+#     int* flag;
+#     int val;
+# };
+
+
+class option(Structure):
+    _fields_ = [('name', c_char_p),
+                ('has_arg', c_int),
+                ('flag', POINTER(c_int)),
+                ('val', c_int)]
+
+
+# # define no_argument            0
+no_argument = 0
+
+# # define required_argument      1
+required_argument = 1
+
+# # define optional_argument      2
+optional_argument = 2
+
+# int getopt(int ___argc, char* const* ___argv, const char* __shortopts);
+getopt = libwsutil.getopt
+getopt.restype = c_int
+getopt.argtypes = [c_int, c_char_p, c_char_p]
+
+# int getopt_long(int ___argc, char* const* ___argv, const char*
+# __shortopts, const struct option* __longopts, int* __longind);
+getopt_long = libwsutil.getopt_long
+getopt_long.restype = c_int
+getopt_long.argtypes = [
+    c_int,
+    c_char_p,
+    c_char_p,
+    POINTER(option),
+    POINTER(c_int)]
+
+
+############
+# wsjson.h #
+############
+
+# gboolean json_validate(const guint8* buf, const size_t len);
+json_validate = libwsutil.json_validate
+json_validate.restype = gboolean
+json_validate.argtypes = [POINTER(guint8), c_size_t]
+
+# int json_parse(const char* buf, jsmntok_t* tokens, unsigned int max_tokens);
+json_parse = libwsutil.json_parse
+json_parse.restype = c_int
+json_parse.argtypes = [c_char_p, POINTER(jsmntok_t), c_uint]
+
+# jsmntok_t* json_get_object(const char* buf, jsmntok_t* parent, const
+# gchar* name);
+json_get_object = libwsutil.json_get_object
+json_get_object.restype = POINTER(jsmntok_t)
+json_get_object.argtypes = [c_char_p, POINTER(jsmntok_t), gchar_p]
+
+# char* json_get_string(char* buf, jsmntok_t* parent, const gchar* name);
+json_get_string = libwsutil.json_get_string
+json_get_string.restype = c_char_p
+json_get_string.argtypes = [c_char_p, POINTER(jsmntok_t), gchar_p]
+
+# gboolean json_get_double(char* buf, jsmntok_t* parent, const gchar*
+# name, gdouble* val);
+json_get_double = libwsutil.json_get_double
+json_get_double.restype = gboolean
+json_get_double.argtypes = [
+    c_char_p,
+    POINTER(jsmntok_t),
+    gchar_p,
+    POINTER(gdouble)]
+
+# gboolean json_decode_string_inplace(char* text);
+json_decode_string_inplace = libwsutil.json_decode_string_inplace
+json_decode_string_inplace.restype = gboolean
+json_decode_string_inplace.argtypes = [c_char_p]
+
+
+#############
+# ws_pipe.h #
+#############
+
+if os.name == 'nt':
+    # #define ws_pipe_handle HANDLE
+    ws_pipe_handle = c_void_p
+else:
+    # #define ws_pipe_handle int
+    ws_pipe_handle = c_int
+
+# typedef struct _ws_pipe_t {
+#     GPid pid;
+#     gchar* stderr_msg;
+#     gint exitcode;
+#     gint stdin_fd;
+#     gint stdout_fd;
+#     gint stderr_fd;
+# #ifdef _WIN32
+#     HANDLE threadId;
+# #endif
+# } ws_pipe_t;
+if os.name == 'nt':
+    class _ws_pipe_t(Structure):
+        _fields_ = [('pid', GPid),
+                    ('stderr_msg', gchar_p),
+                    ('exitcode', gint),
+                    ('stdin_fd', gint),
+                    ('stdout_fd', gint),
+                    ('stderr_fd', gint),
+                    ('threadId', c_void_p)]
+else:
+    class _ws_pipe_t(Structure):
+        _fields_ = [('pid', GPid),
+                    ('stderr_msg', gchar_p),
+                    ('exitcode', gint),
+                    ('stdin_fd', gint),
+                    ('stdout_fd', gint),
+                    ('stderr_fd', gint)]
+ws_pipe_t = _ws_pipe_t
+
+# gboolean ws_pipe_spawn_sync(const gchar* working_directory, const gchar*
+# command, gint argc, gchar** args, gchar** command_output);
+ws_pipe_spawn_sync = libwsutil.ws_pipe_spawn_sync
+ws_pipe_spawn_sync.restype = gboolean
+ws_pipe_spawn_sync.argtypes = [
+    gchar_p,
+    gchar_p,
+    gint,
+    POINTER(gchar_p),
+    POINTER(gchar_p)]
+
+# void ws_pipe_init(ws_pipe_t* ws_pipe);
+ws_pipe_init = libwsutil.ws_pipe_init
+ws_pipe_init.restype = None
+ws_pipe_init.argtypes = [POINTER(ws_pipe_t)]
+
+# static inline gboolean ws_pipe_valid(ws_pipe_t* ws_pipe);
+
+
+def ws_pipe_valid(ws_pipe):
+    return ws_pipe != c_void_p(
+        0) and ws_pipe[0].pid != 0 and ws_pipe.pid != WS_INVALID_PID
+
+
+# GPid ws_pipe_spawn_async(ws_pipe_t* ws_pipe, GPtrArray* args);
+ws_pipe_spawn_async = libwsutil.ws_pipe_spawn_async
+ws_pipe_spawn_async.restype = GPid
+ws_pipe_spawn_async.argtypes = [POINTER(ws_pipe_t)]
+
+# void ws_pipe_close(ws_pipe_t* ws_pipe);
+ws_pipe_close = libwsutil.ws_pipe_close
+ws_pipe_close.restype = None
+ws_pipe_close.argtypes = [POINTER(ws_pipe_t)]
+
+# gboolean ws_pipe_data_available(int pipe_fd);
+ws_pipe_data_available = libwsutil.ws_pipe_data_available
+ws_pipe_data_available.restype = gboolean
+ws_pipe_data_available.argtypes = [c_int]
+
+# gboolean ws_read_string_from_pipe(ws_pipe_handle read_pipe, gchar*
+# buffer, size_t buffer);
+ws_read_string_from_pipe = libwsutil.ws_read_string_from_pipe
+ws_read_string_from_pipe.restype = gboolean
+ws_read_string_from_pipe.argtypes = [ws_pipe_handle, gchar_p, c_size_t]
+
+
+##########
+# xtea.h #
+##########
+
+# void decrypt_xtea_ecb(guint8 plaintext[8], const guint8 ciphertext[8],
+# const guint32 key[4], guint num_rounds);
+decrypt_xtea_ecb = libwsutil.decrypt_xtea_ecb
+decrypt_xtea_ecb.restype = None
+decrypt_xtea_ecb.argtypes = [guint8 * 8, guint8 * 8, guint32 * 4, guint]
+
+# void decrypt_xtea_le_ecb(guint8 plaintext[8], const guint8
+# ciphertext[8], const guint32 key[4], guint num_rounds);
+decrypt_xtea_le_ecb = libwsutil.decrypt_xtea_le_ecb
+decrypt_xtea_le_ecb.restype = None
+decrypt_xtea_le_ecb.argtypes = [guint8 * 8, guint8 * 8, guint32 * 4, guint]
