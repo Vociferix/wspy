@@ -95,3 +95,11 @@ class GError(Structure):
 
 class GPtrArray(Structure):
     _fields_ = [('pdata', POINTER(gpointer)), ('len', guint)]
+
+
+# struct GArray {
+#     gchar* data;
+#     guint  len;
+# };
+class GArray(Structure):
+    _fields_ = [('data', gchar_p), ('len', guint)]
