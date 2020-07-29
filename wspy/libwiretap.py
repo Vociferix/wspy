@@ -21,12 +21,10 @@ from ctypes.util import find_library
 from ctypes import *
 from wspy.errors import *
 from wspy.libglib2 import *
+from wspy.libwsutil import *
+import wspy_config as config
 
-lib_name = find_library('wiretap')
-if lib_name is None:
-    raise LibNotFound('wiretap')
-
-libwiretap = CDLL(lib_name)
+libwiretap = CDLL(config.get_libwiretap())
 
 
 ##########
@@ -2338,3 +2336,486 @@ class wtap_pseudo_header(Union):
                 ('llcp', llcp_phdr),
                 ('logcat', logcat_phdr),
                 ('netmon', netmon_phdr)]
+
+
+# #define REC_TYPE_PACKET               0
+REC_TYPE_PACKET = 0
+
+# #define REC_TYPE_FT_SPECIFIC_EVENT    1
+REC_TYPE_FT_SPECIFIC_EVENT = 1
+
+# #define REC_TYPE_FT_SPECIFIC_REPORT   2
+REC_TYPE_FT_SPECIFIC_REPORT = 2
+
+# #define REC_TYPE_SYSCALL              3
+REC_TYPE_SYSCALL = 3
+
+
+# typedef struct {
+#     guint32   caplen;
+#     guint32   len;
+#     int       pkt_encap;
+#     guint32   interface_id;
+#     guint64   drop_count;
+#     guint32   pack_flags;
+#     guint32   interface_queue;
+#     guint64   packet_id;
+#     union wtap_pseudo_header  pseudo_header;
+# } wtap_packet_header;
+class wtap_packet_header(Structure):
+    _fields_ = [('caplen', guint32),
+                ('len', guint32),
+                ('pkt_encap', c_int),
+                ('interface_id', guint32),
+                ('drop_count', guint64),
+                ('pack_flags', guint32),
+                ('interface_queue', guint32),
+                ('packet_id', guint64),
+                ('pseudo_header', wtap_pseudo_header)]
+
+
+# #define PACK_FLAGS_DIRECTION_MASK     0x00000003
+PACK_FLAGS_DIRECTION_MASK = 0x00000003
+
+# #define PACK_FLAGS_DIRECTION_SHIFT    0
+PACK_FLAGS_DIRECTION_SHIFT = 0
+
+# #define PACK_FLAGS_DIRECTION(pack_flags) (((pack_flags) & PACK_FLAGS_DIRECTION_MASK) >> PACK_FLAGS_DIRECTION_SHIFT)
+def PACK_FLAGS_DIRECTION(pack_flags):
+    return (pack_flags & PACK_FLAGS_DIRECTION_MASK) >> PACK_FLAGS_DIRECTION_SHIFT
+
+# #define PACK_FLAGS_DIRECTION_UNKNOWN  0
+PACK_FLAGS_DIRECTION_UNKNOWN = 0
+
+# #define PACK_FLAGS_DIRECTION_INBOUND  1
+PACK_FLAGS_DIRECTION_INBOUND = 1
+
+# #define PACK_FLAGS_DIRECTION_OUTBOUND 2
+PACK_FLAGS_DIRECTION_OUTBOUND = 2
+
+
+
+# #define PACK_FLAGS_RECEPTION_TYPE_MASK        0x0000001C
+PACK_FLAGS_RECEPTION_TYPE_MASK = 0x0000001C
+
+# #define PACK_FLAGS_RECEPTION_TYPE_SHIFT       2
+PACK_FLAGS_RECEPTION_TYPE_SHIFT = 2
+
+# #define PACK_FLAGS_RECEPTION_TYPE(pack_flags) (((pack_flags) & PACK_FLAGS_RECEPTION_TYPE_MASK) >> PACK_FLAGS_RECEPTION_TYPE_SHIFT)
+def PACK_FLAGS_RECEPTION_TYPE(pack_flags):
+    return (pack_flags & PACK_FLAGS_RECEPTION_TYPE_MASK) >> PACK_FLAGS_RECEPTION_TYPE_SHIFT
+
+# #define PACK_FLAGS_RECEPTION_TYPE_UNSPECIFIED 0
+PACK_FLAGS_RECEPTION_TYPE_UNSPECIFIED = 0
+
+# #define PACK_FLAGS_RECEPTION_TYPE_UNICAST     1
+PACK_FLAGS_RECEPTION_TYPE_UNICAST = 1
+
+# #define PACK_FLAGS_RECEPTION_TYPE_MULTICAST   2
+PACK_FLAGS_RECEPTION_TYPE_MULTICAST = 2
+
+# #define PACK_FLAGS_RECEPTION_TYPE_BROADCAST   3
+PACK_FLAGS_RECEPTION_TYPE_BROADCAST = 3
+
+# #define PACK_FLAGS_RECEPTION_TYPE_PROMISCUOUS 4
+PACK_FLAGS_RECEPTION_TYPE_PROMISCUOUS = 4
+
+
+
+# #define PACK_FLAGS_FCS_LENGTH_MASK                        0x000001E0
+PACK_FLAGS_FCS_LENGTH_MASK = 0x000001E0
+
+# #define PACK_FLAGS_FCS_LENGTH_SHIFT                       5
+PACK_FLAGS_FCS_LENGTH_SHIFT = 5
+
+# #define PACK_FLAGS_FCS_LENGTH(pack_flags) (((pack_flags) & PACK_FLAGS_FCS_LENGTH_MASK) >> PACK_FLAGS_FCS_LENGTH_SHIFT)
+def PACK_FLAGS_FCS_LENGTH(pack_flags):
+    return (pack_flags & PACK_FLAGS_FCS_LENGTH_MASK) >> PACK_FLAGS_FCS_LENGTH_SHIFT
+
+# #define PACK_FLAGS_RESERVED_MASK                          0x0000FE00
+PACK_FLAGS_RESERVED_MASK = 0x0000FE00
+
+
+
+
+
+# #define PACK_FLAGS_CRC_ERROR                   0x01000000
+PACK_FLAGS_CRC_ERROR = 0x01000000
+
+# #define PACK_FLAGS_PACKET_TOO_LONG             0x02000000
+PACK_FLAGS_PACKET_TOO_LONG = 0x02000000
+
+# #define PACK_FLAGS_PACKET_TOO_SHORT            0x04000000
+PACK_FLAGS_PACKET_TOO_SHORT = 0x04000000
+
+# #define PACK_FLAGS_WRONG_INTER_FRAME_GAP       0x08000000
+PACK_FLAGS_WRONG_INTER_FRAME_GAP = 0x08000000
+
+# #define PACK_FLAGS_UNALIGNED_FRAME             0x10000000
+PACK_FLAGS_UNALIGNED_FRAME = 0x10000000
+
+# #define PACK_FLAGS_START_FRAME_DELIMITER_ERROR 0x20000000
+PACK_FLAGS_START_FRAME_DELIMITER_ERROR = 0x20000000
+
+# #define PACK_FLAGS_PREAMBLE_ERROR              0x40000000
+PACK_FLAGS_PREAMBLE_ERROR = 0x40000000
+
+# #define PACK_FLAGS_SYMBOL_ERROR                0x80000000
+PACK_FLAGS_SYMBOL_ERROR = 0x80000000
+
+
+
+# #define PACK_FLAGS_VALUE(direction, reception_type, fcs_length, ll_dependent_errors) \
+#     (((direction) << 30) | \
+#     ((reception_type) << 27) | \
+#     ((fcs_length) << 23) | \
+#     (ll_dependent_errors))
+def PACK_FLAGS_VALUE(direction, reception_type, fcs_length, ll_dependent_errors):
+    return (direction << 30) | (reception_type << 27) | (fcs_length << 23) | ll_dependend_errors
+
+# typedef struct {
+#     guint     record_type;
+#     guint32   record_len;
+# } wtap_ft_specific_header;
+class wtap_ft_specific_header(Structure):
+    _fields_ = [('record_type', guint),
+                ('record_len', guint32)]
+
+# typedef struct {
+#     guint     record_type;
+#     int       byte_order;
+#     guint64   timestamp;
+#     guint64   thread_id;
+#     guint32   event_len;
+#     guint32   event_filelen;
+#     guint16   event_type;
+#     guint16   cpu_id;
+# } wtap_syscall_header;
+class wtap_syscall_header(Structure):
+    _fields_ = [('record_type', guint),
+                ('byte_order', c_int),
+                ('timestamp', guint64),
+                ('thread_id', guint64),
+                ('event_len', guint32),
+                ('event_filelen', guint32),
+                ('event_type', guint16),
+                ('cpu_id', guint16)]
+
+# typedef struct {
+#     guint     rec_type;
+#     guint32   presence_flags;
+#     nstime_t  ts;
+#     int       tsprec;
+#     union {
+#         wtap_packet_header packet_header;
+#         wtap_ft_specific_header ft_specific_header;
+#         wtap_syscall_header syscall_header;
+#     } rec_header;
+#     gchar     *opt_comment;
+#     gboolean  has_comment_changed;
+#     GPtrArray *packet_verdict;
+#     Buffer    options_buf;
+# } wtap_rec;
+class _rec_header_t(Union):
+    _fields_ = [('packet_header', wtap_packet_header),
+                ('ft_specific_header', wtap_ft_specific_header),
+                ('syscall_header', wtap_syscall_header)]
+
+class wtap_rec(Structure):
+    _fields_ = [('rec_type', guint),
+                ('presence_flags', guint32),
+                ('ts', nstime_t),
+                ('tsprec', c_int),
+                ('rec_header', _rec_header_t),
+                ('opt_comment', gchar_p),
+                ('has_comment_changed', gboolean),
+                ('packet_verdict', POINTER(GPtrArray)),
+                ('options_buf', Buffer)]
+
+
+# #define WTAP_HAS_TS            0x00000001
+WTAP_HAS_TS = 0x00000001
+
+# #define WTAP_HAS_CAP_LEN       0x00000002
+WTAP_HAS_CAP_LEN = 0x00000002
+
+# #define WTAP_HAS_INTERFACE_ID  0x00000004
+WTAP_HAS_INTERFACE_ID = 0x00000004
+
+# #define WTAP_HAS_COMMENTS      0x00000008
+WTAP_HAS_COMMENTS = 0x00000008
+
+# #define WTAP_HAS_DROP_COUNT    0x00000010
+WTAP_HAS_DROP_COUNT = 0x00000010
+
+# #define WTAP_HAS_PACK_FLAGS    0x00000020
+WTAP_HAS_PACK_FLAGS = 0x00000020
+
+# #define WTAP_HAS_PACKET_ID     0x00000040
+WTAP_HAS_PACKET_ID = 0x00000040
+
+# #define WTAP_HAS_INT_QUEUE     0x00000080
+WTAP_HAS_INT_QUEUE = 0x00000080
+
+# #define WTAP_HAS_VERDICT       0x00000100
+WTAP_HAS_VERDICT = 0x00000100
+
+
+# typedef struct wtapng_section_mandatory_s {
+#     guint64             section_length;
+# } wtapng_mandatory_section_t;
+class wtapng_mandatory_section_s(Structure):
+    _fields_ = [('section_length', guint64)]
+
+wtapng_mandatory_section_t = wtapng_mandatory_section_s
+
+# typedef struct wtapng_iface_descriptions_s {
+#     GArray *interface_data;
+# } wtapng_iface_descriptions_t;
+class wtapng_iface_descriptions_s(Structure):
+    _fields_ = [('interface_data', POINTER(GArray))]
+
+wtapng_iface_descriptions_t = wtapng_iface_descriptions_s
+
+# typedef struct wtapng_if_descr_mandatory_s {
+#     int                    wtap_encap;
+#     guint64                time_units_per_second;
+#     int                    tsprecision;
+#     guint32                snap_len;
+#     guint8                 num_stat_entries;
+#     GArray                *interface_statistics;
+# } wtapng_if_descr_mandatory_t;
+class wtapng_if_descr_mandatory_s(Structure):
+    _fields_ = [('wtap_encap', c_int),
+                ('time_units_per_second', guint64),
+                ('tsprecision', c_int),
+                ('snap_len', guint32),
+                ('num_stat_entries', guint8),
+                ('interface_statistics', POINTER(GArray))]
+
+wtapng_if_descr_mandatory_t = wtapng_if_descr_mandatory_s
+
+# typedef struct wtapng_dsb_mandatory_s {
+#     guint32                secrets_type;
+#     guint32                secrets_len;
+#     guint8                *secrets_data;
+# } wtapng_dsb_mandatory_t;
+class wtapng_dsb_mandatory_s(Structure):
+    _fields_ = [('secrets_type', guint32),
+                ('secrets_len', guint32),
+                ('secrets_data', POINTER(guint8))]
+
+wtapng_dsb_mandatory_t = wtapng_dsb_mandatory_s
+
+# typedef struct wtapng_if_descr_filter_s {
+#     gchar                 *if_filter_str;
+#     guint16                bpf_filter_len;
+#     guint8                *if_filter_bpf_bytes;
+# } wtapng_if_descr_filter_t;
+class wtapng_if_descr_filter_s(Structure):
+    _fields_ = [('if_filter_str', gchar_p),
+                ('bpf_filter_len', guint16),
+                ('if_filter_bpf_bytes', POINTER(guint8))]
+
+wtapng_if_descr_filter_t = wtapng_if_descr_filter_s
+
+# typedef struct wtapng_if_stats_mandatory_s {
+#     guint32  interface_id;
+#     guint32  ts_high;
+#     guint32  ts_low;
+# } wtapng_if_stats_mandatory_t;
+class wtapng_if_stats_mandatory_s(Structure):
+    _fields_ = [('interface_id', guint32),
+                ('ts_high', guint32),
+                ('ts_low', guint32)]
+
+wtapng_if_stats_mandatory_t = wtapng_if_stats_mandatory_s
+
+# #define MAXNAMELEN  	64
+MAXNAMELEN = 64
+
+# typedef struct hashipv4 {
+#     guint             addr;
+#     guint8            flags;
+#     gchar             ip[WS_INET_ADDRSTRLEN];
+#     gchar             name[MAXNAMELEN];
+# } hashipv4_t;
+class hashipv4(Structure):
+    _fields_ = [('addr', guint),
+                ('flags', guint8),
+                ('ip', gchar * WS_INET_ADDRSTRLEN),
+                ('name', gchar * MAXNAMELEN)]
+
+hashipv4_t = hashipv4
+
+# typedef struct hashipv6 {
+#     guint8            addr[16];
+#     guint8            flags;
+#     gchar             ip6[WS_INET6_ADDRSTRLEN];
+#     gchar             name[MAXNAMELEN];
+# } hashipv6_t;
+class hashipv6(Structure):
+    _fields_ = [('addr', guint8 * 16),
+                ('flags', guint8),
+                ('ip6', gchar * WS_INET6_ADDRSTRLEN),
+                ('name', gchar * MAXNAMELEN)]
+
+hashipv6_t = hashipv6
+
+# typedef struct addrinfo_lists {
+#     GList      *ipv4_addr_list;
+#     GList      *ipv6_addr_list;
+# } addrinfo_lists_t;
+class addrinfo_lists(Structure):
+    _fields_ = [('ipv4_addr_list', POINTER(GList)),
+                ('ipv6_addr_list', POINTER(GList))]
+
+
+# typedef struct wtap_dump_params {
+#     int         encap;
+#     int         snaplen;
+#     GArray     *shb_hdrs;
+#     wtapng_iface_descriptions_t *idb_inf;
+#     GArray     *nrb_hdrs;
+#     GArray     *dsbs_initial;
+#     const GArray *dsbs_growing;
+# } wtap_dump_params;
+class wtap_dump_params(Structure):
+    _fields_ = [('encap', c_int),
+                ('snaplen', c_int),
+                ('shb_hdrs', POINTER(GArray)),
+                ('idb_inf', POINTER(wtapng_iface_descriptions_t)),
+                ('nrb_hdrs', POINTER(GArray)),
+                ('dsbs_initial', POINTER(GArray)),
+                ('dsbs_growing', POINTER(GArray))]
+
+
+# #define WTAP_DUMP_PARAMS_INIT {.snaplen=0}
+WTAP_DUMP_PARAMS_INIT = wtap_dump_params(0, 0)
+
+
+# struct wtap_dumper;
+# typedef struct wtap_dumper wtap_dumper;
+class wtap_dumper(Structure):
+    _fields_ = []
+
+# typedef struct wtap wtap;
+class wtap(Structure):
+    _fields_ = []
+    
+# typedef struct wtap_reader *FILE_T;
+class wtap_reader(Structure):
+    _fields_ = []
+
+FILE_T = POINTER(wtap_reader)
+
+# typedef struct wtap_wslua_file_info {
+#     int (*wslua_can_write_encap)(int, void*);
+#     void* wslua_data;
+# } wtap_wslua_file_info_t;
+class wtap_wslua_file_info(Structure):
+    _fields_ = [('wslua_can_write_encap', CFUNCTYPE(c_int, c_int, c_void_p)),
+                ('wslua_data', c_void_p)]
+
+wtap_wslua_file_info_t = wtap_wslua_file_info
+
+
+# struct file_extension_info {
+#     const char *name;
+#     gboolean is_capture_file;
+#     const char *extensions;
+# };
+class file_extension_info(Structure):
+    _fields_ = [('name', c_char_p),
+                ('is_capture_file', gboolean),
+                ('extensions', c_char_p)]
+
+
+# typedef enum {
+#     WTAP_OPEN_NOT_MINE = 0,
+#     WTAP_OPEN_MINE = 1,
+#     WTAP_OPEN_ERROR = -1
+# } wtap_open_return_val;
+wtap_open_return_val = c_int
+WTAP_OPEN_NOT_MINE = c_int(0)
+WTAP_OPEN_MINE = c_int(1)
+WTAP_OPEN_ERROR = c_int(-1)
+
+# typedef wtap_open_return_val (*wtap_open_routine_t)(struct wtap*, int *, char **);
+wtap_open_routine_t = CFUNCTYPE(wtap_open_return_val, POINTER(wtap), POINTER(c_int), POINTER(c_char_p))
+
+
+# typedef enum {
+#     OPEN_INFO_MAGIC = 0,
+#     OPEN_INFO_HEURISTIC = 1
+# } wtap_open_type;
+wtap_open_type = c_int
+OPEN_INFO_MAGIC = c_int(0)
+OPEN_INFO_HEURISTIC = c_int(1)
+
+# void init_open_routines(void);
+init_open_routines = libwiretap.init_open_routines
+init_open_routines.restype = None
+init_open_routines.argtypes = []
+
+# struct open_info {
+#     const char *name;
+#     wtap_open_type type;
+#     wtap_open_routine_t open_routine;
+#     const char *extensions;
+#     gchar **extensions_set;
+#     void* wslua_data;
+# };
+class open_info(Structure):
+    _fields_ = [('name', c_char_p),
+                ('type', wtap_open_type),
+                ('open_routine', wtap_open_routine_t),
+                ('extensions', c_char_p),
+                ('extensions_set', POINTER(gchar_p)),
+                ('wslua_data', c_void_p)]
+
+# struct open_info *open_routines;
+open_routines = POINTER(open_info).in_dll(libwiretap, 'open_routines')
+
+
+# #define WTAP_COMMENT_PER_SECTION        0x00000001
+WTAP_COMMENT_PER_SECTION = 0x00000001
+
+# #define WTAP_COMMENT_PER_INTERFACE      0x00000002
+WTAP_COMMENT_PER_INTERFACE = 0x00000002
+
+# #define WTAP_COMMENT_PER_PACKET         0x00000004
+WTAP_COMMENT_PER_PACKET = 0x00000004
+
+
+# struct file_type_subtype_info {
+#     const char *name;
+#     const char *short_name;
+#     const char *default_file_extension;
+#     const char *additional_file_extensions;
+#     gboolean writing_must_seek;
+#     gboolean has_name_resolution;
+#     guint32 supported_comment_types;
+#     int (*can_write_encap)(int);
+#     int (*dump_open)(wtap_dumper *, int *);
+#     wtap_wslua_file_info_t *wslua_info;
+# };
+class file_type_subtype_info(Structure):
+    _fields_ = [('name', c_char_p),
+                ('short_name', c_char_p),
+                ('default_file_extension', c_char_p),
+                ('additional_file_extensions', c_char_p),
+                ('writing_must_seek', gboolean),
+                ('has_name_resolution', gboolean),
+                ('supported_comment_types', guint32),
+                ('can_write_encap', CFUNCTYPE(c_int, c_int)),
+                ('dump_open', CFUNCTYPE(c_int, POINTER(wtap_dumper), POINTER(c_int))),
+                ('wslua_info', POINTER(wtap_wslua_file_info_t))]
+
+# #define WTAP_TYPE_AUTO 0
+WTAP_TYPE_AUTO = 0
+
+# void wtap_init(gboolean load_wiretap_plugins);
+wtap_init = libwiretap.wtap_init
+wtap_init.restype = None
+wtap_init.argtypes = [gboolean]

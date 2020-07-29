@@ -22,14 +22,11 @@ from ctypes import *
 from wspy.errors import *
 from wspy.libglib2 import *
 from wspy.utils import *
+import wspy_config as config
 import sys
 import os
 
-lib_name = find_library('wsutil')
-if lib_name is None:
-    raise LibNotFound('wsutil')
-
-libwsutil = CDLL(lib_name)
+libwsutil = CDLL(config.get_libwsutil())
 
 ####################
 # copyright_info.h #

@@ -17,12 +17,10 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.             #
 ###########################################################################
 
-import ctypes
-import ctypes.util
+from ctypes.util import find_library
+from ctypes import *
 from wspy.errors import *
+import wspy_config as config
 
-lib_name = ctypes.util.find_library('wireshark')
-if lib_name is None:
-    raise LibNotFound('wireshark')
+libwireshark = CDLL(config.get_libwireshark())
 
-libwireshark = ctypes.CDLL(lib_name)
