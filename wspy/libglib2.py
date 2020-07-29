@@ -58,7 +58,11 @@ class GString(Structure):
 
 
 # typedef struct _GHashTable GHashTable
-GHashTable_p = c_void_p
+class _GHashTable(Structure):
+    _fields_ = []
+
+
+GHashTable = _GHashTable
 
 # struct GList {
 #     gpointer data;
@@ -103,3 +107,14 @@ class GPtrArray(Structure):
 # };
 class GArray(Structure):
     _fields_ = [('data', gchar_p), ('len', guint)]
+
+
+# struct GSList {
+#     gpointer data;
+#     GSList*  next;
+# };
+class GSList(Structure):
+    pass
+
+
+GSList._fields_ = [('data', gpointer), ('next', POINTER(GSList))]

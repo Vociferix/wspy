@@ -27,6 +27,476 @@ import wspy_config as config
 libwiretap = CDLL(config.get_libwiretap())
 
 
+###################
+# wtap_opttypes.h #
+###################
+
+
+# #define OPT_EOFOPT           0
+OPT_EOFOPT = 0
+
+# #define OPT_COMMENT          1
+OPT_COMMENT = 1
+
+# #define OPT_SHB_HARDWARE     2
+OPT_SHB_HARDWARE = 2
+
+# #define OPT_SHB_OS           3
+OPT_SHB_OS = 3
+
+# #define OPT_SHB_USERAPPL     4
+OPT_SHB_USERAPPL = 4
+
+
+# #define OPT_IDB_NAME         2
+OPT_IDB_NAME = 2
+
+# #define OPT_IDB_DESCR        3
+OPT_IDB_DESCR = 3
+
+# #define OPT_IDB_IP4ADDR      4
+OPT_IDB_IP4ADDR = 4
+
+# #define OPT_IDB_IP6ADDR      5
+OPT_IDB_IP6ADDR = 5
+
+# #define OPT_IDB_MACADDR      6
+OPT_IDB_MACADDR = 6
+
+# #define OPT_IDB_EUIADDR      7
+OPT_IDB_EUIADDR = 7
+
+# #define OPT_IDB_SPEED        8
+OPT_IDB_SPEED = 8
+
+# #define OPT_IDB_TSRESOL      9
+OPT_IDB_TSRESOL = 9
+
+# #define OPT_IDB_TZONE        10
+OPT_IDB_TZONE = 10
+
+# #define OPT_IDB_FILTER       11
+OPT_IDB_FILTER = 11
+
+# #define OPT_IDB_OS           12
+OPT_IDB_OS = 12
+
+# #define OPT_IDB_FCSLEN       13
+OPT_IDB_FCSLEN = 13
+
+# #define OPT_IDB_TSOFFSET     14
+OPT_IDB_TSOFFSET = 14
+
+# #define OPT_IDB_HARDWARE     15
+OPT_IDB_HARDWARE = 15
+
+
+# #define OPT_NS_DNSNAME       2
+OPT_NS_DNSNAME = 2
+
+# #define OPT_NS_DNSIP4ADDR    3
+OPT_NS_DNSIP4ADDR = 3
+
+# #define OPT_NS_DNSIP6ADDR    4
+OPT_NS_DNSIP6ADDR = 4
+
+
+# #define OPT_ISB_STARTTIME    2
+OPT_ISB_STARTTIME = 2
+
+# #define OPT_ISB_ENDTIME      3
+OPT_ISB_ENDTIME = 3
+
+# #define OPT_ISB_IFRECV       4
+OPT_ISB_IFRECV = 4
+
+# #define OPT_ISB_IFDROP       5
+OPT_ISB_IFDROP = 5
+
+# #define OPT_ISB_FILTERACCEPT 6
+OPT_ISB_FILTERACCEPT = 6
+
+# #define OPT_ISB_OSDROP       7
+OPT_ISB_OSDROP = 7
+
+# #define OPT_ISB_USRDELIV     8
+OPT_ISB_USRDELIV = 8
+
+
+# struct wtap_block;
+# typedef struct wtap_block *wtap_block_t;
+class wtap_block(Structure):
+    _fields_ = []
+
+
+wtap_block_t = POINTER(wtap_block)
+
+# typedef enum {
+#     WTAP_BLOCK_NG_SECTION = 0,
+#     WTAP_BLOCK_IF_DESCR,
+#     WTAP_BLOCK_NG_NRB,
+#     WTAP_BLOCK_IF_STATS,
+#     WTAP_BLOCK_DSB,
+#     WTAP_BLOCK_END_OF_LIST
+# } wtap_block_type_t;
+wtap_block_type_t = c_int
+WTAP_BLOCK_NG_SECTION = c_int(0)
+WTAP_BLOCK_IF_DESCR = c_int(1)
+WTAP_BLOCK_NG_NRB = c_int(2)
+WTAP_BLOCK_IF_STATS = c_int(3)
+WTAP_BLOCK_DSB = c_int(4)
+WTAP_BLOCK_END_OF_LIST = c_int(5)
+
+# typedef enum {
+#     WTAP_OPTTYPE_UINT8,
+#     WTAP_OPTTYPE_UINT64,
+#     WTAP_OPTTYPE_STRING,
+#     WTAP_OPTTYPE_IPv4,
+#     WTAP_OPTTYPE_IPv6,
+#     WTAP_OPTTYPE_CUSTOM
+# } wtap_opttype_e;
+wtap_opttype_e = c_int
+WTAP_OPTTYPE_UINT8 = c_int(0)
+WTAP_OPTTYPE_UINT64 = c_int(1)
+WTAP_OPTTYPE_STRING = c_int(2)
+WTAP_OPTTYPE_IPv4 = c_int(3)
+WTAP_OPTTYPE_IPv6 = c_int(4)
+WTAP_OPTTYPE_CUSTOM = c_int(5)
+
+# typedef enum {
+#     WTAP_OPTTYPE_SUCCESS = 0,
+#     WTAP_OPTTYPE_NO_SUCH_OPTION = -1,
+#     WTAP_OPTTYPE_NOT_FOUND = -2,
+#     WTAP_OPTTYPE_TYPE_MISMATCH = -3,
+#     WTAP_OPTTYPE_NUMBER_MISMATCH = -4,
+#     WTAP_OPTTYPE_ALREADY_EXISTS = -5
+# } wtap_opttype_return_val;
+wtap_opttype_return_val = c_int
+WTAP_OPTTYPE_SUCCESS = c_int(0)
+WTAP_OPTTYPE_NO_SUCH_OPTION = c_int(-1)
+WTAP_OPTTYPE_NOT_FOUND = c_int(-2)
+WTAP_OPTTYPE_TYPE_MISMATCH = c_int(-3)
+WTAP_OPTTYPE_NUMBER_MISMATCH = c_int(-4)
+WTAP_OPTTYPE_ALREADY_EXISTS = c_int(-5)
+
+# struct wtap_opttype_custom {
+#     void* data;
+#     guint size;
+# };
+
+
+class wtap_opttype_custom(Structure):
+    _fields_ = [('data', c_void_p),
+                ('size', guint)]
+
+# typedef union {
+#     guint8 uint8val;
+#     guint64 uint64val;
+#     guint32 ipv4val;
+#     ws_in6_addr ipv6val;
+#     char *stringval;
+#     struct wtap_opttype_custom customval;
+# } wtap_optval_t;
+
+
+class wtap_optval_t(Union):
+    _fields_ = [('uint8val', guint8),
+                ('uint64val', guint64),
+                ('ipv4val', guint32),
+                ('ipv6val', ws_in6_addr),
+                ('stringval', c_char_p),
+                ('customval', wtap_opttype_custom)]
+
+# typedef struct {
+#     guint option_id;
+#     wtap_optval_t value;
+# } wtap_option_t;
+
+
+class wtap_option_t(Structure):
+    _fields_ = [('option_id', guint),
+                ('value', wtap_optval_t)]
+
+# struct wtap_dumper;
+
+
+class wtap_dumper(Structure):
+    _fields_ = []
+
+
+# typedef void (*wtap_block_create_func)(wtap_block_t block);
+wtap_block_create_func = CFUNCTYPE(None, wtap_block_t)
+
+# typedef void (*wtap_mand_free_func)(wtap_block_t block);
+wtap_mand_free_func = CFUNCTYPE(None, wtap_block_t)
+
+# typedef void (*wtap_mand_copy_func)(wtap_block_t dest_block,
+# wtap_block_t src_block);
+wtap_mand_copy_func = CFUNCTYPE(None, wtap_block_t, wtap_block_t)
+
+# void wtap_opttypes_initialize(void);
+wtap_opttypes_initialize = libwiretap.wtap_opttypes_initialize
+wtap_opttypes_initialize.restype = None
+wtap_opttypes_initialize.argtypes = []
+
+# wtap_block_t wtap_block_create(wtap_block_type_t block_type);
+wtap_block_create = libwiretap.wtap_block_create
+wtap_block_create.restype = wtap_block_t
+wtap_block_create.argtypes = [wtap_block_type_t]
+
+# void wtap_block_free(wtap_block_t block);
+wtap_block_free = libwiretap.wtap_block_free
+wtap_block_free.restype = None
+wtap_block_free.argtypes = [wtap_block_t]
+
+# void wtap_block_array_free(GArray* block_array);
+wtap_block_array_free = libwiretap.wtap_block_array_free
+wtap_block_array_free.restype = None
+wtap_block_array_free.argtypes = [POINTER(GArray)]
+
+# void* wtap_block_get_mandatory_data(wtap_block_t block);
+wtap_block_get_mandatory_data = libwiretap.wtap_block_get_mandatory_data
+wtap_block_get_mandatory_data.restype = c_void_p
+wtap_block_get_mandatory_data.argtypes = [wtap_block_t]
+
+# wtap_opttype_return_val
+# wtap_block_add_uint8_option(wtap_block_t block, guint option_id, guint8
+# value);
+wtap_block_add_uint8_option = libwiretap.wtap_block_add_uint8_option
+wtap_block_add_uint8_option.restype = wtap_opttype_return_val
+wtap_block_add_uint8_option.argtypes = [wtap_block_t, guint, guint8]
+
+# wtap_opttype_return_val
+# wtap_block_set_uint8_option_value(wtap_block_t block, guint option_id,
+# guint8 value);
+wtap_block_set_uint8_option_value = libwiretap.wtap_block_set_uint8_option_value
+wtap_block_set_uint8_option_value.restype = wtap_opttype_return_val
+wtap_block_set_uint8_option_value.argtypes = [wtap_block_t, guint, guint8]
+
+# wtap_opttype_return_val
+# wtap_block_get_uint8_option_value(wtap_block_t block, guint option_id,
+# guint8* value);
+wtap_block_get_uint8_option_value = libwiretap.wtap_block_get_uint8_option_value
+wtap_block_get_uint8_option_value.restype = wtap_opttype_return_val
+wtap_block_get_uint8_option_value.argtypes = [
+    wtap_block_t, guint, POINTER(guint8)]
+
+# wtap_opttype_return_val
+# wtap_block_add_uint64_option(wtap_block_t block, guint option_id,
+# guint64 value);
+wtap_block_add_uint64_option = libwiretap.wtap_block_add_uint64_option
+wtap_block_add_uint64_option.restype = wtap_opttype_return_val
+wtap_block_add_uint64_option.argtypes = [wtap_block_t, guint, guint64]
+
+# wtap_opttype_return_val
+# wtap_block_set_uint64_option_value(wtap_block_t block, guint option_id,
+# guint64 value);
+wtap_block_set_uint64_option_value = libwiretap.wtap_block_set_uint64_option_value
+wtap_block_set_uint64_option_value.restype = wtap_opttype_return_val
+wtap_block_set_uint64_option_value.argtypes = [wtap_block_t, guint, guint64]
+
+# wtap_opttype_return_val
+# wtap_block_get_uint64_option_value(wtap_block_t block, guint option_id,
+# guint64* value);
+wtap_block_get_uint64_option_value = libwiretap.wtap_block_get_uint64_option_value
+wtap_block_get_uint64_option_value.restype = wtap_opttype_return_val
+wtap_block_get_uint64_option_value.argtypes = [
+    wtap_block_t, guint, POINTER(guint64)]
+
+# wtap_opttype_return_val
+# wtap_block_add_ipv4_option(wtap_block_t block, guint option_id, guint32
+# value);
+wtap_block_add_ipv4_option = libwiretap.wtap_block_add_ipv4_option
+wtap_block_add_ipv4_option.restype = wtap_opttype_return_val
+wtap_block_add_ipv4_option.argtypes = [wtap_block_t, guint, guint32]
+
+# wtap_opttype_return_val
+# wtap_block_set_ipv4_option_value(wtap_block_t block, guint option_id,
+# guint32 value);
+wtap_block_set_ipv4_option_value = libwiretap.wtap_block_set_ipv4_option_value
+wtap_block_set_ipv4_option_value.restype = wtap_opttype_return_val
+wtap_block_set_ipv4_option_value.argtypes = [wtap_block_t, guint, guint32]
+
+# wtap_opttype_return_val
+# wtap_block_get_ipv4_option_value(wtap_block_t block, guint option_id,
+# guint32* value);
+wtap_block_get_ipv4_option_value = libwiretap.wtap_block_get_ipv4_option_value
+wtap_block_get_ipv4_option_value.restype = wtap_opttype_return_val
+wtap_block_get_ipv4_option_value.argtypes = [
+    wtap_block_t, guint, POINTER(guint32)]
+
+# wtap_opttype_return_val
+# wtap_block_add_ipv6_option(wtap_block_t block, guint option_id,
+# ws_in6_addr *value);
+wtap_block_add_ipv6_option = libwiretap.wtap_block_add_ipv6_option
+wtap_block_add_ipv6_option.restype = wtap_opttype_return_val
+wtap_block_add_ipv6_option.argtypes = [
+    wtap_block_t, guint, POINTER(ws_in6_addr)]
+
+# wtap_opttype_return_val
+# wtap_block_set_ipv6_option_value(wtap_block_t block, guint option_id,
+# ws_in6_addr *value);
+wtap_block_set_ipv6_option_value = libwiretap.wtap_block_set_ipv6_option_value
+wtap_block_set_ipv6_option_value.restype = wtap_opttype_return_val
+wtap_block_set_ipv6_option_value.argtypes = [
+    wtap_block_t, guint, POINTER(ws_in6_addr)]
+
+# wtap_opttype_return_val
+# wtap_block_get_ipv6_option_value(wtap_block_t block, guint option_id,
+# ws_in6_addr* value);
+wtap_block_get_ipv6_option_value = libwiretap.wtap_block_get_ipv6_option_value
+wtap_block_get_ipv6_option_value.restype = wtap_opttype_return_val
+wtap_block_get_ipv6_option_value.argtypes = [
+    wtap_block_t, guint, POINTER(ws_in6_addr)]
+
+# wtap_opttype_return_val
+# wtap_block_add_string_option(wtap_block_t block, guint option_id, const
+# char *value, gsize value_length);
+wtap_block_add_string_option = libwiretap.wtap_block_add_string_option
+wtap_block_add_string_option.restype = wtap_opttype_return_val
+wtap_block_add_string_option.argtypes = [wtap_block_t, guint, c_char_p, gsize]
+
+# wtap_opttype_return_val
+# wtap_block_add_string_option_format(wtap_block_t block, guint option_id,
+# const char *format, ...)
+
+
+def wtap_block_add_string_option_format(block, option_id, format, *argv):
+    args, types = c_va_list(*argv)
+    _wtap_block_add_string_option_format = libwiretap.wtap_block_add_string_option_format
+    _wtap_block_add_string_option_format.restype = wtap_opttype_return_val
+    _wtap_block_add_string_option_format.argtypes = [
+        wtap_block_t, guint, c_char_p] + types
+    return _wtap_block_add_string_option_format(
+        block, option_id, format, *args)
+
+
+# wtap_opttype_return_val
+# wtap_block_set_string_option_value(wtap_block_t block, guint option_id,
+# const char* value, gsize value_length);
+wtap_block_set_string_option_value = libwiretap.wtap_block_set_string_option_value
+wtap_block_set_string_option_value.restype = wtap_opttype_return_val
+wtap_block_set_string_option_value.argtypes = [wtap_block_t, guint, c_char_p]
+
+# wtap_opttype_return_val
+# wtap_block_set_nth_string_option_value(wtap_block_t block, guint
+# option_id, guint idx, const char* value, gsize value_length);
+wtap_block_set_nth_string_option_value = libwiretap.wtap_block_set_nth_string_option_value
+wtap_block_set_nth_string_option_value.restype = wtap_opttype_return_val
+wtap_block_set_nth_string_option_value.argtypes = [wtap_block_t,
+                                                   guint,
+                                                   guint,
+                                                   c_char_p,
+                                                   gsize]
+
+# wtap_opttype_return_val
+# wtap_block_set_string_option_value_format(wtap_block_t block, guint
+# option_id, const char *format, ...)
+
+
+def wtap_block_set_string_option_value_fromat(block, option_id, format, *argv):
+    args, types = c_va_list(*argv)
+    _wtap_block_set_string_option_value_format = libwiretap._wtap_block_set_string_option_value_format
+    _wtap_block_set_string_option_value_format.restype = wtap_opttype_return_val
+    _wtap_block_set_string_option_value_format.argtypes = [wtap_block_t,
+                                                           guint,
+                                                           c_char_p] + types
+    return _wtap_block_set_string_option_value_format(
+        block, option_id, format, *args)
+
+
+# wtap_opttype_return_val
+# wtap_block_get_string_option_value(wtap_block_t block, guint option_id,
+# char** value);
+wtap_block_get_string_option_value = libwiretap.wtap_block_get_string_option_value
+wtap_block_get_string_option_value.restype = wtap_opttype_return_val
+wtap_block_get_string_option_value.argtypes = [
+    wtap_block_t, guint, POINTER(c_char_p)]
+
+# wtap_opttype_return_val
+# wtap_block_get_nth_string_option_value(wtap_block_t block, guint
+# option_id, guint idx, char** value);
+wtap_block_get_nth_string_option_value = libwiretap.wtap_block_get_nth_string_option_value
+wtap_block_get_nth_string_option_value.restype = wtap_opttype_return_val
+wtap_block_get_nth_string_option_value.argtypes = [wtap_block_t,
+                                                   guint,
+                                                   guint,
+                                                   POINTER(c_char_p)]
+
+# wtap_opttype_return_val
+# wtap_block_add_custom_option(wtap_block_t block, guint option_id, void*
+# value, size_t value_size);
+wtap_block_add_custom_option = libwiretap.wtap_block_add_custom_option
+wtap_block_add_custom_option.restype = wtap_opttype_return_val
+wtap_block_add_custom_option.argtypes = [
+    wtap_block_t, guint, c_void_p, c_size_t]
+
+# wtap_opttype_return_val
+# wtap_block_set_custom_option_value(wtap_block_t block, guint option_id,
+# void* value);
+wtap_block_set_custom_option_value = libwiretap.wtap_block_set_custom_option_value
+wtap_block_set_custom_option_value.restype = wtap_opttype_return_val
+wtap_block_set_custom_option_value.argtypes = [wtap_block_t, guint, c_void_p]
+
+# wtap_opttype_return_val
+# wtap_block_get_custom_option_value(wtap_block_t block, guint option_id,
+# void** value);
+wtap_block_get_custom_option_value = libwiretap.wtap_block_get_custom_option_value
+wtap_block_get_custom_option_value.restype = wtap_opttype_return_val
+wtap_block_get_custom_option_value.argtypes = [
+    wtap_block_t, guint, POINTER(c_void_p)]
+
+# wtap_opttype_return_val
+# wtap_block_remove_option(wtap_block_t block, guint option_id);
+wtap_block_remove_option = libwiretap.wtap_block_remove_option
+wtap_block_remove_option.restype = wtap_opttype_return_val
+wtap_block_remove_option.argtypes = [wtap_block_t, guint]
+
+# wtap_opttype_return_val
+# wtap_block_remove_nth_option_instance(wtap_block_t block, guint option_id,
+#                                       guint idx);
+wtap_block_remove_nth_option_instance = libwiretap.wtap_block_remove_nth_option_instance
+wtap_block_remove_nth_option_instance.restype = wtap_opttype_return_val
+wtap_block_remove_nth_option_instance.argtypes = [wtap_block_t, guint, guint]
+
+# void wtap_block_copy(wtap_block_t dest_block, wtap_block_t src_block);
+wtap_block_copy = libwiretap.wtap_block_copy
+wtap_block_copy.restype = None
+wtap_block_copy.argtypes = [wtap_block_t, wtap_block_t]
+
+# typedef void (*wtap_block_foreach_func)(wtap_block_t block, guint
+# option_id, wtap_opttype_e option_type, wtap_optval_t *option, void
+# *user_data);
+wtap_block_foreach_func = CFUNCTYPE(None,
+                                    wtap_block_t,
+                                    guint,
+                                    wtap_opttype_e,
+                                    POINTER(wtap_optval_t),
+                                    c_void_p)
+
+# void wtap_block_foreach_option(wtap_block_t block,
+# wtap_block_foreach_func func, void* user_data);
+wtap_block_foreach_option = libwiretap.wtap_block_foreach_option
+wtap_block_foreach_option.restype = None
+wtap_block_foreach_option.argtypes = [
+    wtap_block_t, wtap_block_foreach_func, c_void_p]
+
+# int wtap_opttype_register_custom_block_type(const char* name, const char* description, wtap_block_create_func create,
+# wtap_mand_free_func free_mand, wtap_mand_copy_func copy_mand);
+wtap_opttype_register_custom_block_type = libwiretap.wtap_opttype_register_custom_block_type
+wtap_opttype_register_custom_block_type.restype = c_int
+wtap_opttype_register_custom_block_type.argtypes = [c_char_p,
+                                                    c_char_p,
+                                                    wtap_block_create_func,
+                                                    wtap_mand_free_func,
+                                                    wtap_mand_copy_func]
+
+# void wtap_opttypes_cleanup(void);
+wtap_opttypes_cleanup = libwiretap.wtap_opttypes_cleanup
+wtap_opttypes_cleanup.restype = None
+wtap_opttypes_cleanup.argtypes = []
+
+
 ##########
 # wtap.h #
 ##########
@@ -2381,8 +2851,11 @@ PACK_FLAGS_DIRECTION_MASK = 0x00000003
 PACK_FLAGS_DIRECTION_SHIFT = 0
 
 # #define PACK_FLAGS_DIRECTION(pack_flags) (((pack_flags) & PACK_FLAGS_DIRECTION_MASK) >> PACK_FLAGS_DIRECTION_SHIFT)
+
+
 def PACK_FLAGS_DIRECTION(pack_flags):
     return (pack_flags & PACK_FLAGS_DIRECTION_MASK) >> PACK_FLAGS_DIRECTION_SHIFT
+
 
 # #define PACK_FLAGS_DIRECTION_UNKNOWN  0
 PACK_FLAGS_DIRECTION_UNKNOWN = 0
@@ -2394,7 +2867,6 @@ PACK_FLAGS_DIRECTION_INBOUND = 1
 PACK_FLAGS_DIRECTION_OUTBOUND = 2
 
 
-
 # #define PACK_FLAGS_RECEPTION_TYPE_MASK        0x0000001C
 PACK_FLAGS_RECEPTION_TYPE_MASK = 0x0000001C
 
@@ -2402,8 +2874,12 @@ PACK_FLAGS_RECEPTION_TYPE_MASK = 0x0000001C
 PACK_FLAGS_RECEPTION_TYPE_SHIFT = 2
 
 # #define PACK_FLAGS_RECEPTION_TYPE(pack_flags) (((pack_flags) & PACK_FLAGS_RECEPTION_TYPE_MASK) >> PACK_FLAGS_RECEPTION_TYPE_SHIFT)
+
+
 def PACK_FLAGS_RECEPTION_TYPE(pack_flags):
-    return (pack_flags & PACK_FLAGS_RECEPTION_TYPE_MASK) >> PACK_FLAGS_RECEPTION_TYPE_SHIFT
+    return (
+        pack_flags & PACK_FLAGS_RECEPTION_TYPE_MASK) >> PACK_FLAGS_RECEPTION_TYPE_SHIFT
+
 
 # #define PACK_FLAGS_RECEPTION_TYPE_UNSPECIFIED 0
 PACK_FLAGS_RECEPTION_TYPE_UNSPECIFIED = 0
@@ -2421,7 +2897,6 @@ PACK_FLAGS_RECEPTION_TYPE_BROADCAST = 3
 PACK_FLAGS_RECEPTION_TYPE_PROMISCUOUS = 4
 
 
-
 # #define PACK_FLAGS_FCS_LENGTH_MASK                        0x000001E0
 PACK_FLAGS_FCS_LENGTH_MASK = 0x000001E0
 
@@ -2429,14 +2904,14 @@ PACK_FLAGS_FCS_LENGTH_MASK = 0x000001E0
 PACK_FLAGS_FCS_LENGTH_SHIFT = 5
 
 # #define PACK_FLAGS_FCS_LENGTH(pack_flags) (((pack_flags) & PACK_FLAGS_FCS_LENGTH_MASK) >> PACK_FLAGS_FCS_LENGTH_SHIFT)
+
+
 def PACK_FLAGS_FCS_LENGTH(pack_flags):
     return (pack_flags & PACK_FLAGS_FCS_LENGTH_MASK) >> PACK_FLAGS_FCS_LENGTH_SHIFT
 
+
 # #define PACK_FLAGS_RESERVED_MASK                          0x0000FE00
 PACK_FLAGS_RESERVED_MASK = 0x0000FE00
-
-
-
 
 
 # #define PACK_FLAGS_CRC_ERROR                   0x01000000
@@ -2464,19 +2939,27 @@ PACK_FLAGS_PREAMBLE_ERROR = 0x40000000
 PACK_FLAGS_SYMBOL_ERROR = 0x80000000
 
 
-
 # #define PACK_FLAGS_VALUE(direction, reception_type, fcs_length, ll_dependent_errors) \
 #     (((direction) << 30) | \
 #     ((reception_type) << 27) | \
 #     ((fcs_length) << 23) | \
 #     (ll_dependent_errors))
-def PACK_FLAGS_VALUE(direction, reception_type, fcs_length, ll_dependent_errors):
-    return (direction << 30) | (reception_type << 27) | (fcs_length << 23) | ll_dependend_errors
+def PACK_FLAGS_VALUE(
+        direction,
+        reception_type,
+        fcs_length,
+        ll_dependent_errors):
+    return (
+        direction << 30) | (
+        reception_type << 27) | (
+            fcs_length << 23) | ll_dependend_errors
 
 # typedef struct {
 #     guint     record_type;
 #     guint32   record_len;
 # } wtap_ft_specific_header;
+
+
 class wtap_ft_specific_header(Structure):
     _fields_ = [('record_type', guint),
                 ('record_len', guint32)]
@@ -2491,6 +2974,8 @@ class wtap_ft_specific_header(Structure):
 #     guint16   event_type;
 #     guint16   cpu_id;
 # } wtap_syscall_header;
+
+
 class wtap_syscall_header(Structure):
     _fields_ = [('record_type', guint),
                 ('byte_order', c_int),
@@ -2516,10 +3001,13 @@ class wtap_syscall_header(Structure):
 #     GPtrArray *packet_verdict;
 #     Buffer    options_buf;
 # } wtap_rec;
+
+
 class _rec_header_t(Union):
     _fields_ = [('packet_header', wtap_packet_header),
                 ('ft_specific_header', wtap_ft_specific_header),
                 ('syscall_header', wtap_syscall_header)]
+
 
 class wtap_rec(Structure):
     _fields_ = [('rec_type', guint),
@@ -2567,13 +3055,17 @@ WTAP_HAS_VERDICT = 0x00000100
 class wtapng_mandatory_section_s(Structure):
     _fields_ = [('section_length', guint64)]
 
+
 wtapng_mandatory_section_t = wtapng_mandatory_section_s
 
 # typedef struct wtapng_iface_descriptions_s {
 #     GArray *interface_data;
 # } wtapng_iface_descriptions_t;
+
+
 class wtapng_iface_descriptions_s(Structure):
     _fields_ = [('interface_data', POINTER(GArray))]
+
 
 wtapng_iface_descriptions_t = wtapng_iface_descriptions_s
 
@@ -2585,6 +3077,8 @@ wtapng_iface_descriptions_t = wtapng_iface_descriptions_s
 #     guint8                 num_stat_entries;
 #     GArray                *interface_statistics;
 # } wtapng_if_descr_mandatory_t;
+
+
 class wtapng_if_descr_mandatory_s(Structure):
     _fields_ = [('wtap_encap', c_int),
                 ('time_units_per_second', guint64),
@@ -2593,6 +3087,7 @@ class wtapng_if_descr_mandatory_s(Structure):
                 ('num_stat_entries', guint8),
                 ('interface_statistics', POINTER(GArray))]
 
+
 wtapng_if_descr_mandatory_t = wtapng_if_descr_mandatory_s
 
 # typedef struct wtapng_dsb_mandatory_s {
@@ -2600,10 +3095,13 @@ wtapng_if_descr_mandatory_t = wtapng_if_descr_mandatory_s
 #     guint32                secrets_len;
 #     guint8                *secrets_data;
 # } wtapng_dsb_mandatory_t;
+
+
 class wtapng_dsb_mandatory_s(Structure):
     _fields_ = [('secrets_type', guint32),
                 ('secrets_len', guint32),
                 ('secrets_data', POINTER(guint8))]
+
 
 wtapng_dsb_mandatory_t = wtapng_dsb_mandatory_s
 
@@ -2612,10 +3110,13 @@ wtapng_dsb_mandatory_t = wtapng_dsb_mandatory_s
 #     guint16                bpf_filter_len;
 #     guint8                *if_filter_bpf_bytes;
 # } wtapng_if_descr_filter_t;
+
+
 class wtapng_if_descr_filter_s(Structure):
     _fields_ = [('if_filter_str', gchar_p),
                 ('bpf_filter_len', guint16),
                 ('if_filter_bpf_bytes', POINTER(guint8))]
+
 
 wtapng_if_descr_filter_t = wtapng_if_descr_filter_s
 
@@ -2624,10 +3125,13 @@ wtapng_if_descr_filter_t = wtapng_if_descr_filter_s
 #     guint32  ts_high;
 #     guint32  ts_low;
 # } wtapng_if_stats_mandatory_t;
+
+
 class wtapng_if_stats_mandatory_s(Structure):
     _fields_ = [('interface_id', guint32),
                 ('ts_high', guint32),
                 ('ts_low', guint32)]
+
 
 wtapng_if_stats_mandatory_t = wtapng_if_stats_mandatory_s
 
@@ -2640,11 +3144,14 @@ MAXNAMELEN = 64
 #     gchar             ip[WS_INET_ADDRSTRLEN];
 #     gchar             name[MAXNAMELEN];
 # } hashipv4_t;
+
+
 class hashipv4(Structure):
     _fields_ = [('addr', guint),
                 ('flags', guint8),
                 ('ip', gchar * WS_INET_ADDRSTRLEN),
                 ('name', gchar * MAXNAMELEN)]
+
 
 hashipv4_t = hashipv4
 
@@ -2654,11 +3161,14 @@ hashipv4_t = hashipv4
 #     gchar             ip6[WS_INET6_ADDRSTRLEN];
 #     gchar             name[MAXNAMELEN];
 # } hashipv6_t;
+
+
 class hashipv6(Structure):
     _fields_ = [('addr', guint8 * 16),
                 ('flags', guint8),
                 ('ip6', gchar * WS_INET6_ADDRSTRLEN),
                 ('name', gchar * MAXNAMELEN)]
+
 
 hashipv6_t = hashipv6
 
@@ -2666,9 +3176,14 @@ hashipv6_t = hashipv6
 #     GList      *ipv4_addr_list;
 #     GList      *ipv6_addr_list;
 # } addrinfo_lists_t;
+
+
 class addrinfo_lists(Structure):
     _fields_ = [('ipv4_addr_list', POINTER(GList)),
                 ('ipv6_addr_list', POINTER(GList))]
+
+
+addrinfo_lists_t = addrinfo_lists
 
 
 # typedef struct wtap_dump_params {
@@ -2700,12 +3215,17 @@ class wtap_dumper(Structure):
     _fields_ = []
 
 # typedef struct wtap wtap;
+
+
 class wtap(Structure):
     _fields_ = []
-    
+
 # typedef struct wtap_reader *FILE_T;
+
+
 class wtap_reader(Structure):
     _fields_ = []
+
 
 FILE_T = POINTER(wtap_reader)
 
@@ -2713,9 +3233,12 @@ FILE_T = POINTER(wtap_reader)
 #     int (*wslua_can_write_encap)(int, void*);
 #     void* wslua_data;
 # } wtap_wslua_file_info_t;
+
+
 class wtap_wslua_file_info(Structure):
     _fields_ = [('wslua_can_write_encap', CFUNCTYPE(c_int, c_int, c_void_p)),
                 ('wslua_data', c_void_p)]
+
 
 wtap_wslua_file_info_t = wtap_wslua_file_info
 
@@ -2741,8 +3264,13 @@ WTAP_OPEN_NOT_MINE = c_int(0)
 WTAP_OPEN_MINE = c_int(1)
 WTAP_OPEN_ERROR = c_int(-1)
 
-# typedef wtap_open_return_val (*wtap_open_routine_t)(struct wtap*, int *, char **);
-wtap_open_routine_t = CFUNCTYPE(wtap_open_return_val, POINTER(wtap), POINTER(c_int), POINTER(c_char_p))
+# typedef wtap_open_return_val (*wtap_open_routine_t)(struct wtap*, int *,
+# char **);
+wtap_open_routine_t = CFUNCTYPE(
+    wtap_open_return_val,
+    POINTER(wtap),
+    POINTER(c_int),
+    POINTER(c_char_p))
 
 
 # typedef enum {
@@ -2766,6 +3294,8 @@ init_open_routines.argtypes = []
 #     gchar **extensions_set;
 #     void* wslua_data;
 # };
+
+
 class open_info(Structure):
     _fields_ = [('name', c_char_p),
                 ('type', wtap_open_type),
@@ -2773,6 +3303,7 @@ class open_info(Structure):
                 ('extensions', c_char_p),
                 ('extensions_set', POINTER(gchar_p)),
                 ('wslua_data', c_void_p)]
+
 
 # struct open_info *open_routines;
 open_routines = POINTER(open_info).in_dll(libwiretap, 'open_routines')
@@ -2812,6 +3343,7 @@ class file_type_subtype_info(Structure):
                 ('dump_open', CFUNCTYPE(c_int, POINTER(wtap_dumper), POINTER(c_int))),
                 ('wslua_info', POINTER(wtap_wslua_file_info_t))]
 
+
 # #define WTAP_TYPE_AUTO 0
 WTAP_TYPE_AUTO = 0
 
@@ -2819,3 +3351,595 @@ WTAP_TYPE_AUTO = 0
 wtap_init = libwiretap.wtap_init
 wtap_init.restype = None
 wtap_init.argtypes = [gboolean]
+
+# struct wtap* wtap_open_offline(const char *filename, unsigned int type, int *err,
+#     gchar **err_info, gboolean do_random);
+wtap_open_offline = libwiretap.wtap_open_offline
+wtap_open_offline.restype = POINTER(wtap)
+wtap_open_offline.argtypes = [c_char_p,
+                              c_uint,
+                              POINTER(c_int),
+                              POINTER(gchar_p),
+                              gboolean]
+
+# void wtap_cleareof(wtap *wth);
+wtap_cleareof = libwiretap.wtap_cleareof
+wtap_cleareof.restype = None
+wtap_cleareof.argtypes = [POINTER(wtap)]
+
+# typedef void (*wtap_new_ipv4_callback_t) (const guint addr, const gchar
+# *name);
+wtap_new_ipv4_callback_t = CFUNCTYPE(None, guint, gchar_p)
+
+# void wtap_set_cb_new_ipv4(wtap *wth, wtap_new_ipv4_callback_t add_new_ipv4);
+wtap_set_cb_new_ipv4 = libwiretap.wtap_set_cb_new_ipv4
+wtap_set_cb_new_ipv4.restype = None
+wtap_set_cb_new_ipv4.argtypes = [POINTER(wtap), wtap_new_ipv4_callback_t]
+
+# typedef void (*wtap_new_ipv6_callback_t) (const void *addrp, const gchar
+# *name);
+wtap_new_ipv6_callback_t = CFUNCTYPE(None, c_void_p, gchar_p)
+
+# void wtap_set_cb_new_ipv6(wtap *wth, wtap_new_ipv6_callback_t add_new_ipv6);
+wtap_set_cb_new_ipv6 = libwiretap.wtap_set_cb_new_ipv6
+wtap_set_cb_new_ipv6.restype = None
+wtap_set_cb_new_ipv6.argtypes = [POINTER(wtap), wtap_new_ipv6_callback_t]
+
+
+# typedef void (*wtap_new_secrets_callback_t)(guint32 secrets_type, const
+# void *secrets, guint size);
+wtap_new_secrets_callback_t = CFUNCTYPE(None, guint32, c_void_p, guint)
+
+# void wtap_set_cb_new_secrets(wtap *wth, wtap_new_secrets_callback_t
+# add_new_secrets);
+wtap_set_cb_new_secrets = libwiretap.wtap_set_cb_new_secrets
+wtap_set_cb_new_secrets.restype = None
+wtap_set_cb_new_secrets.argtypes = [POINTER(wtap), wtap_new_secrets_callback_t]
+
+# gboolean wtap_read(wtap *wth, wtap_rec *rec, Buffer *buf, int *err,
+#     gchar **err_info, gint64 *offset);
+wtap_read = libwiretap.wtap_read
+wtap_read.restype = gboolean
+wtap_read.argtypes = [POINTER(wtap),
+                      POINTER(wtap_rec),
+                      POINTER(Buffer),
+                      POINTER(c_int),
+                      POINTER(gchar_p),
+                      POINTER(gint64)]
+
+# gboolean wtap_seek_read(wtap *wth, gint64 seek_off, wtap_rec *rec,
+#     Buffer *buf, int *err, gchar **err_info);
+wtap_seek_read = libwiretap.wtap_seek_read
+wtap_seek_read.restype = gboolean
+wtap_seek_read.argtypes = [POINTER(wtap),
+                           gint64,
+                           POINTER(wtap_rec),
+                           POINTER(Buffer),
+                           POINTER(c_int),
+                           POINTER(gchar_p)]
+
+# void wtap_rec_init(wtap_rec *rec);
+wtap_rec_init = libwiretap.wtap_rec_init
+wtap_rec_init.restype = None
+wtap_rec_init.argtypes = [POINTER(wtap_rec)]
+
+# void wtap_rec_cleanup(wtap_rec *rec);
+wtap_rec_cleanup = libwiretap.wtap_rec_cleanup
+wtap_rec_cleanup.restype = None
+wtap_rec_cleanup.argtypes = [POINTER(wtap_rec)]
+
+# typedef enum {
+#     WTAP_UNCOMPRESSED,
+#     WTAP_GZIP_COMPRESSED
+# } wtap_compression_type;
+wtap_compression_type = c_int
+WTAP_UNCOMPRESSED = c_int(0)
+WTAP_GZIP_COMPRESSED = c_int(1)
+
+# wtap_compression_type wtap_get_compression_type(wtap *wth);
+wtap_get_compression_type = libwiretap.wtap_get_compression_type
+wtap_get_compression_type.restype = wtap_compression_type
+wtap_get_compression_type.argtypes = [POINTER(wtap)]
+
+# const char *wtap_compression_type_description(wtap_compression_type
+# compression_type);
+wtap_compression_type_description = libwiretap.wtap_compression_type_description
+wtap_compression_type_description.restype = c_char_p
+wtap_compression_type_description.argtypes = [wtap_compression_type]
+
+# const char *wtap_compression_type_extension(wtap_compression_type
+# compression_type);
+wtap_compression_type_extension = libwiretap.wtap_compression_type_extension
+wtap_compression_type_extension.restype = c_char_p
+wtap_compression_type_extension.argtypes = [wtap_compression_type]
+
+# GSList *wtap_get_all_compression_type_extensions_list(void);
+wtap_get_all_compression_type_extensions_list = libwiretap.wtap_get_all_compression_type_extensions_list
+wtap_get_all_compression_type_extensions_list.restype = POINTER(GSList)
+wtap_get_all_compression_type_extensions_list.argtypes = []
+
+# gint64 wtap_read_so_far(wtap *wth);
+wtap_read_so_far = libwiretap.wtap_read_so_far
+wtap_read_so_far.restype = gint64
+wtap_read_so_far.argtypes = [POINTER(wtap)]
+
+# gint64 wtap_file_size(wtap *wth, int *err);
+wtap_file_size = libwiretap.wtap_file_size
+wtap_file_size.restype = gint64
+wtap_file_size.argtypes = [POINTER(wtap), POINTER(c_int)]
+
+# guint wtap_snapshot_length(wtap *wth);
+wtap_snapshot_length = libwiretap.wtap_snapshot_length
+wtap_snapshot_length.restype = guint
+wtap_snapshot_length.argtypes = [POINTER(wtap)]
+
+# int wtap_file_type_subtype(wtap *wth);
+wtap_file_type_subtype = libwiretap.wtap_file_type_subtype
+wtap_file_type_subtype.restype = c_int
+wtap_file_type_subtype.argtypes = [POINTER(wtap)]
+
+# int wtap_file_encap(wtap *wth);
+wtap_file_encap = libwiretap.wtap_file_encap
+wtap_file_encap.restype = c_int
+wtap_file_encap.argtypes = [POINTER(wtap)]
+
+# int wtap_file_tsprec(wtap *wth);
+wtap_file_tsprec = libwiretap.wtap_file_tsprec
+wtap_file_tsprec.restype = c_int
+wtap_file_tsprec.argtypes = [POINTER(wtap)]
+
+# guint wtap_file_get_num_shbs(wtap *wth);
+#wtap_file_get_num_shbs = libwiretap.wtap_file_get_num_shbs
+#wtap_file_get_num_shbs.restype = guint
+#wtap_file_get_num_shbs.argtypes = [POINTER(wtap)]
+
+# wtap_block_t wtap_file_get_shb(wtap *wth, guint shb_num);
+wtap_file_get_shb = libwiretap.wtap_file_get_shb
+wtap_file_get_shb.restype = wtap_block_t
+wtap_file_get_shb.argtypes = [POINTER(wtap), guint]
+
+# GArray* wtap_file_get_shb_for_new_file(wtap *wth);
+wtap_file_get_shb_for_new_file = libwiretap.wtap_file_get_shb_for_new_file
+wtap_file_get_shb_for_new_file.restype = POINTER(GArray)
+wtap_file_get_shb_for_new_file.argtypes = [POINTER(wtap)]
+
+# void wtap_write_shb_comment(wtap *wth, gchar *comment);
+wtap_write_shb_comment = libwiretap.wtap_write_shb_comment
+wtap_write_shb_comment.restype = None
+wtap_write_shb_comment.argtypes = [POINTER(wtap), gchar_p]
+
+# wtapng_iface_descriptions_t *wtap_file_get_idb_info(wtap *wth);
+wtap_file_get_idb_info = libwiretap.wtap_file_get_idb_info
+wtap_file_get_idb_info.restype = POINTER(wtapng_iface_descriptions_t)
+wtap_file_get_idb_info.argtypes = [POINTER(wtap)]
+
+# void wtap_free_idb_info(wtapng_iface_descriptions_t *idb_info);
+wtap_free_idb_info = libwiretap.wtap_free_idb_info
+wtap_free_idb_info.restype = None
+wtap_free_idb_info.argtypes = [POINTER(wtapng_iface_descriptions_t)]
+
+# gchar *wtap_get_debug_if_descr(const wtap_block_t if_descr,
+#                                const int indent,
+#                                const char* line_end);
+wtap_get_debug_if_descr = libwiretap.wtap_get_debug_if_descr
+wtap_get_debug_if_descr.restype = gchar_p
+wtap_get_debug_if_descr.argtypes = [wtap_block_t, c_int, c_char_p]
+
+# wtap_block_t wtap_file_get_nrb(wtap *wth);
+wtap_file_get_nrb = libwiretap.wtap_file_get_nrb
+wtap_file_get_nrb.restype = wtap_block_t
+wtap_file_get_nrb.argtypes = [POINTER(wtap)]
+
+# GArray* wtap_file_get_nrb_for_new_file(wtap *wth);
+wtap_file_get_nrb_for_new_file = libwiretap.wtap_file_get_nrb_for_new_file
+wtap_file_get_nrb_for_new_file.restype = POINTER(GArray)
+wtap_file_get_nrb_for_new_file.argtypes = [POINTER(wtap)]
+
+# void wtap_fdclose(wtap *wth);
+wtap_fdclose = libwiretap.wtap_fdclose
+wtap_fdclose.restype = None
+wtap_fdclose.argtypes = [POINTER(wtap)]
+
+# gboolean wtap_fdreopen(wtap *wth, const char *filename, int *err);
+wtap_fdreopen = libwiretap.wtap_fdreopen
+wtap_fdreopen.restype = gboolean
+wtap_fdreopen.argtypes = [POINTER(wtap), c_char_p, POINTER(c_int)]
+
+# void wtap_sequential_close(wtap *wth);
+wtap_sequential_close = libwiretap.wtap_sequential_close
+wtap_sequential_close.restype = None
+wtap_sequential_close.argtypes = [POINTER(wtap)]
+
+# void wtap_close(wtap *wth);
+wtap_close = libwiretap.wtap_close
+wtap_close.restype = None
+wtap_close.argtypes = [POINTER(wtap)]
+
+# gboolean wtap_dump_can_open(int filetype);
+wtap_dump_can_open = libwiretap.wtap_dump_can_open
+wtap_dump_can_open.restype = gboolean
+wtap_dump_can_open.argtypes = [c_int]
+
+# int wtap_dump_file_encap_type(const GArray *file_encaps);
+wtap_dump_file_encap_type = libwiretap.wtap_dump_file_encap_type
+wtap_dump_file_encap_type.restype = c_int
+wtap_dump_file_encap_type.argtypes = [POINTER(GArray)]
+
+# gboolean wtap_dump_can_compress(int filetype);
+wtap_dump_can_compress = libwiretap.wtap_dump_can_compress
+wtap_dump_can_compress.restype = gboolean
+wtap_dump_can_compress.argtypes = [c_int]
+
+# gboolean wtap_dump_has_name_resolution(int filetype);
+wtap_dump_has_name_resolution = libwiretap.wtap_dump_has_name_resolution
+wtap_dump_has_name_resolution.restype = gboolean
+wtap_dump_has_name_resolution.argtypes = [c_uint]
+
+# gboolean wtap_dump_supports_comment_types(int filetype, guint32
+# comment_types);
+wtap_dump_supports_comment_types = libwiretap.wtap_dump_supports_comment_types
+wtap_dump_supports_comment_types.restype = gboolean
+wtap_dump_supports_comment_types.argtypes = [c_int, guint32]
+
+# void wtap_dump_params_init(wtap_dump_params *params, wtap *wth);
+wtap_dump_params_init = libwiretap.wtap_dump_params_init
+wtap_dump_params_init.restype = None
+wtap_dump_params_init.argtypes = [POINTER(wtap_dump_params), POINTER(wtap)]
+
+# void wtap_dump_params_discard_decryption_secrets(wtap_dump_params *params);
+wtap_dump_params_discard_decryption_secrets = libwiretap.wtap_dump_params_discard_decryption_secrets
+wtap_dump_params_discard_decryption_secrets.restype = None
+wtap_dump_params_discard_decryption_secrets.argtypes = [
+    POINTER(wtap_dump_params)]
+
+# void wtap_dump_params_cleanup(wtap_dump_params *params);
+wtap_dump_params_cleanup = libwiretap.wtap_dump_params_cleanup
+wtap_dump_params_cleanup.restype = None
+wtap_dump_params_cleanup.argtypes = [POINTER(wtap_dump_params)]
+
+# wtap_dumper* wtap_dump_open(const char *filename, int file_type_subtype,
+#     wtap_compression_type compression_type, const wtap_dump_params *params,
+#     int *err);
+wtap_dump_open = libwiretap.wtap_dump_open
+wtap_dump_open.restype = POINTER(wtap_dumper)
+wtap_dump_open.argtypes = [c_char_p,
+                           c_int,
+                           wtap_compression_type,
+                           POINTER(wtap_dump_params),
+                           POINTER(c_int)]
+
+# wtap_dumper* wtap_dump_open_tempfile(char **filenamep, const char *pfx,
+#     int file_type_subtype, wtap_compression_type compression_type,
+#     const wtap_dump_params *params, int *err);
+wtap_dump_open_tempfile = libwiretap.wtap_dump_open_tempfile
+wtap_dump_open_tempfile.restype = POINTER(wtap_dumper)
+wtap_dump_open_tempfile.argtypes = [POINTER(c_char_p),
+                                    c_char_p,
+                                    c_int,
+                                    wtap_compression_type,
+                                    POINTER(wtap_dump_params),
+                                    POINTER(c_int)]
+
+# wtap_dumper* wtap_dump_fdopen(int fd, int file_type_subtype,
+#     wtap_compression_type compression_type, const wtap_dump_params *params,
+#     int *err);
+wtap_dump_fdopen = libwiretap.wtap_dump_fdopen
+wtap_dump_fdopen.restype = POINTER(wtap_dumper)
+wtap_dump_fdopen.argtypes = [c_int,
+                             c_int,
+                             wtap_compression_type,
+                             POINTER(wtap_dump_params),
+                             POINTER(c_int)]
+
+# wtap_dumper* wtap_dump_open_stdout(int file_type_subtype,
+#     wtap_compression_type compression_type, const wtap_dump_params *params,
+#     int *err);
+wtap_dump_open_stdout = libwiretap.wtap_dump_open_stdout
+wtap_dump_open_stdout.restype = POINTER(wtap_dumper)
+wtap_dump_open_stdout.argtypes = [c_int,
+                                  wtap_compression_type,
+                                  POINTER(wtap_dump_params),
+                                  POINTER(c_int)]
+
+# gboolean wtap_dump(wtap_dumper *, const wtap_rec *, const guint8 *,
+#      int *err, gchar **err_info);
+wtap_dump = libwiretap.wtap_dump
+wtap_dump.restype = gboolean
+wtap_dump.argtypes = [POINTER(wtap_dumper),
+                      POINTER(wtap_rec),
+                      POINTER(guint8),
+                      POINTER(c_int),
+                      POINTER(gchar_p)]
+
+# void wtap_dump_flush(wtap_dumper *);
+wtap_dump_flush = libwiretap.wtap_dump_flush
+wtap_dump_flush.restype = None
+wtap_dump_flush.argtypes = [POINTER(wtap_dumper)]
+
+# gint64 wtap_get_bytes_dumped(wtap_dumper *);
+wtap_get_bytes_dumped = libwiretap.wtap_get_bytes_dumped
+wtap_get_bytes_dumped.restype = gint64
+wtap_get_bytes_dumped.argtypes = [POINTER(wtap_dumper)]
+
+# void wtap_set_bytes_dumped(wtap_dumper *wdh, gint64 bytes_dumped);
+wtap_set_bytes_dumped = libwiretap.wtap_set_bytes_dumped
+wtap_set_bytes_dumped.restype = None
+wtap_set_bytes_dumped.argtypes = [POINTER(wtap_dumper), gint64]
+
+# struct addrinfo;
+
+
+class addrinfo(Structure):
+    _fields_ = []
+
+
+# gboolean wtap_addrinfo_list_empty(addrinfo_lists_t *addrinfo_lists);
+wtap_addrinfo_list_empty = libwiretap.wtap_addrinfo_list_empty
+wtap_addrinfo_list_empty.restype = gboolean
+wtap_addrinfo_list_empty.argtypes = [POINTER(addrinfo_lists_t)]
+
+# gboolean wtap_dump_set_addrinfo_list(wtap_dumper *wdh, addrinfo_lists_t
+# *addrinfo_lists);
+wtap_dump_set_addrinfo_list = libwiretap.wtap_dump_set_addrinfo_list
+wtap_dump_set_addrinfo_list.restype = gboolean
+wtap_dump_set_addrinfo_list.argtypes = [
+    POINTER(wtap_dumper), POINTER(addrinfo_lists_t)]
+
+# gboolean wtap_dump_get_needs_reload(wtap_dumper *wdh);
+wtap_dump_get_needs_reload = libwiretap.wtap_dump_get_needs_reload
+wtap_dump_get_needs_reload.restype = gboolean
+wtap_dump_get_needs_reload.argtypes = [POINTER(wtap_dumper)]
+
+# void wtap_dump_discard_decryption_secrets(wtap_dumper *wdh);
+wtap_dump_discard_decryption_secrets = libwiretap.wtap_dump_discard_decryption_secrets
+wtap_dump_discard_decryption_secrets.restype = None
+wtap_dump_discard_decryption_secrets.argtypes = [POINTER(wtap_dumper)]
+
+# gboolean wtap_dump_close(wtap_dumper *wdh, int *err);
+wtap_dump_close = libwiretap.wtap_dump_close
+wtap_dump_close.restype = gboolean
+wtap_dump_close.argtypes = [POINTER(wtap_dumper), POINTER(c_int)]
+
+# gboolean wtap_dump_can_write(const GArray *file_encaps, guint32
+# required_comment_types);
+wtap_dump_can_write = libwiretap.wtap_dump_can_write
+wtap_dump_can_write.restype = gboolean
+wtap_dump_can_write.argtypes = [POINTER(GArray), guint32]
+
+# GArray *wtap_get_savable_file_types_subtypes(int file_type,
+#     const GArray *file_encaps, guint32 required_comment_types);
+wtap_get_savable_file_types_subtypes = libwiretap.wtap_get_savable_file_types_subtypes
+wtap_get_savable_file_types_subtypes.restype = POINTER(GArray)
+wtap_get_savable_file_types_subtypes.argtypes = [
+    c_int, POINTER(GArray), guint32]
+
+# const char *wtap_file_type_subtype_string(int file_type_subtype);
+wtap_file_type_subtype_string = libwiretap.wtap_file_type_subtype_string
+wtap_file_type_subtype_string.restype = c_char_p
+wtap_file_type_subtype_string.argtypes = [c_int]
+
+# const char *wtap_file_type_subtype_short_string(int file_type_subtype);
+wtap_file_type_subtype_short_string = libwiretap.wtap_file_type_subtype_short_string
+wtap_file_type_subtype_short_string.restype = c_char_p
+wtap_file_type_subtype_short_string.argtypes = [c_int]
+
+# int wtap_short_string_to_file_type_subtype(const char *short_name);
+wtap_short_string_to_file_type_subtype = libwiretap.wtap_short_string_to_file_type_subtype
+wtap_short_string_to_file_type_subtype.restype = c_int
+wtap_short_string_to_file_type_subtype.argtypes = [c_char_p]
+
+# GSList *wtap_get_all_capture_file_extensions_list(void);
+wtap_get_all_capture_file_extensions_list = libwiretap.wtap_get_all_capture_file_extensions_list
+wtap_get_all_capture_file_extensions_list.restype = POINTER(GSList)
+wtap_get_all_capture_file_extensions_list.argtypes = []
+
+# const char *wtap_default_file_extension(int filetype);
+wtap_default_file_extension = libwiretap.wtap_default_file_extension
+wtap_default_file_extension.restype = c_char_p
+wtap_default_file_extension.argtypes = [c_int]
+
+# GSList *wtap_get_file_extensions_list(int filetype, gboolean
+# include_compressed);
+wtap_get_file_extensions_list = libwiretap.wtap_get_file_extensions_list
+wtap_get_file_extensions_list.restype = POINTER(GSList)
+wtap_get_file_extensions_list.argtypes = [c_int, gboolean]
+
+# GSList *wtap_get_all_file_extensions_list(void);
+wtap_get_all_file_extensions_list = libwiretap.wtap_get_all_file_extensions_list
+wtap_get_all_file_extensions_list.restype = POINTER(GSList)
+wtap_get_all_file_extensions_list.argtypes = []
+
+# void wtap_free_extensions_list(GSList *extensions);
+wtap_free_extensions_list = libwiretap.wtap_free_extensions_list
+wtap_free_extensions_list.restype = None
+wtap_free_extensions_list.argtypes = [POINTER(GSList)]
+
+# const char *wtap_encap_name(int encap);
+wtap_encap_name = libwiretap.wtap_encap_name
+wtap_encap_name.restype = c_char_p
+wtap_encap_name.argtypes = [c_int]
+
+# const char *wtap_encap_description(int encap);
+wtap_encap_description = libwiretap.wtap_encap_description
+wtap_encap_description.restype = c_char_p
+wtap_encap_description.argtypes = [c_int]
+
+# int wtap_name_to_encap(const char *short_name);
+wtap_name_to_encap = libwiretap.wtap_name_to_encap
+wtap_name_to_encap.restype = c_int
+wtap_name_to_encap.argtypes = [c_char_p]
+
+# const char* wtap_tsprec_string(int tsprec);
+wtap_tsprec_string = libwiretap.wtap_tsprec_string
+wtap_tsprec_string.restype = c_char_p
+wtap_tsprec_string.argtypes = [c_int]
+
+# const char *wtap_strerror(int err);
+wtap_strerror = libwiretap.wtap_strerror
+wtap_strerror.restype = c_char_p
+wtap_strerror.argtypes = [c_int]
+
+# int wtap_get_num_file_type_extensions(void);
+wtap_get_num_file_type_extensions = libwiretap.wtap_get_num_file_type_extensions
+wtap_get_num_file_type_extensions.restype = c_int
+wtap_get_num_file_type_extensions.argtypes = []
+
+# int wtap_get_num_encap_types(void);
+wtap_get_num_encap_types = libwiretap.wtap_get_num_encap_types
+wtap_get_num_encap_types.restype = c_int
+wtap_get_num_encap_types.argtypes = []
+
+# int wtap_get_num_file_types_subtypes(void);
+wtap_get_num_file_types_subtypes = libwiretap.wtap_get_num_file_types_subtypes
+wtap_get_num_file_types_subtypes.restype = c_int
+wtap_get_num_file_types_subtypes.argtypes = []
+
+# const char *wtap_get_file_extension_type_name(int extension_type);
+wtap_get_file_extension_type_name = libwiretap.wtap_get_file_extension_type_name
+wtap_get_file_extension_type_name.restype = c_char_p
+wtap_get_file_extension_type_name.argtypes = [c_int]
+
+# GSList *wtap_get_file_extension_type_extensions(guint extension_type);
+wtap_get_file_extension_type_extensions = libwiretap.wtap_get_file_extension_type_extensions
+wtap_get_file_extension_type_extensions.restype = POINTER(GSList)
+wtap_get_file_extension_type_extensions.argtypes = [guint]
+
+# void wtap_register_file_type_extension(const struct file_extension_info *ei);
+wtap_register_file_type_extension = libwiretap.wtap_register_file_type_extension
+wtap_register_file_type_extension.restype = None
+wtap_register_file_type_extension.argtypes = [POINTER(file_extension_info)]
+
+# typedef struct {
+# 	void (*register_wtap_module)(void);
+# } wtap_plugin;
+
+
+class wtap_plugin(Structure):
+    _fields_ = [('register_wtap_module', CFUNCTYPE(None))]
+
+
+# void wtap_register_plugin(const wtap_plugin *plug);
+wtap_register_plugin = libwiretap.wtap_register_plugin
+wtap_register_plugin.restype = None
+wtap_register_plugin.argtypes = [POINTER(wtap_plugin)]
+
+# void wtap_register_open_info(struct open_info *oi, const gboolean
+# first_routine);
+wtap_register_open_info = libwiretap.wtap_register_open_info
+wtap_register_open_info.restype = None
+wtap_register_open_info.argtypes = [POINTER(open_info), gboolean]
+
+# gboolean wtap_has_open_info(const gchar *name);
+wtap_has_open_info = libwiretap.wtap_has_open_info
+wtap_has_open_info.restype = gboolean
+wtap_has_open_info.argtypes = [gchar_p]
+
+# void wtap_deregister_open_info(const gchar *name);
+wtap_deregister_open_info = libwiretap.wtap_deregister_open_info
+wtap_deregister_open_info.restype = None
+wtap_deregister_open_info.argtypes = [gchar_p]
+
+# unsigned int open_info_name_to_type(const char *name);
+open_info_name_to_type = libwiretap.open_info_name_to_type
+open_info_name_to_type.restype = c_uint
+open_info_name_to_type.argtypes = [c_char_p]
+
+# int wtap_register_file_type_subtypes(const struct
+# file_type_subtype_info* fi, const int subtype);
+wtap_register_file_type_subtypes = libwiretap.wtap_register_file_type_subtypes
+wtap_register_file_type_subtypes.restype = c_int
+wtap_register_file_type_subtypes.argtypes = [
+    POINTER(file_type_subtype_info), c_int]
+
+# void wtap_deregister_file_type_subtype(const int file_type_subtype);
+wtap_deregister_file_type_subtype = libwiretap.wtap_deregister_file_type_subtype
+wtap_deregister_file_type_subtype.restype = None
+wtap_deregister_file_type_subtype.argtypes = [c_int]
+
+# int wtap_register_encap_type(const char *description, const char *name);
+wtap_register_encap_type = libwiretap.wtap_register_encap_type
+wtap_register_encap_type.restype = c_int
+wtap_register_encap_type.argtypes = [c_char_p, c_char_p]
+
+# void wtap_cleanup(void);
+wtap_cleanup = libwiretap.wtap_cleanup
+wtap_cleanup.restype = None
+wtap_cleanup.argtypes = []
+
+# #define WTAP_ERR_NOT_REGULAR_FILE              -1
+WTAP_ERR_NOT_REGULAR_FILE = -1
+
+# #define WTAP_ERR_RANDOM_OPEN_PIPE              -2
+WTAP_ERR_RANDOM_OPEN_PIPE = -2
+
+# #define WTAP_ERR_FILE_UNKNOWN_FORMAT           -3
+WTAP_ERR_FILE_UNKNOWN_FORMAT = -3
+
+# #define WTAP_ERR_UNSUPPORTED                   -4
+WTAP_ERR_UNSUPPORTED = -4
+
+# #define WTAP_ERR_CANT_WRITE_TO_PIPE            -5
+WTAP_ERR_CANT_WRITE_TO_PIPE = -5
+
+# #define WTAP_ERR_CANT_OPEN                     -6
+WTAP_ERR_CANT_OPEN = -6
+
+# #define WTAP_ERR_UNWRITABLE_FILE_TYPE          -7
+WTAP_ERR_UNWRITABLE_FILE_TYPE = -7
+
+# #define WTAP_ERR_UNWRITABLE_ENCAP              -8
+WTAP_ERR_UNWRITABLE_ENCAP = -8
+
+# #define WTAP_ERR_ENCAP_PER_PACKET_UNSUPPORTED  -9
+WTAP_ERR_ENCAP_PER_PACKET_UNSUPPORTED = -9
+
+# #define WTAP_ERR_CANT_WRITE                   -10
+WTAP_ERR_CANT_WRITE = -10
+
+# #define WTAP_ERR_CANT_CLOSE                   -11
+WTAP_ERR_CANT_CLOSE = -11
+
+# #define WTAP_ERR_SHORT_READ                   -12
+WTAP_ERR_SHORT_READ = -12
+
+# #define WTAP_ERR_BAD_FILE                     -13
+WTAP_ERR_BAD_FILE = -13
+
+# #define WTAP_ERR_SHORT_WRITE                  -14
+WTAP_ERR_SHORT_WRITE = -14
+
+# #define WTAP_ERR_UNC_OVERFLOW                 -15
+WTAP_ERR_UNC_OVERFLOW = -15
+
+# #define WTAP_ERR_RANDOM_OPEN_STDIN            -16
+WTAP_ERR_RANDOM_OPEN_STDIN = -16
+
+# #define WTAP_ERR_COMPRESSION_NOT_SUPPORTED    -17
+WTAP_ERR_COMPRESSION_NOT_SUPPORTED = -17
+
+# #define WTAP_ERR_CANT_SEEK                    -18
+WTAP_ERR_CANT_SEEK = -18
+
+# #define WTAP_ERR_CANT_SEEK_COMPRESSED         -19
+WTAP_ERR_CANT_SEEK_COMPRESSED = -19
+
+# #define WTAP_ERR_DECOMPRESS                   -20
+WTAP_ERR_DECOMPRESS = -20
+
+# #define WTAP_ERR_INTERNAL                     -21
+WTAP_ERR_INTERNAL = -21
+
+# #define WTAP_ERR_PACKET_TOO_LARGE             -22
+WTAP_ERR_PACKET_TOO_LARGE = -22
+
+# #define WTAP_ERR_CHECK_WSLUA                  -23
+WTAP_ERR_CHECK_WSLUA = -23
+
+# #define WTAP_ERR_UNWRITABLE_REC_TYPE          -24
+WTAP_ERR_UNWRITABLE_REC_TYPE = -24
+
+# #define WTAP_ERR_UNWRITABLE_REC_DATA          -25
+WTAP_ERR_UNWRITABLE_REC_DATA = -25
+
+# #define WTAP_ERR_DECOMPRESSION_NOT_SUPPORTED  -26
+WTAP_ERR_DECOMPRESSION_NOT_SUPPORTED = -26

@@ -52,11 +52,16 @@ ws_cleanup_sockets = libwsutil.ws_cleanup_sockets
 ws_init_sockets.restype = None
 ws_init_sockets.argtypes = []
 
+
+class sockaddr_storage(Structure):
+    _fields_ = []
+
+
 # int ws_socket_ptoa(struct sockaddr_storage* dst, const gchar* src,
 # guint16 def_port);
 ws_socket_ptoa = libwsutil.ws_socket_ptoa
 ws_socket_ptoa.restype = c_int
-ws_socket_ptoa.argtypes = [c_void_p, gchar_p, guint16]
+ws_socket_ptoa.argtypes = [POINTER(sockaddr_storage), gchar_p, guint16]
 
 
 ###############
@@ -542,7 +547,13 @@ codecs_cleanup.argtypes = []
 
 # struct codec_handle;
 # typedef struct codec_handle* codec_handle_t;
-codec_handle_t = c_void_p
+
+
+class codec_handle(Structure):
+    _fields_ = []
+
+
+codec_handle_t = POINTER(codec_handle)
 
 # typedef void* (*codec_init_fn)(void);
 codec_init_fn = CFUNCTYPE(c_void_p)
@@ -1123,7 +1134,7 @@ create_persconffile_profile.argtypes = [c_char_p, POINTER(c_char_p)]
 
 # const GHashTable* allowed_profile_filenames(void);
 allowed_profile_filenames = libwsutil.allowed_profile_filenames
-allowed_profile_filenames.restype = GHashTable_p
+allowed_profile_filenames.restype = POINTER(GHashTable)
 allowed_profile_filenames.argtypes = []
 
 # int delete_perconffile_profile(const char* profilename, char**
@@ -1377,6 +1388,10 @@ class jsmn_parser(Structure):
 # #define JSON_DUMPER_MAX_DEPTH   1100
 JSON_DUMPER_MAX_DEPTH = 1100
 
+
+class FILE(Structure):
+    _fields_ = []
+
 # typedef struct json_dumper {
 #     FILE* output_file;
 #     int flags;
@@ -1388,7 +1403,7 @@ JSON_DUMPER_MAX_DEPTH = 1100
 
 
 class json_dumper(Structure):
-    _fields_ = [('output_file', c_void_p),
+    _fields_ = [('output_file', POINTER(FILE)),
                 ('flags', c_int),
                 ('current_depth', c_int),
                 ('base64_state', gint),
@@ -2164,7 +2179,7 @@ please_report_bug_short.argtypes = []
 plugin_register_func = CFUNCTYPE(None)
 
 # typedef void plugins_t;
-plugins_t_p = c_void_p
+plugins_t = None
 
 # typedef enum {
 #     WS_PLUGIN_EPAN,
@@ -2178,7 +2193,7 @@ WS_PLUGIN_CODEC = c_int(2)
 
 # plugins_t* plugins_init(plugin_type_e type);
 plugins_init = libwsutil.plugins_init
-plugins_init.restype = plugins_t_p
+plugins_init.restype = POINTER(plugins_t)
 plugins_init.argtypes = [plugin_type_e]
 
 # typedef void (*plugin_description_callback)(const char* name, const char* version,
@@ -2206,7 +2221,7 @@ plugins_get_count.argtypes = []
 # void plugins_cleanup(plugins_t* plugins);
 plugins_cleanup = libwsutil.plugins_cleanup
 plugins_cleanup.restype = None
-plugins_cleanup.argtypes = [plugins_t_p]
+plugins_cleanup.argtypes = [POINTER(plugins_t)]
 
 
 ##########
@@ -2343,7 +2358,13 @@ gcry_error_t = c_uint
 # (from gcrypt.h)
 # struct gcry_sexp;
 # typedef struct gcry_sexp* gcry_sexp_t;
-gcry_sexp_t = c_void_p
+
+
+class gcry_sexp(Structure):
+    _fields_ = []
+
+
+gcry_sexp_t = POINTER(gcry_sexp)
 
 # gcry_error_t ws_hmac_buffer(int algo, void* digest, const void* buffer,
 # size_t length, const void *key, size_t keylen);
@@ -2455,7 +2476,11 @@ report_write_failure.argtypes = [c_char_p, c_int]
 # (from gnutls.h)
 # struct gnutls_x509_privkey_int;
 # typedef gnutls_x509_privkey_int* gnutls_x509_privkey_t;
-gnutls_x509_privkey_t = c_void_p
+class gnutls_x509_privkey_int(Structure):
+    _fields_ = []
+
+
+gnutls_x509_privkey_t = POINTER(gnutls_x509_privkey_int)
 
 # gcry_sexp_t rsa_privkey_to_sexp(gnutls_x509_privkey_t priv_key, char** err);
 rsa_privkey_to_sexp = libwsutil.rsa_privkey_to_sexp
@@ -2465,13 +2490,13 @@ rsa_privkey_to_sexp.argtypes = [gnutls_x509_privkey_t, POINTER(c_char_p)]
 # gnutls_x509_privkey_t rsa_load_pem_key(FILE* fp, char** err);
 rsa_load_pem_key = libwsutil.rsa_load_pem_key
 rsa_load_pem_key.restype = gnutls_x509_privkey_t
-rsa_load_pem_key.argtypes = [c_void_p, POINTER(c_char_p)]
+rsa_load_pem_key.argtypes = [POINTER(FILE), POINTER(c_char_p)]
 
 # gnutls_x509_privkey_t rsa_load_pkcs12(FILE* fp, const char* cert_passwd,
 # char** err);
 rsa_load_pkcs12 = libwsutil.rsa_load_pkcs12
 rsa_load_pkcs12.restype = gnutls_x509_privkey_t
-rsa_load_pkcs12.argtypes = [c_void_p, c_char_p, POINTER(c_char_p)]
+rsa_load_pkcs12.argtypes = [POINTER(FILE), c_char_p, POINTER(c_char_p)]
 
 # void rsa_private_key_free(gpointer key);
 rsa_private_key_free = libwsutil.rsa_private_key_free
@@ -2568,12 +2593,14 @@ ws_ascii_strnatcasecmp.argtypes = [POINTER(nat_char), POINTER(nat_char)]
 # strptime.h #
 ##############
 
-tm_p = c_void_p
+class tm(Structure):
+    _fields_ = []
+
 
 # char* strptime(const char*, const char*, struct tm*);
 strptime = libwsutil.strptime
 strptime.restype = c_char_p
-strptime.argtypes = [c_char_p, c_char_p, tm_p]
+strptime.argtypes = [c_char_p, c_char_p, POINTER(tm)]
 
 
 ############
@@ -2789,7 +2816,7 @@ create_tempfile.argtypes = [
 # time_t mktime_utc(struct tm* tm);
 mktime_utc = libwsutil.mktime_utc
 mktime_utc.restype = c_ulong
-mktime_utc.argtypes = [tm_p]
+mktime_utc.argtypes = [POINTER(tm)]
 
 # void get_resource_usage(double* user_time, double* sys_time);
 get_resource_usage = libwsutil.get_resource_usage

@@ -23,4 +23,3 @@ from wspy.errors import *
 import wspy_config as config
 
 libwireshark = CDLL(config.get_libwireshark())
-
