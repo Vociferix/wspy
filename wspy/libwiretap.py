@@ -179,15 +179,15 @@ WTAP_OPTTYPE_TYPE_MISMATCH = c_int(-3)
 WTAP_OPTTYPE_NUMBER_MISMATCH = c_int(-4)
 WTAP_OPTTYPE_ALREADY_EXISTS = c_int(-5)
 
+
 # struct wtap_opttype_custom {
 #     void* data;
 #     guint size;
 # };
-
-
 class wtap_opttype_custom(Structure):
     _fields_ = [('data', c_void_p),
                 ('size', guint)]
+
 
 # typedef union {
 #     guint8 uint8val;
@@ -197,8 +197,6 @@ class wtap_opttype_custom(Structure):
 #     char *stringval;
 #     struct wtap_opttype_custom customval;
 # } wtap_optval_t;
-
-
 class wtap_optval_t(Union):
     _fields_ = [('uint8val', guint8),
                 ('uint64val', guint64),
@@ -207,21 +205,19 @@ class wtap_optval_t(Union):
                 ('stringval', c_char_p),
                 ('customval', wtap_opttype_custom)]
 
+
 # typedef struct {
 #     guint option_id;
 #     wtap_optval_t value;
 # } wtap_option_t;
-
-
 class wtap_option_t(Structure):
     _fields_ = [('option_id', guint),
                 ('value', wtap_optval_t)]
 
+
 # struct wtap_dumper;
-
-
 class wtap_dumper(Structure):
-    _fields_ = []
+    pass
 
 
 # typedef void (*wtap_block_create_func)(wtap_block_t block);
@@ -356,11 +352,10 @@ wtap_block_add_string_option = libwiretap.wtap_block_add_string_option
 wtap_block_add_string_option.restype = wtap_opttype_return_val
 wtap_block_add_string_option.argtypes = [wtap_block_t, guint, c_char_p, gsize]
 
+
 # wtap_opttype_return_val
 # wtap_block_add_string_option_format(wtap_block_t block, guint option_id,
 # const char *format, ...)
-
-
 def wtap_block_add_string_option_format(block, option_id, format, *argv):
     args, types = c_va_list(*argv)
     _wtap_block_add_string_option_format = libwiretap.wtap_block_add_string_option_format
@@ -389,11 +384,10 @@ wtap_block_set_nth_string_option_value.argtypes = [wtap_block_t,
                                                    c_char_p,
                                                    gsize]
 
+
 # wtap_opttype_return_val
 # wtap_block_set_string_option_value_format(wtap_block_t block, guint
 # option_id, const char *format, ...)
-
-
 def wtap_block_set_string_option_value_fromat(block, option_id, format, *argv):
     args, types = c_va_list(*argv)
     _wtap_block_set_string_option_value_format = libwiretap._wtap_block_set_string_option_value_format
@@ -1448,20 +1442,18 @@ class eth_phdr(Structure):
 # #define FROM_DCE 0x80
 FROM_DCE = 0x80
 
+
 # struct dte_dce_phdr {
 #     guint8  flags;
 # };
-
-
 class dte_dce_phdr(Structure):
     _fields_ = [('fcs_len', guint8)]
+
 
 # struct isdn_phdr {
 #     gboolean uton;
 #     guint8   channel;
 # };
-
-
 class isdn_phdr(Structure):
     _fields_ = [('uton', gboolean), ('channel', guint8)]
 
@@ -1604,6 +1596,7 @@ TRAF_ST_IPSILON_FT1 = 2
 # #define TRAF_ST_IPSILON_FT2      3
 TRAF_ST_IPSILON_FT2 = 3
 
+
 # struct atm_phdr {
 #     guint32 flags;
 #     guint8  aal;
@@ -1618,8 +1611,6 @@ TRAF_ST_IPSILON_FT2 = 3
 #     guint16 aal5t_len;
 #     guint32 aal5t_chksum;
 # };
-
-
 class atm_phdr(Structure):
     _fields_ = [('flags', guint32),
                 ('aal', guint8),
@@ -1657,6 +1648,7 @@ ASCEND_PFX_ISDN_R = 5
 # #define ASCEND_PFX_ETHER    6
 ASCEND_PFX_ETHER = 6
 
+
 # struct ascend_phdr {
 #     guint16 type;
 #     char    user[ASCEND_MAX_STR_LEN];
@@ -1665,8 +1657,6 @@ ASCEND_PFX_ETHER = 6
 #     guint32 chunk;
 #     guint32 task;
 # };
-
-
 class ascend_phdr(Structure):
     _fields_ = [('type', guint16),
                 ('user', c_char * ASCEND_MAX_STR_LEN),
@@ -1675,11 +1665,10 @@ class ascend_phdr(Structure):
                 ('chunk', guint32),
                 ('task', guint32)]
 
+
 # struct p2p_phdr {
 #     gboolean sent;
 # };
-
-
 class p2p_phdr(Structure):
     _fields_ = [('sent', gboolean)]
 
@@ -1737,15 +1726,15 @@ class ieee_802_11_fhss(Structure):
                 ('hop_pattern', guint8),
                 ('hop_index', guint8)]
 
+
 # struct ieee_802_11b {
 #     guint    has_short_preamble:1;
 #     gboolean short_preamble;
 # };
-
-
 class ieee_802_11b(Structure):
     _fields_ = [('has_short_preamble', guint, 1),
                 ('short_preamble', gboolean)]
+
 
 # struct ieee_802_11a {
 #     guint    has_channel_type:1;
@@ -1753,8 +1742,6 @@ class ieee_802_11b(Structure):
 #     guint    channel_type:2;
 #     guint    turbo_type:2;
 # };
-
-
 class ieee_802_11a(Structure):
     _fields_ = [('has_channel_type', guint, 1),
                 ('has_turbo_type', guint, 1),
@@ -1972,10 +1959,9 @@ PHDR_802_11AD_MIN_FREQUENCY = 57000
 # #define PHDR_802_11AD_MAX_FREQUENCY    71000
 PHDR_802_11AD_MAX_FREQUENCY = 71000
 
+
 # #define IS_80211AD(frequency) (((frequency) >= PHDR_802_11AD_MIN_FREQUENCY) &&\
 #                                ((frequency) <= PHDR_802_11AD_MAX_FREQUENCY))
-
-
 def IS_80211AD(frequency):
     return frequency >= PHDR_802_11AD_MIN_FREQUENCY and frequency <= PHDR_802_11AD_MAX_FREQUENCY
 
@@ -1988,6 +1974,7 @@ class ieee_802_11ad(Structure):
     _fields_ = [('has_mcs_index', guint, 1),
                 ('mcs', guint8)]
 
+
 # struct ieee_802_11ax {
 #     guint    has_mcs_index:1;
 #     guint    has_bwru:1;
@@ -1997,8 +1984,6 @@ class ieee_802_11ad(Structure):
 #     guint8   bwru:4;
 #     guint8   gi:2;
 # };
-
-
 class ieee_802_11ax(Structure):
     _fields_ = [('has_mcs_index', guint, 1),
                 ('has_bwru', guint, 1),
@@ -2007,6 +1992,7 @@ class ieee_802_11ax(Structure):
                 ('mcs', guint8, 4),
                 ('bwru', guint8, 4),
                 ('gi', guint8, 2)]
+
 
 # union ieee_802_11_phy_info {
 #     struct ieee_802_11_fhss info_11_fhss;
@@ -2018,8 +2004,6 @@ class ieee_802_11ax(Structure):
 #     struct ieee_802_11ad info_11ad;
 #     struct ieee_802_11ax info_11ax;
 # };
-
-
 class ieee_802_11_phy_info(Union):
     _fields_ = [('info_11_fhss', ieee_802_11_fhss),
                 ('info_11b', ieee_802_11b),
@@ -2029,6 +2013,7 @@ class ieee_802_11_phy_info(Union):
                 ('info_11ac', ieee_802_11ac),
                 ('info_11ad', ieee_802_11ad),
                 ('info_11ax', ieee_802_11ax)]
+
 
 # struct ieee_802_11_phdr {
 #     gint     fcs_len;
@@ -2062,8 +2047,6 @@ class ieee_802_11_phy_info(Union):
 #     guint32  aggregate_id;
 #     guint8   zero_length_psdu_type;
 # };
-
-
 class ieee_802_11_phdr(Structure):
     _fields_ = [('fcs_len', gint),
                 ('decrypted', gboolean),
@@ -2259,6 +2242,7 @@ class k12_input_info_t(Union):
     _fields_ = [('atm', _atm_t),
                 ('ds0mask', guint32)]
 
+
 # struct k12_phdr {
 #     guint32           input;
 #     const gchar      *input_name;
@@ -2269,8 +2253,6 @@ class k12_input_info_t(Union):
 #     guint32           extra_length;
 #     void*             stuff;
 # };
-
-
 class k12_phdr(Structure):
     _fields_ = [('input', guint32),
                 ('input_name', gchar_p),
@@ -2343,11 +2325,10 @@ class erf_phdr(Structure):
                 ('lctr', guint16),
                 ('wlen', guint16)]
 
+
 # struct erf_ehdr {
 #   guint64 ehdr;
 # };
-
-
 class erf_ehdr(Structure):
     _fields_ = [('ehdr', guint64)]
 
@@ -2364,6 +2345,7 @@ class wtap_erf_eth_hdr(Structure):
     _fields_ = [('offset', guint8),
                 ('pad', guint8)]
 
+
 # struct erf_mc_phdr {
 #     struct erf_phdr phdr;
 #     struct erf_ehdr ehdr_list[MAX_ERF_EHDR];
@@ -2374,8 +2356,6 @@ class wtap_erf_eth_hdr(Structure):
 #         guint32 aal2_hdr;
 #     } subhdr;
 # };
-
-
 class _subhdr_t(Union):
     _fields_ = [('eth_hdr', wtap_erf_eth_hdr),
                 ('mc_hdr', guint32),
@@ -2707,12 +2687,11 @@ class nokia_phdr(Structure):
 # #define LLCP_PHDR_FLAG_SENT 0
 LLCP_PHDR_FLAG_SENT = 0
 
+
 # struct llcp_phdr {
 #     guint8 adapter;
 #     guint8 flags;
 # };
-
-
 class llcp_phdr(Structure):
     _fields_ = [('adapter', guint8),
                 ('flags', guint8)]
@@ -2749,6 +2728,7 @@ class netmon_phdr(Structure):
                 ('sub_encap', guint),
                 ('subheader', sub_wtap_pseudo_header)]
 
+
 # union wtap_pseudo_header {
 #     struct eth_phdr     eth;
 #     struct dte_dce_phdr dte_dce;
@@ -2777,8 +2757,6 @@ class netmon_phdr(Structure):
 #     struct logcat_phdr  logcat;
 #     struct netmon_phdr  netmon;
 # };
-
-
 class wtap_pseudo_header(Union):
     _fields_ = [('eth', eth_phdr),
                 ('dte_dce', dte_dce_phdr),
@@ -2850,9 +2828,8 @@ PACK_FLAGS_DIRECTION_MASK = 0x00000003
 # #define PACK_FLAGS_DIRECTION_SHIFT    0
 PACK_FLAGS_DIRECTION_SHIFT = 0
 
+
 # #define PACK_FLAGS_DIRECTION(pack_flags) (((pack_flags) & PACK_FLAGS_DIRECTION_MASK) >> PACK_FLAGS_DIRECTION_SHIFT)
-
-
 def PACK_FLAGS_DIRECTION(pack_flags):
     return (pack_flags & PACK_FLAGS_DIRECTION_MASK) >> PACK_FLAGS_DIRECTION_SHIFT
 
@@ -2873,9 +2850,8 @@ PACK_FLAGS_RECEPTION_TYPE_MASK = 0x0000001C
 # #define PACK_FLAGS_RECEPTION_TYPE_SHIFT       2
 PACK_FLAGS_RECEPTION_TYPE_SHIFT = 2
 
+
 # #define PACK_FLAGS_RECEPTION_TYPE(pack_flags) (((pack_flags) & PACK_FLAGS_RECEPTION_TYPE_MASK) >> PACK_FLAGS_RECEPTION_TYPE_SHIFT)
-
-
 def PACK_FLAGS_RECEPTION_TYPE(pack_flags):
     return (
         pack_flags & PACK_FLAGS_RECEPTION_TYPE_MASK) >> PACK_FLAGS_RECEPTION_TYPE_SHIFT
@@ -2903,9 +2879,8 @@ PACK_FLAGS_FCS_LENGTH_MASK = 0x000001E0
 # #define PACK_FLAGS_FCS_LENGTH_SHIFT                       5
 PACK_FLAGS_FCS_LENGTH_SHIFT = 5
 
+
 # #define PACK_FLAGS_FCS_LENGTH(pack_flags) (((pack_flags) & PACK_FLAGS_FCS_LENGTH_MASK) >> PACK_FLAGS_FCS_LENGTH_SHIFT)
-
-
 def PACK_FLAGS_FCS_LENGTH(pack_flags):
     return (pack_flags & PACK_FLAGS_FCS_LENGTH_MASK) >> PACK_FLAGS_FCS_LENGTH_SHIFT
 
@@ -2954,15 +2929,15 @@ def PACK_FLAGS_VALUE(
         reception_type << 27) | (
             fcs_length << 23) | ll_dependend_errors
 
+
 # typedef struct {
 #     guint     record_type;
 #     guint32   record_len;
 # } wtap_ft_specific_header;
-
-
 class wtap_ft_specific_header(Structure):
     _fields_ = [('record_type', guint),
                 ('record_len', guint32)]
+
 
 # typedef struct {
 #     guint     record_type;
@@ -2974,8 +2949,6 @@ class wtap_ft_specific_header(Structure):
 #     guint16   event_type;
 #     guint16   cpu_id;
 # } wtap_syscall_header;
-
-
 class wtap_syscall_header(Structure):
     _fields_ = [('record_type', guint),
                 ('byte_order', c_int),
@@ -2985,6 +2958,7 @@ class wtap_syscall_header(Structure):
                 ('event_filelen', guint32),
                 ('event_type', guint16),
                 ('cpu_id', guint16)]
+
 
 # typedef struct {
 #     guint     rec_type;
@@ -3001,8 +2975,6 @@ class wtap_syscall_header(Structure):
 #     GPtrArray *packet_verdict;
 #     Buffer    options_buf;
 # } wtap_rec;
-
-
 class _rec_header_t(Union):
     _fields_ = [('packet_header', wtap_packet_header),
                 ('ft_specific_header', wtap_ft_specific_header),
@@ -3058,16 +3030,16 @@ class wtapng_mandatory_section_s(Structure):
 
 wtapng_mandatory_section_t = wtapng_mandatory_section_s
 
+
 # typedef struct wtapng_iface_descriptions_s {
 #     GArray *interface_data;
 # } wtapng_iface_descriptions_t;
-
-
 class wtapng_iface_descriptions_s(Structure):
     _fields_ = [('interface_data', POINTER(GArray))]
 
 
 wtapng_iface_descriptions_t = wtapng_iface_descriptions_s
+
 
 # typedef struct wtapng_if_descr_mandatory_s {
 #     int                    wtap_encap;
@@ -3077,8 +3049,6 @@ wtapng_iface_descriptions_t = wtapng_iface_descriptions_s
 #     guint8                 num_stat_entries;
 #     GArray                *interface_statistics;
 # } wtapng_if_descr_mandatory_t;
-
-
 class wtapng_if_descr_mandatory_s(Structure):
     _fields_ = [('wtap_encap', c_int),
                 ('time_units_per_second', guint64),
@@ -3090,13 +3060,12 @@ class wtapng_if_descr_mandatory_s(Structure):
 
 wtapng_if_descr_mandatory_t = wtapng_if_descr_mandatory_s
 
+
 # typedef struct wtapng_dsb_mandatory_s {
 #     guint32                secrets_type;
 #     guint32                secrets_len;
 #     guint8                *secrets_data;
 # } wtapng_dsb_mandatory_t;
-
-
 class wtapng_dsb_mandatory_s(Structure):
     _fields_ = [('secrets_type', guint32),
                 ('secrets_len', guint32),
@@ -3105,13 +3074,12 @@ class wtapng_dsb_mandatory_s(Structure):
 
 wtapng_dsb_mandatory_t = wtapng_dsb_mandatory_s
 
+
 # typedef struct wtapng_if_descr_filter_s {
 #     gchar                 *if_filter_str;
 #     guint16                bpf_filter_len;
 #     guint8                *if_filter_bpf_bytes;
 # } wtapng_if_descr_filter_t;
-
-
 class wtapng_if_descr_filter_s(Structure):
     _fields_ = [('if_filter_str', gchar_p),
                 ('bpf_filter_len', guint16),
@@ -3120,13 +3088,12 @@ class wtapng_if_descr_filter_s(Structure):
 
 wtapng_if_descr_filter_t = wtapng_if_descr_filter_s
 
+
 # typedef struct wtapng_if_stats_mandatory_s {
 #     guint32  interface_id;
 #     guint32  ts_high;
 #     guint32  ts_low;
 # } wtapng_if_stats_mandatory_t;
-
-
 class wtapng_if_stats_mandatory_s(Structure):
     _fields_ = [('interface_id', guint32),
                 ('ts_high', guint32),
@@ -3138,14 +3105,13 @@ wtapng_if_stats_mandatory_t = wtapng_if_stats_mandatory_s
 # #define MAXNAMELEN  	64
 MAXNAMELEN = 64
 
+
 # typedef struct hashipv4 {
 #     guint             addr;
 #     guint8            flags;
 #     gchar             ip[WS_INET_ADDRSTRLEN];
 #     gchar             name[MAXNAMELEN];
 # } hashipv4_t;
-
-
 class hashipv4(Structure):
     _fields_ = [('addr', guint),
                 ('flags', guint8),
@@ -3155,14 +3121,13 @@ class hashipv4(Structure):
 
 hashipv4_t = hashipv4
 
+
 # typedef struct hashipv6 {
 #     guint8            addr[16];
 #     guint8            flags;
 #     gchar             ip6[WS_INET6_ADDRSTRLEN];
 #     gchar             name[MAXNAMELEN];
 # } hashipv6_t;
-
-
 class hashipv6(Structure):
     _fields_ = [('addr', guint8 * 16),
                 ('flags', guint8),
@@ -3172,12 +3137,11 @@ class hashipv6(Structure):
 
 hashipv6_t = hashipv6
 
+
 # typedef struct addrinfo_lists {
 #     GList      *ipv4_addr_list;
 #     GList      *ipv6_addr_list;
 # } addrinfo_lists_t;
-
-
 class addrinfo_lists(Structure):
     _fields_ = [('ipv4_addr_list', POINTER(GList)),
                 ('ipv6_addr_list', POINTER(GList))]
@@ -3209,32 +3173,18 @@ class wtap_dump_params(Structure):
 WTAP_DUMP_PARAMS_INIT = wtap_dump_params(0, 0)
 
 
-# struct wtap_dumper;
-# typedef struct wtap_dumper wtap_dumper;
-class wtap_dumper(Structure):
-    _fields_ = []
-
-# typedef struct wtap wtap;
-
-
-class wtap(Structure):
-    _fields_ = []
-
 # typedef struct wtap_reader *FILE_T;
-
-
 class wtap_reader(Structure):
     _fields_ = []
 
 
 FILE_T = POINTER(wtap_reader)
 
+
 # typedef struct wtap_wslua_file_info {
 #     int (*wslua_can_write_encap)(int, void*);
 #     void* wslua_data;
 # } wtap_wslua_file_info_t;
-
-
 class wtap_wslua_file_info(Structure):
     _fields_ = [('wslua_can_write_encap', CFUNCTYPE(c_int, c_int, c_void_p)),
                 ('wslua_data', c_void_p)]
@@ -3286,6 +3236,7 @@ init_open_routines = libwiretap.init_open_routines
 init_open_routines.restype = None
 init_open_routines.argtypes = []
 
+
 # struct open_info {
 #     const char *name;
 #     wtap_open_type type;
@@ -3294,8 +3245,6 @@ init_open_routines.argtypes = []
 #     gchar **extensions_set;
 #     void* wslua_data;
 # };
-
-
 class open_info(Structure):
     _fields_ = [('name', c_char_p),
                 ('type', wtap_open_type),
@@ -3666,9 +3615,8 @@ wtap_set_bytes_dumped = libwiretap.wtap_set_bytes_dumped
 wtap_set_bytes_dumped.restype = None
 wtap_set_bytes_dumped.argtypes = [POINTER(wtap_dumper), gint64]
 
+
 # struct addrinfo;
-
-
 class addrinfo(Structure):
     _fields_ = []
 
@@ -3809,11 +3757,10 @@ wtap_register_file_type_extension = libwiretap.wtap_register_file_type_extension
 wtap_register_file_type_extension.restype = None
 wtap_register_file_type_extension.argtypes = [POINTER(file_extension_info)]
 
+
 # typedef struct {
 # 	void (*register_wtap_module)(void);
 # } wtap_plugin;
-
-
 class wtap_plugin(Structure):
     _fields_ = [('register_wtap_module', CFUNCTYPE(None))]
 
@@ -3943,3 +3890,765 @@ WTAP_ERR_UNWRITABLE_REC_DATA = -25
 
 # #define WTAP_ERR_DECOMPRESSION_NOT_SUPPORTED  -26
 WTAP_ERR_DECOMPRESSION_NOT_SUPPORTED = -26
+
+
+###################
+# file_wrappers.h #
+###################
+
+# gint64 file_seek(FILE_T stream, gint64 offset, int whence, int *err);
+file_seek = libwiretap.file_seek
+file_seek.restype = gint64
+file_seek.argtypes = [FILE_T, gint64, c_int, POINTER(c_int)]
+
+# gint64 file_tell(FILE_T stream);
+file_tell = libwiretap.file_tell
+file_tell.restype = gint64
+file_tell.argtypes = [FILE_T]
+
+# gboolean file_iscompressed(FILE_T stream);
+file_iscompressed = libwiretap.file_iscompressed
+file_iscompressed.restype = gboolean
+file_iscompressed.argtypes = [FILE_T]
+
+# int file_read(void *buf, unsigned int count, FILE_T file);
+file_read = libwiretap.file_read
+file_read.restype = c_int
+file_read.argtypes = [c_void_p, c_uint, FILE_T]
+
+# int file_peekc(FILE_T stream);
+file_peekc = libwiretap.file_peekc
+file_peekc.restype = c_int
+file_peekc.argtypes = [FILE_T]
+
+# int file_getc(FILE_T stream);
+file_getc = libwiretap.file_getc
+file_getc.restype = c_int
+file_getc.argtypes = [FILE_T]
+
+# char *file_gets(char *buf, int len, FILE_T stream);
+file_gets = libwiretap.file_gets
+file_gets.restype = c_char_p
+file_gets.argtypes = [c_char_p, c_int, FILE_T]
+
+# char *file_getsp(char *buf, int len, FILE_T stream);
+file_getsp = libwiretap.file_getsp
+file_getsp.restype = c_char_p
+file_getsp.argtypes = [c_char_p, c_int, FILE_T]
+
+# int file_eof(FILE_T stream);
+file_eof = libwiretap.file_eof
+file_eof.restype = c_int
+file_eof.argtypes = [FILE_T]
+
+# int file_error(FILE_T fh, gchar **err_info);
+file_error = libwiretap.file_error
+file_error.restype = c_int
+file_error.argtypes = [FILE_T, POINTER(gchar_p)]
+
+
+# typedef struct wtap_writer *GZWFILE_T;
+class wtap_writer(Structure):
+    _fields_ = []
+
+
+GZWFILE_T = POINTER(wtap_writer)
+
+
+###########
+# merge.h #
+###########
+
+# typedef enum {
+#     RECORD_PRESENT,
+#     RECORD_NOT_PRESENT,
+#     AT_EOF,
+#     GOT_ERROR
+# } in_file_state_e;
+in_file_state_e = c_int
+RECORD_PRESENT = c_int(0)
+RECORD_NOT_PRESENT = c_int(1)
+AT_EOF = c_int(2)
+GOT_ERROR = c_int(3)
+
+
+# typedef struct merge_in_file_s {
+#     const char     *filename;
+#     wtap           *wth;
+#     wtap_rec        rec;
+#     Buffer          frame_buffer;
+#     in_file_state_e state;
+#     guint32         packet_num;
+#     gint64          size;
+#     GArray         *idb_index_map;
+#     guint           dsbs_seen;
+# } merge_in_file_t;
+class merge_in_file_s(Structure):
+    _fields_ = [('filename', c_char_p),
+                ('wth', POINTER(wtap)),
+                ('rec', wtap_rec),
+                ('frame_buffer', Buffer),
+                ('state', in_file_state_e),
+                ('packet_num', guint32),
+                ('size', gint64),
+                ('idb_index_map', POINTER(GArray)),
+                ('dsbs_seen', guint)]
+
+
+merge_in_file_t = merge_in_file_s
+
+
+# typedef enum {
+#     MERGE_OK,
+#     MERGE_USER_ABORTED,
+#     MERGE_ERR_CANT_OPEN_INFILE,
+#     MERGE_ERR_CANT_OPEN_OUTFILE,
+#     MERGE_ERR_CANT_READ_INFILE,
+#     MERGE_ERR_BAD_PHDR_INTERFACE_ID,
+#     MERGE_ERR_CANT_WRITE_OUTFILE,
+#     MERGE_ERR_CANT_CLOSE_OUTFILE,
+#     MERGE_ERR_INVALID_OPTION
+# } merge_result;
+merge_result = c_int
+MERGE_OK = c_int(0)
+MERGE_USER_ABORTED = c_int(1)
+MERGE_ERR_CANT_OPEN_INFILE = c_int(2)
+MERGE_ERR_CANT_OPEN_OUTFILE = c_int(3)
+MERGE_ERR_CANT_READ_INFILE = c_int(4)
+MERGE_ERR_BAD_PHDR_INTERFACE_ID = c_int(5)
+MERGE_ERR_CANT_WRITE_OUTFILE = c_int(6)
+MERGE_ERR_CANT_CLOSE_OUTFILE = c_int(7)
+MERGE_ERR_INVALID_OPTION = c_int(8)
+
+
+# typedef enum {
+#     MERGE_EVENT_INPUT_FILES_OPENED,
+#     MERGE_EVENT_FRAME_TYPE_SELECTED,
+#     MERGE_EVENT_READY_TO_MERGE,
+#     MERGE_EVENT_RECORD_WAS_READ,
+#     MERGE_EVENT_DONE
+# } merge_event;
+merge_event = c_int
+MERGE_EVENT_INPUT_FILES_OPENED = c_int(0)
+MERGE_EVENT_FRAME_TYPE_SELECTED = c_int(1)
+MERGE_EVENT_READY_TO_MERGE = c_int(2)
+MERGE_EVENT_RECORD_WAS_READ = c_int(3)
+MERGE_EVENT_DONE = c_int(4)
+
+
+# typedef enum {
+#     IDB_MERGE_MODE_NONE = 0,
+#     IDB_MERGE_MODE_ALL_SAME,
+#     IDB_MERGE_MODE_ANY_SAME,
+#     IDB_MERGE_MODE_MAX
+# } idb_merge_mode;
+idb_merge_mode = c_int
+IDB_MERGE_MODE_NONE = c_int(0)
+IDB_MERGE_MODE_ALL_SAME = c_int(1)
+IDB_MERGE_MODE_ANY_SAME = c_int(2)
+IDB_MERGE_MODE_MAX = c_int(3)
+
+# idb_merge_mode merge_string_to_idb_merge_mode(const char *name);
+merge_string_to_idb_merge_mode = libwiretap.merge_string_to_idb_merge_mode
+merge_string_to_idb_merge_mode.restype = idb_merge_mode
+merge_string_to_idb_merge_mode.argtypes = [c_char_p]
+
+# const char* merge_idb_merge_mode_to_string(const int mode);
+merge_idb_merge_mode_to_string = libwiretap.merge_idb_merge_mode_to_string
+merge_idb_merge_mode_to_string.restype = c_char_p
+merge_idb_merge_mode_to_string.argtypes = [c_int]
+
+
+# typedef struct {
+#     gboolean (*callback_func)(merge_event event, int num,
+#                               const merge_in_file_t in_files[], const guint in_file_count,
+#                               void *data);
+#     void *data;
+# } merge_progress_callback_t;
+class merge_progress_callback_t(Structure):
+    _fields_ = [('callback_func', CFUNCTYPE(gboolean,
+                                            merge_event,
+                                            c_int,
+                                            POINTER(merge_in_file_t),
+                                            guint,
+                                            c_void_p)),
+                ('data', c_void_p)]
+
+
+# merge_result
+# merge_files(const gchar* out_filename, const int file_type,
+#             const char *const *in_filenames, const guint in_file_count,
+#             const gboolean do_append, const idb_merge_mode mode,
+#             guint snaplen, const gchar *app_name, merge_progress_callback_t* cb,
+#             int *err, gchar **err_info, guint *err_fileno,
+#             guint32 *err_framenum);
+merge_files = libwiretap.merge_files
+merge_files.restype = merge_result
+merge_files.argtypes = [gchar_p,
+                        c_int,
+                        POINTER(c_char_p),
+                        guint,
+                        gboolean,
+                        idb_merge_mode,
+                        guint, gchar_p,
+                        POINTER(merge_progress_callback_t),
+                        POINTER(c_int),
+                        POINTER(gchar_p),
+                        POINTER(guint),
+                        POINTER(guint32)]
+
+# merge_result
+# merge_files_to_tempfile(gchar **out_filenamep, const char *pfx,
+#                         const int file_type, const char *const *in_filenames,
+#                         const guint in_file_count, const gboolean do_append,
+#                         const idb_merge_mode mode, guint snaplen,
+#                         const gchar *app_name, merge_progress_callback_t* cb,
+#                         int *err, gchar **err_info, guint *err_fileno,
+#                         guint32 *err_framenum);
+merge_files_to_tempfile = libwiretap.merge_files_to_tempfile
+merge_files_to_tempfile.restype = merge_result
+merge_files_to_tempfile.argtypes = [POINTER(gchar_p),
+                                    c_char_p,
+                                    c_int,
+                                    POINTER(c_char_p),
+                                    guint,
+                                    gboolean,
+                                    idb_merge_mode,
+                                    guint,
+                                    gchar_p,
+                                    POINTER(merge_progress_callback_t),
+                                    POINTER(c_int),
+                                    POINTER(gchar_p),
+                                    POINTER(guint),
+                                    POINTER(guint32)]
+
+# merge_result
+# merge_files_to_stdout(const int file_type, const char *const *in_filenames,
+#                       const guint in_file_count, const gboolean do_append,
+#                       const idb_merge_mode mode, guint snaplen,
+#                       const gchar *app_name, merge_progress_callback_t* cb,
+#                       int *err, gchar **err_info, guint *err_fileno,
+#                       guint32 *err_framenum);
+merge_files_to_stdout = libwiretap.merge_files_to_stdout
+merge_files_to_stdout.restype = merge_result
+merge_files_to_stdout.argtypes = [c_int,
+                                  POINTER(c_char_p),
+                                  guint,
+                                  gboolean,
+                                  idb_merge_mode,
+                                  guint,
+                                  gchar_p,
+                                  POINTER(merge_progress_callback_t),
+                                  POINTER(c_int),
+                                  POINTER(gchar_p),
+                                  POINTER(guint),
+                                  POINTER(guint32)]
+
+
+################
+# pcap-encap.h #
+################
+
+# int wtap_pcap_encap_to_wtap_encap(int encap);
+wtap_pcap_encap_to_wtap_encap = libwiretap.wtap_pcap_encap_to_wtap_encap
+wtap_pcap_encap_to_wtap_encap.restype = c_int
+wtap_pcap_encap_to_wtap_encap.argtypes = [c_int]
+
+# int wtap_wtap_encap_to_pcap_encap(int encap);
+wtap_wtap_encap_to_pcap_encap = libwiretap.wtap_wtap_encap_to_pcap_encap
+wtap_wtap_encap_to_pcap_encap.restype = c_int
+wtap_wtap_encap_to_pcap_encap.argtypes = [c_int]
+
+# gboolean wtap_encap_requires_phdr(int encap);
+wtap_encap_requires_phdr = libwiretap.wtap_encap_requires_phdr
+wtap_encap_requires_phdr.restype = gboolean
+wtap_encap_requires_phdr.argtypes = [c_int]
+
+
+###################
+# pcapng_module.h #
+###################
+
+# #define BLOCK_TYPE_SHB              0x0A0D0D0A
+BLOCK_TYPE_SHB = 0x0A0D0D0A
+
+# #define BLOCK_TYPE_IDB              0x00000001
+BLOCK_TYPE_IDB = 0x00000001
+
+# #define BLOCK_TYPE_PB               0x00000002
+BLOCK_TYPE_PB = 0x00000002
+
+# #define BLOCK_TYPE_SPB              0x00000003
+BLOCK_TYPE_SPB = 0x00000003
+
+# #define BLOCK_TYPE_NRB              0x00000004
+BLOCK_TYPE_NRB = 0x00000004
+
+# #define BLOCK_TYPE_ISB              0x00000005
+BLOCK_TYPE_ISB = 0x00000005
+
+# #define BLOCK_TYPE_EPB              0x00000006
+BLOCK_TYPE_EPB = 0x00000006
+
+# #define BLOCK_TYPE_IRIG_TS          0x00000007
+BLOCK_TYPE_IRIG_TS = 0x00000007
+
+# #define BLOCK_TYPE_ARINC_429        0x00000008
+BLOCK_TYPE_ARINC_429 = 0x00000008
+
+# #define BLOCK_TYPE_SYSTEMD_JOURNAL  0x00000009
+BLOCK_TYPE_SYSTEMD_JOURNAL = 0x00000009
+
+# #define BLOCK_TYPE_DSB              0x0000000A
+BLOCK_TYPE_DSB = 0x0000000A
+
+# #define BLOCK_TYPE_SYSDIG_EVENT     0x00000204
+BLOCK_TYPE_SYSDIG_EVENT = 0x00000204
+
+# #define BLOCK_TYPE_SYSDIG_EVF       0x00000208
+BLOCK_TYPE_SYSDIG_EVF = 0x00000208
+
+
+# typedef struct wtapng_block_s {
+#     guint32      type;
+#     gboolean     internal;
+#     wtap_block_t block;
+#     wtap_rec     *rec;
+#     Buffer       *frame_buffer;
+# } wtapng_block_t;
+class wtapng_block_s(Structure):
+    _fields_ = [('type', guint32),
+                ('internal', gboolean),
+                ('block', wtap_block_t),
+                ('rec', POINTER(wtap_rec)),
+                ('frame_buffer', POINTER(Buffer))]
+
+
+wtapng_block_t = wtapng_block_s
+
+# typedef gboolean (*block_reader)(FILE_T, guint32, gboolean, wtapng_block_t *,
+#                                  int *, gchar **);
+block_reader = CFUNCTYPE(gboolean,
+                         FILE_T,
+                         guint32,
+                         gboolean,
+                         POINTER(wtapng_block_t),
+                         POINTER(c_int),
+                         POINTER(gchar_p))
+
+# typedef gboolean (*block_writer)(wtap_dumper *, const wtap_rec *,
+#                                  const guint8 *, int *);
+block_writer = CFUNCTYPE(gboolean,
+                         POINTER(wtap_dumper),
+                         POINTER(wtap_rec),
+                         POINTER(guint8),
+                         POINTER(c_int))
+
+# void register_pcapng_block_type_handler(guint block_type, block_reader reader,
+#                                         block_writer writer);
+register_pcapng_block_type_handler = libwiretap.register_pcapng_block_type_handler
+register_pcapng_block_type_handler.restype = None
+register_pcapng_block_type_handler.argtypes = [
+    guint, block_reader, block_writer]
+
+# typedef gboolean (*option_handler_fn)(gboolean, guint, guint8 *, int *,
+# gchar **);
+option_handler_fn = CFUNCTYPE(gboolean,
+                              gboolean,
+                              guint,
+                              POINTER(guint8),
+                              POINTER(c_int),
+                              POINTER(gchar_p))
+
+# void register_pcapng_option_handler(guint block_type, guint option_code,
+#                                     option_handler_fn hfunc);
+register_pcapng_option_handler = libwiretap.register_pcapng_option_handler
+register_pcapng_option_handler.restype = None
+register_pcapng_option_handler.argtypes = [guint, guint, option_handler_fn]
+
+
+###################
+# secrets-types.h #
+###################
+
+# #define SECRETS_TYPE_TLS        0x544c534b
+SECRETS_TYPE_TLS = 0x544c534b
+
+# #define SECRETS_TYPE_WIREGUARD  0x57474b4c
+SECRETS_TYPE_WIREGUARD = 0x57474b4c
+
+
+##############
+# wtap-int.h #
+##############
+
+# int wtap_fstat(wtap *wth, ws_statb64 *statb, int *err);
+wtap_fstat = libwiretap.wtap_fstat
+wtap_fstat.restype = c_int
+wtap_fstat.argtypes = [POINTER(wtap), POINTER(ws_statb64), POINTER(c_int)]
+
+# typedef gboolean (*subtype_read_func)(struct wtap*, wtap_rec *,
+#                                       Buffer *, int *, char **, gint64 *);
+subtype_read_func = CFUNCTYPE(gboolean,
+                              POINTER(wtap),
+                              POINTER(wtap_rec),
+                              POINTER(Buffer),
+                              POINTER(c_int),
+                              POINTER(c_char_p),
+                              POINTER(gint64))
+
+# typedef gboolean (*subtype_seek_read_func)(struct wtap*, gint64, wtap_rec *,
+#                                            Buffer *, int *, char **);
+subtype_seek_read_func = CFUNCTYPE(gboolean,
+                                   POINTER(wtap),
+                                   gint64,
+                                   POINTER(wtap_rec),
+                                   POINTER(Buffer),
+                                   POINTER(c_int),
+                                   POINTER(c_char_p))
+
+
+# struct wtap {
+#     FILE_T                      fh;
+#     FILE_T                      random_fh;
+#     gboolean                    ispipe;
+#     int                         file_type_subtype;
+#     guint                       snapshot_length;
+#     GArray                      *shb_hdrs;
+#     GArray                      *interface_data;
+#     GArray                      *nrb_hdrs;
+#     GArray                      *dsbs;
+#     void                        *priv;
+#     void                        *wslua_data;
+#     subtype_read_func           subtype_read;
+#     subtype_seek_read_func      subtype_seek_read;
+#     void                        (*subtype_sequential_close)(struct wtap*);
+#     void                        (*subtype_close)(struct wtap*);
+#     int                         file_encap;
+#     int                         file_tsprec;
+#     wtap_new_ipv4_callback_t    add_new_ipv4;
+#     wtap_new_ipv6_callback_t    add_new_ipv6;
+#     wtap_new_secrets_callback_t add_new_secrets;
+#     GPtrArray                   *fast_seek;
+# };
+wtap._fields_ = [('fh', FILE_T),
+                 ('random_fh', FILE_T),
+                 ('ispipe', gboolean),
+                 ('file_type_subtype', c_int),
+                 ('snapshot_length', guint),
+                 ('shb_hdrs', POINTER(GArray)),
+                 ('interface_data', POINTER(GArray)),
+                 ('nrb_hdrs', POINTER(GArray)),
+                 ('dsbs', POINTER(GArray)),
+                 ('priv', c_void_p),
+                 ('wslua_data', c_void_p),
+                 ('subtype_read', subtype_read_func),
+                 ('subtype_seek_read', subtype_seek_read_func),
+                 ('subtype_sequential_close', CFUNCTYPE(None, POINTER(wtap))),
+                 ('subtype_close', CFUNCTYPE(None, POINTER(wtap))),
+                 ('file_encap', c_int),
+                 ('file_tsprec', c_int),
+                 ('add_new_ipv4', wtap_new_ipv4_callback_t),
+                 ('add_new_ipv6', wtap_new_ipv6_callback_t),
+                 ('add_new_secrets', wtap_new_secrets_callback_t),
+                 ('fast_seek', POINTER(GPtrArray))]
+
+
+# typedef void *WFILE_T;
+WFILE_T = c_void_p
+
+# typedef gboolean (*subtype_write_func)(struct wtap_dumper*,
+#                                        const wtap_rec *rec,
+#                                        const guint8*, int*, gchar**);
+subtype_write_func = CFUNCTYPE(gboolean,
+                               POINTER(wtap_dumper),
+                               POINTER(wtap_rec),
+                               POINTER(guint8),
+                               POINTER(c_int),
+                               POINTER(gchar_p))
+
+# typedef gboolean (*subtype_finish_func)(struct wtap_dumper*, int*);
+subtype_finish_func = CFUNCTYPE(gboolean,
+                                POINTER(wtap_dumper),
+                                POINTER(c_int))
+
+
+# struct wtap_dumper {
+#     WFILE_T                 fh;
+#     int                     file_type_subtype;
+#     int                     snaplen;
+#     int                     encap;
+#     wtap_compression_type   compression_type;
+#     gboolean                needs_reload;
+#     gint64                  bytes_dumped;
+#     void                    *priv;
+#     void                    *wslua_data;
+#     subtype_write_func      subtype_write;
+#     subtype_finish_func     subtype_finish;
+#     addrinfo_lists_t        *addrinfo_lists;
+#     GArray                  *shb_hdrs;
+#     GArray                  *nrb_hdrs;
+#     GArray                  *interface_data;
+#     GArray                  *dsbs_initial;
+#     const GArray            *dsbs_growing;
+#     guint                   dsbs_growing_written;
+# };
+wtap_dumper._fields_ = [('fh', WFILE_T),
+                        ('file_type_subtype', c_int),
+                        ('snaplen', c_int),
+                        ('encap', c_int),
+                        ('compression_type', wtap_compression_type),
+                        ('needs_reload', gboolean),
+                        ('bytes_dumped', gint64),
+                        ('priv', c_void_p),
+                        ('wslua_data', c_void_p),
+                        ('subtype_write', subtype_write_func),
+                        ('subtype_finish', subtype_finish_func),
+                        ('addrinfo_lists', POINTER(addrinfo_lists_t)),
+                        ('shb_hdrs', POINTER(GArray)),
+                        ('nrb_hdrs', POINTER(GArray)),
+                        ('interface_data', POINTER(GArray)),
+                        ('dsbs_initial', POINTER(GArray)),
+                        ('dsbs_growing', POINTER(GArray)),
+                        ('dsbs_growing_written', guint)]
+
+# gboolean wtap_dump_file_write(wtap_dumper *wdh, const void *buf,
+#     size_t bufsize, int *err);
+wtap_dump_file_write = libwiretap.wtap_dump_file_write
+wtap_dump_file_write.restype = gboolean
+wtap_dump_file_write.argtypes = [POINTER(wtap_dumper),
+                                 c_void_p,
+                                 c_size_t,
+                                 POINTER(c_int)]
+
+# gint64 wtap_dump_file_seek(wtap_dumper *wdh, gint64 offset, int whence,
+# int *err);
+wtap_dump_file_seek = libwiretap.wtap_dump_file_seek
+wtap_dump_file_seek.restype = gint64
+wtap_dump_file_seek.argtypes = [POINTER(wtap_dumper),
+                                gint64,
+                                c_int,
+                                POINTER(c_int)]
+
+# gint64 wtap_dump_file_tell(wtap_dumper *wdh, int *err);
+wtap_dump_file_tell = libwiretap.wtap_dump_file_tell
+wtap_dump_file_tell.restype = gint64
+wtap_dump_file_tell.argtypes = [POINTER(wtap_dumper), POINTER(c_int)]
+
+
+# #define PBSWAP64(p) \
+#     {            \
+#         guint8 tmp;        \
+#         tmp = (p)[7];      \
+#         (p)[7] = (p)[0];   \
+#         (p)[0] = tmp;      \
+#         tmp = (p)[6];      \
+#         (p)[6] = (p)[1];   \
+#         (p)[1] = tmp;      \
+#         tmp = (p)[5];      \
+#         (p)[5] = (p)[2];   \
+#         (p)[2] = tmp;      \
+#         tmp = (p)[4];      \
+#         (p)[4] = (p)[3];   \
+#         (p)[3] = tmp;      \
+#     }
+def PBSWAP64(p):
+    tmp = p[7]
+    p[7] = p[0]
+    p[0] = tmp
+    tmp = p[6]
+    p[6] = p[1]
+    p[1] = tmp
+    tmp = p[5]
+    p[5] = p[2]
+    p[2] = tmp
+    tmp = p[4]
+    p[4] = p[3]
+    p[3] = tmp
+
+
+# #define PBSWAP32(p) \
+#     {            \
+#         guint8 tmp;         \
+#         tmp = (p)[3];       \
+#         (p)[3] = (p)[0];    \
+#         (p)[0] = tmp;       \
+#         tmp = (p)[2];       \
+#         (p)[2] = (p)[1];    \
+#         (p)[1] = tmp;       \
+#     }
+def PBSWAP32(p):
+    tmp = p[3]
+    p[3] = p[0]
+    p[0] = tmp
+    tmp = p[2]
+    p[2] = p[1]
+    p[1] = tmp
+
+
+# #define PBSWAP16(p) \
+#     {            \
+#         guint8 tmp;        \
+#         tmp = (p)[1];      \
+#         (p)[1] = (p)[0];   \
+#         (p)[0] = tmp;      \
+#     }
+def PBSWAP16(p):
+    tmp = p[1]
+    p[1] = p[0]
+    p[0] = tmp
+
+
+# #define phtons(p, v) \
+#     {                 \
+#         (p)[0] = (guint8)((v) >> 8);    \
+#         (p)[1] = (guint8)((v) >> 0);    \
+#     }
+def phtons(p, v):
+    p[0] = cast(v >> 8, guint8)
+    p[1] = cast(v, guint8)
+
+
+# #define phton24(p, v) \
+#     {                 \
+#         (p)[0] = (guint8)((v) >> 16);    \
+#         (p)[1] = (guint8)((v) >> 8);     \
+#         (p)[2] = (guint8)((v) >> 0);     \
+#     }
+def phton24(p, v):
+    p[0] = cast(v >> 16, guint8)
+    p[1] = cast(v >> 8, guint8)
+    p[2] = cast(v, guint8)
+
+
+# #define phtonl(p, v) \
+#     {                 \
+#         (p)[0] = (guint8)((v) >> 24);    \
+#         (p)[1] = (guint8)((v) >> 16);    \
+#         (p)[2] = (guint8)((v) >> 8);     \
+#         (p)[3] = (guint8)((v) >> 0);     \
+#     }
+def phtonl(p, v):
+    p[0] = cast(v >> 24, guint8)
+    p[1] = cast(v >> 16, guint8)
+    p[2] = cast(v >> 8, guint8)
+    p[3] = cast(v, guint8)
+
+
+# #define phtonll(p, v) \
+#     {                 \
+#         (p)[0] = (guint8)((v) >> 56);    \
+#         (p)[1] = (guint8)((v) >> 48);    \
+#         (p)[2] = (guint8)((v) >> 40);    \
+#         (p)[3] = (guint8)((v) >> 32);    \
+#         (p)[4] = (guint8)((v) >> 24);    \
+#         (p)[5] = (guint8)((v) >> 16);    \
+#         (p)[6] = (guint8)((v) >> 8);     \
+#         (p)[7] = (guint8)((v) >> 0);     \
+#     }
+def phtonll(p, v):
+    p[0] = cast(v >> 56, guint8)
+    p[1] = cast(v >> 48, guint8)
+    p[2] = cast(v >> 40, guint8)
+    p[3] = cast(v >> 32, guint8)
+    p[4] = cast(v >> 24, guint8)
+    p[5] = cast(v >> 16, guint8)
+    p[6] = cast(v >> 8, guint8)
+    p[7] = cast(v, guint8)
+
+
+# #define phtole8(p, v) \
+#     {                 \
+#         (p)[0] = (guint8)((v) >> 0);    \
+#     }
+def phtole8(p, v):
+    p[0] = cast(v, guint8)
+
+
+# #define phtoles(p, v) \
+#     {                 \
+#         (p)[0] = (guint8)((v) >> 0);    \
+#         (p)[1] = (guint8)((v) >> 8);    \
+#     }
+def phtoles(p, v):
+    p[0] = cast(v, guint8)
+    p[1] = cast(v >> 8, guint8)
+
+
+# #define phtole24(p, v) \
+#     {                 \
+#         (p)[0] = (guint8)((v) >> 0);     \
+#         (p)[1] = (guint8)((v) >> 8);     \
+#         (p)[2] = (guint8)((v) >> 16);    \
+#     }
+def phtole24(p, v):
+    p[0] = cast(v, guint8)
+    p[1] = cast(v >> 8, guint8)
+    p[2] = cast(v >> 16, guint8)
+
+
+# #define phtolel(p, v) \
+#     {                 \
+#         (p)[0] = (guint8)((v) >> 0);     \
+#         (p)[1] = (guint8)((v) >> 8);     \
+#         (p)[2] = (guint8)((v) >> 16);    \
+#         (p)[3] = (guint8)((v) >> 24);    \
+#     }
+def phtolel(p, v):
+    p[0] = cast(v, guint8)
+    p[1] = cast(v >> 8, guint8)
+    p[2] = cast(v >> 16, guint8)
+    p[3] = cast(v >> 24, guint8)
+
+
+# #define phtolell(p, v) \
+#     {                 \
+#         (p)[0] = (guint8)((v) >> 0);     \
+#         (p)[1] = (guint8)((v) >> 8);     \
+#         (p)[2] = (guint8)((v) >> 16);    \
+#         (p)[3] = (guint8)((v) >> 24);    \
+#         (p)[4] = (guint8)((v) >> 32);    \
+#         (p)[5] = (guint8)((v) >> 40);    \
+#         (p)[6] = (guint8)((v) >> 48);    \
+#         (p)[7] = (guint8)((v) >> 56);    \
+#     }
+def phtolell(p, v):
+    p[0] = cast(v, guint8)
+    p[1] = cast(v >> 8, guint8)
+    p[2] = cast(v >> 16, guint8)
+    p[3] = cast(v >> 24, guint8)
+    p[4] = cast(v >> 32, guint8)
+    p[5] = cast(v >> 40, guint8)
+    p[6] = cast(v >> 48, guint8)
+    p[7] = cast(v >> 56, guint8)
+
+
+# #define g_ptr_array_len(a)      ((a)->len)
+def g_ptr_array_len(a):
+    return a[0].len
+
+
+# gboolean
+# wtap_read_bytes_or_eof(FILE_T fh, void *buf, unsigned int count, int *err,
+#     gchar **err_info);
+wtap_read_bytes_or_eof = libwiretap.wtap_read_bytes_or_eof
+wtap_read_bytes_or_eof.restype = gboolean
+wtap_read_bytes_or_eof.argtypes = [FILE_T, c_void_p, c_uint, POINTER(c_int)]
+
+# gboolean
+# wtap_read_bytes(FILE_T fh, void *buf, unsigned int count, int *err,
+#     gchar **err_info);
+wtap_read_bytes = libwiretap.wtap_read_bytes
+wtap_read_bytes.restype = gboolean
+wtap_read_bytes.argtypes = [FILE_T, c_void_p, c_uint, POINTER(c_int)]
+
+# gboolean
+# wtap_read_packet_bytes(FILE_T fh, Buffer *buf, guint length, int *err,
+#     gchar **err_info);
+wtap_read_packet_bytes = libwiretap.wtap_read_packet_bytes
+wtap_read_packet_bytes.restype = gboolean
+wtap_read_packet_bytes.argtypes = [FILE_T,
+                                   POINTER(Buffer),
+                                   guint,
+                                   POINTER(c_int),
+                                   POINTER(gchar_p)]
