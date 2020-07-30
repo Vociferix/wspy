@@ -44,6 +44,12 @@ gconstpointer = c_void_p
 GQuark = guint32
 GPid = c_int
 
+GCompareFunc = CFUNCTYPE(gint, gconstpointer, gconstpointer)
+GFunc = CFUNCTYPE(None, gpointer, gpointer)
+GHFunc = CFUNCTYPE(None, gpointer, gpointer, gpointer)
+GHashFunc = CFUNCTYPE(guint, gconstpointer)
+GEqualFunc = CFUNCTYPE(gboolean, gconstpointer, gconstpointer)
+
 # struct GString {
 #     gchar* str;
 #     gsize len;

@@ -230,3 +230,210 @@ wmem_array_get_count.argtypes = [POINTER(wmem_array_t)]
 #wmem_destroy_array = libwireshark.wmem_destroy_array
 #wmem_destroy_array.restype = None
 #wmem_destroy_array.argtypes = [POINTER(wmem_array_t)]
+
+
+####################
+# wmem/wmem_list.h #
+####################
+
+# struct _wmem_list_t;
+class _wmem_list_t(Structure):
+    _fields_ = []
+
+
+# struct _wmem_list_frame_t;
+class _wmem_list_frame_t(Structure):
+    _fields_ = []
+
+
+# typedef struct _wmem_list_t       wmem_list_t;
+wmem_list_t = _wmem_list_t
+
+# typedef struct _wmem_list_frame_t wmem_list_frame_t;
+wmem_list_frame_t = _wmem_list_frame_t
+
+# guint wmem_list_count(const wmem_list_t *list);
+wmem_list_count = libwireshark.wmem_list_count
+wmem_list_count.restype = guint
+wmem_list_count.argtypes = [POINTER(wmem_list_t)]
+
+# wmem_list_frame_t *wmem_list_head(const wmem_list_t *list);
+wmem_list_head = libwireshark.wmem_list_head
+wmem_list_head.restype = POINTER(wmem_list_frame_t)
+wmem_list_head.argtypes = [POINTER(wmem_list_t)]
+
+# wmem_list_frame_t *wmem_list_tail(const wmem_list_t *list);
+wmem_list_tail = libwireshark.wmem_list_tail
+wmem_list_tail.restype = POINTER(wmem_list_frame_t)
+wmem_list_tail.argtypes = [POINTER(wmem_list_t)]
+
+# wmem_list_frame_t *wmem_list_frame_next(const wmem_list_frame_t *frame);
+wmem_list_frame_next = libwireshark.wmem_list_frame_next
+wmem_list_frame_next.restype = POINTER(wmem_list_frame_t)
+wmem_list_frame_next.argtypes = [POINTER(wmem_list_frame_t)]
+
+# wmem_list_frame_t *wmem_list_frame_prev(const wmem_list_frame_t *frame);
+wmem_list_frame_prev = libwireshark.wmem_list_frame_prev
+wmem_list_frame_prev.restype = POINTER(wmem_list_frame_t)
+wmem_list_frame_prev.argtypes = [POINTER(wmem_list_frame_t)]
+
+# void *wmem_list_frame_data(const wmem_list_frame_t *frame);
+wmem_list_frame_data = libwireshark.wmem_list_frame_data
+wmem_list_frame_data.restype = c_void_p
+wmem_list_frame_data.argtypes = [POINTER(wmem_list_frame_t)]
+
+# void wmem_list_remove(wmem_list_t *list, void *data);
+wmem_list_remove = libwireshark.wmem_list_remove
+wmem_list_remove.restype = None
+wmem_list_remove.argtypes = [POINTER(wmem_list_t), c_void_p]
+
+# void wmem_list_remove_frame(wmem_list_t *list, wmem_list_frame_t *frame);
+wmem_list_remove_frame = libwireshark.wmem_list_remove_frame
+wmem_list_remove_frame.restype = None
+wmem_list_remove_frame.argtypes = [
+    POINTER(wmem_list_t),
+    POINTER(wmem_list_frame_t)]
+
+# wmem_list_frame_t *wmem_list_find(wmem_list_t *list, const void *data);
+wmem_list_find = libwireshark.wmem_list_find
+wmem_list_find.restype = POINTER(wmem_list_frame_t)
+wmem_list_find.argtypes = [POINTER(wmem_list_t), c_void_p]
+
+# wmem_list_frame_t *wmem_list_find_custom(wmem_list_t *list, const void
+# *data, GCompareFunc func);
+wmem_list_find_custom = libwireshark.wmem_list_find_custom
+wmem_list_find_custom.restype = POINTER(wmem_list_frame_t)
+wmem_list_find_custom.argtypes = [POINTER(wmem_list_t), c_void_p, GCompareFunc]
+
+# void wmem_list_prepend(wmem_list_t *list, void *data);
+wmem_list_prepend = libwireshark.wmem_list_prepend
+wmem_list_prepend.restype = None
+wmem_list_prepend.argtypes = [POINTER(wmem_list_t), c_void_p]
+
+# void wmem_list_append(wmem_list_t *list, void *data);
+wmem_list_append = libwireshark.wmem_list_append
+wmem_list_append.restype = None
+wmem_list_append.argtypes = [POINTER(wmem_list_t), c_void_p]
+
+# void wmem_list_insert_sorted(wmem_list_t *list, void* data, GCompareFunc
+# func);
+wmem_list_insert_sorted = libwireshark.wmem_list_insert_sorted
+wmem_list_insert_sorted.restype = None
+wmem_list_insert_sorted.argtypes = [
+    POINTER(wmem_list_t), c_void_p, GCompareFunc]
+
+# wmem_list_t *wmem_list_new(wmem_allocator_t *allocator);
+wmem_list_new = libwireshark.wmem_list_new
+wmem_list_new.restype = POINTER(wmem_list_t)
+wmem_list_new.argtypes = [POINTER(wmem_allocator_t)]
+
+# void wmem_list_foreach(wmem_list_t *list, GFunc foreach_func, gpointer
+# user_data);
+wmem_list_foreach = libwireshark.wmem_list_foreach
+wmem_list_foreach.restype = None
+wmem_list_foreach.argtypes = [POINTER(wmem_list_t), GFunc, gpointer]
+
+# void wmem_destroy_list(wmem_list_t *list);
+wmem_destroy_list = libwireshark.wmem_destroy_list
+wmem_destroy_list.restype = None
+wmem_destroy_list.argtypes = [POINTER(wmem_list_t)]
+
+
+###################
+# wmem/wmem_map.h #
+###################
+
+# struct _wmem_map_t;
+class _wmem_map_t(Structure):
+    _fields_ = []
+
+
+# typedef struct _wmem_map_t wmem_map_t;
+wmem_map_t = _wmem_map_t
+
+# wmem_map_t *wmem_map_new(wmem_allocator_t *allocator,
+#         GHashFunc hash_func, GEqualFunc eql_func);
+wmem_map_new = libwireshark.wmem_map_new
+wmem_map_new.restype = POINTER(wmem_map_t)
+wmem_map_new.argtypes = [POINTER(wmem_allocator_t),
+                         GHashFunc,
+                         GEqualFunc]
+
+# wmem_map_t *wmem_map_new_autoreset(wmem_allocator_t *master, wmem_allocator_t *slave,
+#         GHashFunc hash_func, GEqualFunc eql_func);
+wmem_map_new_autoreset = libwireshark.wmem_map_new_autoreset
+wmem_map_new_autoreset.restype = POINTER(wmem_map_t)
+wmem_map_new_autoreset.argtypes = [POINTER(wmem_allocator_t),
+                                   POINTER(wmem_allocator_t),
+                                   GHashFunc,
+                                   GEqualFunc]
+
+# void *wmem_map_insert(wmem_map_t *map, const void *key, void *value);
+wmem_map_insert = libwireshark.wmem_map_insert
+wmem_map_insert.restype = c_void_p
+wmem_map_insert.argtypes = [POINTER(wmem_map_t), c_void_p, c_void_p]
+
+# gboolean wmem_map_contains(wmem_map_t *map, const void *key);
+wmem_map_contains = libwireshark.wmem_map_contains
+wmem_map_contains.restype = gboolean
+wmem_map_contains.argtypes = [POINTER(wmem_map_t), c_void_p]
+
+# void *wmem_map_lookup(wmem_map_t *map, const void *key);
+wmem_map_lookup = libwireshark.wmem_map_lookup
+wmem_map_lookup.restype = c_void_p
+wmem_map_lookup.argtypes = [POINTER(wmem_map_t), c_void_p]
+
+# gboolean wmem_map_lookup_extended(wmem_map_t *map, const void *key,
+# const void **orig_key, void **value);
+wmem_map_lookup_extended = libwireshark.wmem_map_lookup_extended
+wmem_map_lookup_extended.restype = gboolean
+wmem_map_lookup_extended.argtypes = [POINTER(wmem_map_t),
+                                     c_void_p,
+                                     POINTER(c_void_p),
+                                     POINTER(c_void_p)]
+
+# void *wmem_map_remove(wmem_map_t *map, const void *key);
+wmem_map_remove = libwireshark.wmem_map_remove
+wmem_map_remove.restype = c_void_p
+wmem_map_remove.argtypes = [POINTER(wmem_map_t), c_void_p]
+
+# gboolean wmem_map_steal(wmem_map_t *map, const void *key);
+wmem_map_steal = libwireshark.wmem_map_steal
+wmem_map_steal.restype = gboolean
+wmem_map_steal.argtypes = [POINTER(wmem_map_t), c_void_p]
+
+# wmem_list_t* wmem_map_get_keys(wmem_allocator_t *list_allocator, wmem_map_t *map);
+wmem_map_get_keys = libwireshark.wmem_map_get_keys
+wmem_map_get_keys.restype = POINTER(wmem_list_t)
+wmem_map_get_keys.argtypes = [POINTER(wmem_allocator_t), POINTER(wmem_map_t)]
+
+# void wmem_map_foreach(wmem_map_t *map, GHFunc foreach_func, gpointer
+# user_data);
+wmem_map_foreach = libwireshark.wmem_map_foreach
+wmem_map_foreach.restype = None
+wmem_map_foreach.argtypes = [POINTER(wmem_map_t), GHFunc, gpointer]
+
+# guint wmem_map_size(wmem_map_t *map);
+wmem_map_size = libwireshark.wmem_map_size
+wmem_map_size.restype = guint
+wmem_map_size.argtypes = [POINTER(wmem_map_t)]
+
+# guint32 wmem_strong_hash(const guint8 *buf, const size_t len);
+wmem_strong_hash = libwireshark.wmem_strong_hash
+wmem_strong_hash.restype = guint32
+wmem_strong_hash.argtypes = [POINTER(guint8), c_size_t]
+
+# guint wmem_str_hash(gconstpointer key);
+wmem_str_hash = libwireshark.wmem_str_hash
+wmem_str_hash.restype = guint
+wmem_str_hash.argtypes = [gconstpointer]
+
+# guint wmem_int64_hash(gconstpointer key);
+wmem_int64_hash = libwireshark.wmem_int64_hash
+wmem_int64_hash.restype = guint
+wmem_int64_hash.argtypes = [gconstpointer]
+
+# guint wmem_double_hash(gconstpointer key);
+wmem_double_hash = libwireshark.wmem_double_hash
+wmem_double_hash.restype = guint
+wmem_double_hash.argtypes = [gconstpointer]
