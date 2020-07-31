@@ -37,6 +37,7 @@ gint64 = c_int64
 gsize = c_size_t
 gssize = c_ssize_t
 gdouble = c_double
+gunichar = guint32
 
 gpointer = c_void_p
 gconstpointer = c_void_p
