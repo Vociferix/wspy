@@ -36,6 +36,7 @@ gint32 = c_int32
 gint64 = c_int64
 gsize = c_size_t
 gssize = c_ssize_t
+gfloat = c_float
 gdouble = c_double
 gunichar = guint32
 
@@ -125,3 +126,12 @@ class GSList(Structure):
 
 
 GSList._fields_ = [('data', gpointer), ('next', POINTER(GSList))]
+
+
+# struct GByteArray {
+#     guint8 *data;
+#     guint   len;
+# };
+class GByteArray(Structure):
+    _fields_ = [('data', POINTER(guint8)),
+                ('len', guint)]

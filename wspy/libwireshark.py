@@ -21,7 +21,9 @@ from ctypes.util import find_library
 from ctypes import *
 from wspy.errors import *
 from wspy.libglib2 import *
+from wspy.libwsutil import *
 import wspy_config as config
+import sys
 
 libwireshark = CDLL(config.get_libwireshark())
 
@@ -842,3 +844,1009 @@ wmem_register_callback.argtypes = [POINTER(wmem_allocator_t),
 wmem_unregister_callback = libwireshark.wmem_unregister_callback
 wmem_unregister_callback.restype = None
 wmem_unregister_callback.argtypes = [POINTER(wmem_allocator_t), guint]
+
+
+################
+# guid-utils.h #
+################
+
+# #define GUID_LEN	16
+GUID_LEN = 16
+
+
+# typedef struct _e_guid_t {
+#     guint32 data1;
+#     guint16 data2;
+#     guint16 data3;
+#     guint8  data4[8];
+# } e_guid_t;
+class _e_guid_t(Structure):
+    _fields_ = [('data1', guint32),
+                ('data2', guint16),
+                ('data3', guint16),
+                ('data4', guint8 * 4)]
+
+
+e_guid_t = _e_guid_t
+
+# void guids_init(void);
+guids_init = libwireshark.guids_init
+guids_init.restype = None
+guids_init.argtypes = []
+
+# void guids_add_guid(const e_guid_t *guid, const gchar *name);
+guids_add_guid = libwireshark.guids_add_guid
+guids_add_guid.restype = None
+guids_add_guid.argtypes = [POINTER(e_guid_t), gchar_p]
+
+# const gchar *guids_get_guid_name(const e_guid_t *guid);
+guids_get_guid_name = libwireshark.guids_get_guid_name
+guids_get_guid_name.restype = gchar_p
+guids_get_guid_name.argtypes = [POINTER(e_guid_t)]
+
+# const gchar* guids_resolve_guid_to_str(const e_guid_t *guid);
+guids_resolve_guid_to_str = libwireshark.guids_resolve_guid_to_str
+guids_resolve_guid_to_str.restype = gchar_p
+guids_resolve_guid_to_str.argtypes = [POINTER(e_guid_t)]
+
+
+# #define guids_add_uuid(uuid, name) guids_add_guid((const e_guid_t *) (uuid), (name))
+def guids_add_uuid(uuid, name):
+    guids_add_guid(cast(uuid, POINTER(e_guid_t)), name)
+
+
+# #define guids_get_uuid_name(uuid) guids_get_guid_name((e_guid_t *) (uuid))
+def guids_get_uuid_name(uuid):
+    guids_get_guid_name(cast(uuid, POINTER(e_guid_t)))
+
+
+# #define guids_resolve_uuid_to_str(uuid) guids_resolve_guid_to_str((e_guid_t *) (uuid))
+def guids_reolve_uuid_to_str(uuid):
+    guids_resolve_guid_to_str(cast(uuid, POINTER(e_guid_t)))
+
+
+# int guid_cmp(const e_guid_t *g1, const e_guid_t *g2);
+guid_cmp = libwireshark.guid_cmp
+guid_cmp.restype = c_int
+guid_cmp.argtypes = [POINTER(e_guid_t), POINTER(e_guid_t)]
+
+
+##########
+# ipv6.h #
+##########
+
+# typedef struct {
+# 	ws_in6_addr addr;
+# 	guint32 prefix;
+# } ipv6_addr_and_prefix;
+class ipv6_addr_and_prefix(Structure):
+    _fields_ = [('addr', ws_in6_addr),
+                ('prefix', guint32)]
+
+
+############
+# tvbuff.h #
+############
+
+# struct tvbuff;
+class tvbuff(Structure):
+    _fields_ = []
+
+
+# typedef struct tvbuff tvbuff_t;
+tvbuff_t = tvbuff
+
+# typedef void (*tvbuff_free_cb_t)(void*);
+tvbuff_free_cb_t = CFUNCTYPE(None, c_void_p)
+
+# tvbuff_t *tvb_new_octet_aligned(tvbuff_t *tvb,
+#     guint32 bit_offset, gint32 no_of_bits);
+tvb_new_octet_aligned = libwireshark.tvb_new_octet_aligned
+tvb_new_octet_aligned.restype = POINTER(tvbuff_t)
+tvb_new_octet_aligned.argtypes = [POINTER(tvbuff_t), guint32, guint32]
+
+# tvbuff_t *tvb_new_chain(tvbuff_t *parent, tvbuff_t *backing);
+tvb_new_chain = libwireshark.tvb_new_chain
+tvb_new_chain.restype = POINTER(tvbuff_t)
+tvb_new_chain.argtypes = [POINTER(tvbuff_t), POINTER(tvbuff_t)]
+
+# tvbuff_t *tvb_clone(tvbuff_t *tvb);
+tvb_clone = libwireshark.tvb_clone
+tvb_clone.restype = POINTER(tvbuff_t)
+tvb_clone.argtypes = [POINTER(tvbuff_t)]
+
+# tvbuff_t *tvb_clone_offset_len(tvbuff_t *tvb, guint offset,
+#     guint len);
+tvb_clone_offset_len = libwireshark.tvb_clone_offset_len
+tvb_clone_offset_len.restype = POINTER(tvbuff_t)
+tvb_clone_offset_len.argtypes = [POINTER(tvbuff_t), guint, guint]
+
+# void tvb_free(tvbuff_t *tvb);
+tvb_free = libwireshark.tvb_free
+tvb_free.restype = None
+tvb_free.argtypes = [POINTER(tvbuff_t)]
+
+# void tvb_free_chain(tvbuff_t *tvb);
+tvb_free_chain = libwireshark.tvb_free_chain
+tvb_free_chain.restype = None
+tvb_free_chain.argtypes = [POINTER(tvbuff_t)]
+
+# void tvb_set_free_cb(tvbuff_t *tvb, const tvbuff_free_cb_t func);
+tvb_set_free_cb = libwireshark.tvb_set_free_cb
+tvb_set_free_cb.restype = None
+tvb_set_free_cb.argtypes = [POINTER(tvbuff_t), tvbuff_free_cb_t]
+
+# void tvb_set_child_real_data_tvbuff(tvbuff_t *parent,
+#     tvbuff_t *child);
+tvb_set_child_real_data_tvbuff = libwireshark.tvb_set_child_real_data_tvbuff
+tvb_set_child_real_data_tvbuff.restype = None
+tvb_set_child_real_data_tvbuff.argtypes = [
+    POINTER(tvbuff_t), POINTER(tvbuff_t)]
+
+# tvbuff_t *tvb_new_child_real_data(tvbuff_t *parent,
+#     const guint8 *data, const guint length, const gint reported_length);
+tvb_new_child_real_data = libwireshark.tvb_new_child_real_data
+tvb_new_child_real_data.restype = POINTER(tvbuff_t)
+tvb_new_child_real_data.argtypes = [POINTER(tvbuff_t),
+                                    POINTER(guint8),
+                                    guint,
+                                    gint]
+
+# tvbuff_t *tvb_new_real_data(const guint8 *data,
+#     const guint length, const gint reported_length);
+tvb_new_real_data = libwireshark.tvb_new_real_data
+tvb_new_real_data.restype = POINTER(tvbuff_t)
+tvb_new_real_data.argtypes = [POINTER(guint8), guint, gint]
+
+# tvbuff_t *tvb_new_subset_length_caplen(tvbuff_t *backing,
+#     const gint backing_offset, const gint backing_length,
+#     const gint reported_length);
+tvb_new_subset_length_caplen = libwireshark.tvb_new_subset_length_caplen
+tvb_new_subset_length_caplen.restype = POINTER(tvbuff_t)
+tvb_new_subset_length_caplen.argtypes = [POINTER(tvbuff_t),
+                                         gint,
+                                         gint,
+                                         gint]
+
+# tvbuff_t *tvb_new_subset_length(tvbuff_t *backing,
+#     const gint backing_offset, const gint reported_length);
+tvb_new_subset_length = libwireshark.tvb_new_subset_length
+tvb_new_subset_length.restype = POINTER(tvbuff_t)
+tvb_new_subset_length.argtypes = [POINTER(tvbuff_t), gint, gint]
+
+# tvbuff_t *tvb_new_subset_remaining(tvbuff_t *backing,
+#     const gint backing_offset);
+tvb_new_subset_remaining = libwireshark.tvb_new_subset_remaining
+tvb_new_subset_remaining.restype = POINTER(tvbuff_t)
+tvb_new_subset_remaining.argtypes = [POINTER(tvbuff_t), gint]
+
+# void tvb_composite_append(tvbuff_t *tvb, tvbuff_t *member);
+tvb_composite_append = libwireshark.tvb_composite_append
+tvb_composite_append.restype = None
+tvb_composite_append.argtypes = [POINTER(tvbuff_t), POINTER(tvbuff_t)]
+
+# tvbuff_t *tvb_new_composite(void);
+tvb_new_composite = libwireshark.tvb_new_composite
+tvb_new_composite.restype = POINTER(tvbuff_t)
+tvb_new_composite.argtypes = []
+
+# void tvb_composite_finalize(tvbuff_t *tvb);
+tvb_composite_finalize = libwireshark.tvb_composite_finalize
+tvb_composite_finalize.restype = None
+tvb_composite_finalize.argtypes = [POINTER(tvbuff_t)]
+
+# guint tvb_captured_length(const tvbuff_t *tvb);
+tvb_captured_length = libwireshark.tvb_captured_length
+tvb_captured_length.restype = guint
+tvb_captured_length.argtypes = [POINTER(tvbuff_t)]
+
+# gint tvb_captured_length_remaining(const tvbuff_t *tvb, const gint offset);
+tvb_captured_length_remaining = libwireshark.tvb_captured_length_remaining
+tvb_captured_length_remaining.restype = gint
+tvb_captured_length_remaining.argtype = [POINTER(tvbuff_t), gint]
+
+# guint tvb_ensure_captured_length_remaining(const tvbuff_t *tvb,
+#     const gint offset);
+tvb_ensure_captured_length_remaining = libwireshark.tvb_ensure_captured_length_remaining
+tvb_ensure_captured_length_remaining.restype = guint
+tvb_ensure_captured_length_remaining.argtypes = [POINTER(tvbuff_t), gint]
+
+# gboolean tvb_bytes_exist(const tvbuff_t *tvb, const gint offset,
+#     const gint length);
+tvb_bytes_exist = libwireshark.tvb_bytes_exist
+tvb_bytes_exist.restype = gboolean
+tvb_bytes_exist.argtypes = [POINTER(tvbuff_t), gint, gint]
+
+# void tvb_ensure_bytes_exist64(const tvbuff_t *tvb,
+#     const gint offset, const guint64 length);
+tvb_ensure_bytes_exist64 = libwireshark.tvb_ensure_bytes_exist64
+tvb_ensure_bytes_exist64.restype = None
+tvb_ensure_bytes_exist64.argtypes = [POINTER(tvbuff_t), gint, guint64]
+
+# void tvb_ensure_bytes_exist(const tvbuff_t *tvb,
+#     const gint offset, const gint length);
+tvb_ensure_bytes_exist = libwireshark.tvb_ensure_bytes_exist
+tvb_ensure_bytes_exist.restype = None
+tvb_ensure_bytes_exist.argtypes = [POINTER(tvbuff_t), gint, gint]
+
+# gboolean tvb_offset_exists(const tvbuff_t *tvb,
+#     const gint offset);
+tvb_offset_exists = libwireshark.tvb_offset_exists
+tvb_offset_exists.restype = gboolean
+tvb_offset_exists.argtypes = [POINTER(tvbuff_t), gint]
+
+# guint tvb_reported_length(const tvbuff_t *tvb);
+tvb_reported_length = libwireshark.tvb_reported_length
+tvb_reported_length.restype = guint
+tvb_reported_length.argtypes = [POINTER(tvbuff_t)]
+
+# gint tvb_reported_length_remaining(const tvbuff_t *tvb,
+#     const gint offset);
+tvb_reported_length_remaining = libwireshark.tvb_reported_length_remaining
+tvb_reported_length_remaining.restype = gint
+tvb_reported_length_remaining.argtypes = [POINTER(tvbuff_t), gint]
+
+# void tvb_set_reported_length(tvbuff_t *tvb, const guint);
+tvb_set_reported_length = libwireshark.tvb_set_reported_length
+tvb_set_reported_length.restype = None
+tvb_set_reported_length.argtypes = [POINTER(tvbuff_t), guint]
+
+# guint tvb_offset_from_real_beginning(const tvbuff_t *tvb);
+tvb_offset_from_real_beginning = libwireshark.tvb_offset_from_real_beginning
+tvb_offset_from_real_beginning.restype = guint
+tvb_offset_from_real_beginning.argtypes = [POINTER(tvbuff_t)]
+
+# gint tvb_raw_offset(tvbuff_t *tvb);
+tvb_raw_offset = libwireshark.tvb_raw_offset
+tvb_raw_offset.restype = gint
+tvb_raw_offset.argtypes = [POINTER(tvbuff_t)]
+
+# void tvb_set_fragment(tvbuff_t *tvb);
+tvb_set_fragment = libwireshark.tvb_set_fragment
+tvb_set_fragment.restype = None
+tvb_set_fragment.argtypes = [POINTER(tvbuff_t)]
+
+# struct tvbuff *tvb_get_ds_tvb(tvbuff_t *tvb);
+tvb_get_ds_tvb = libwireshark.tvb_get_ds_tvb
+tvb_get_ds_tvb.restype = POINTER(tvbuff)
+tvb_get_ds_tvb.argtypes = [POINTER(tvbuff_t)]
+
+# guint8 tvb_get_guint8(tvbuff_t *tvb, const gint offset);
+tvb_get_guint8 = libwireshark.tvb_get_guint8
+tvb_get_guint8.restype = guint8
+tvb_get_guint8.argtypes = [POINTER(tvbuff_t), gint]
+
+# gint8 tvb_get_gint8(tvbuff_t *tvb, const gint offset);
+tvb_get_gint8 = libwireshark.tvb_get_gint8
+tvb_get_gint8.restype = gint8
+tvb_get_gint8.argtypes = [POINTER(tvbuff_t), gint]
+
+# guint16 tvb_get_ntohs(tvbuff_t *tvb, const gint offset);
+tvb_get_ntohs = libwireshark.tvb_get_ntohs
+tvb_get_ntohs.restype = guint16
+tvb_get_ntohs.argtypes = [POINTER(tvbuff_t), gint]
+
+# gint16 tvb_get_ntohis(tvbuff_t *tvb, const gint offset);
+tvb_get_ntohis = libwireshark.tvb_get_ntohis
+tvb_get_ntohis.restype = gint16
+tvb_get_ntohis.argtypes = [POINTER(tvbuff_t), gint]
+
+# guint32 tvb_get_ntoh24(tvbuff_t *tvb, const gint offset);
+tvb_get_ntoh24 = libwireshark.tvb_get_ntoh24
+tvb_get_ntoh24.restype = guint32
+tvb_get_ntoh24.argtypes = [POINTER(tvbuff_t), gint]
+
+# gint32 tvb_get_ntohi24(tvbuff_t *tvb, const gint offset);
+tvb_get_ntohi24 = libwireshark.tvb_get_ntohi24
+tvb_get_ntohi24.restype = gint32
+tvb_get_ntohi24.argtypes = [POINTER(tvbuff_t), gint]
+
+# guint32 tvb_get_ntohl(tvbuff_t *tvb, const gint offset);
+tvb_get_ntohl = libwireshark.tvb_get_ntohl
+tvb_get_ntohl.restype = guint32
+tvb_get_ntohl.argtypes = [POINTER(tvbuff_t), gint]
+
+# gint32 tvb_get_ntohil(tvbuff_t *tvb, const gint offset);
+tvb_get_ntohil = libwireshark.tvb_get_ntohil
+tvb_get_ntohil.restype = gint32
+tvb_get_ntohil.argtypes = [POINTER(tvbuff_t), gint]
+
+# guint64 tvb_get_ntoh40(tvbuff_t *tvb, const gint offset);
+tvb_get_ntoh40 = libwireshark.tvb_get_ntoh40
+tvb_get_ntoh40.restype = guint64
+tvb_get_ntoh40.argtypes = [POINTER(tvbuff_t), gint]
+
+# gint64 tvb_get_ntohi40(tvbuff_t *tvb, const gint offset);
+tvb_get_ntohi40 = libwireshark.tvb_get_ntohi40
+tvb_get_ntohi40.restype = gint64
+tvb_get_ntohi40.argtypes = [POINTER(tvbuff_t), gint]
+
+# guint64 tvb_get_ntoh48(tvbuff_t *tvb, const gint offset);
+tvb_get_ntoh48 = libwireshark.tvb_get_ntoh48
+tvb_get_ntoh48.restype = guint64
+tvb_get_ntoh48.argtypes = [POINTER(tvbuff_t), gint]
+
+# gint64 tvb_get_ntohi48(tvbuff_t *tvb, const gint offset);
+tvb_get_ntohi48 = libwireshark.tvb_get_ntohi48
+tvb_get_ntohi48.restype = gint64
+tvb_get_ntohi48.argtypes = [POINTER(tvbuff_t), gint]
+
+# guint64 tvb_get_ntoh56(tvbuff_t *tvb, const gint offset);
+tvb_get_ntoh56 = libwireshark.tvb_get_ntoh56
+tvb_get_ntoh56.restype = guint64
+tvb_get_ntoh56.argtypes = [POINTER(tvbuff_t), gint]
+
+# gint64 tvb_get_ntohi56(tvbuff_t *tvb, const gint offset);
+tvb_get_ntohi56 = libwireshark.tvb_get_ntohi56
+tvb_get_ntohi56.restype = gint64
+tvb_get_ntohi56.argtypes = [POINTER(tvbuff_t), gint]
+
+# guint64 tvb_get_ntoh64(tvbuff_t *tvb, const gint offset);
+tvb_get_ntoh64 = libwireshark.tvb_get_ntoh64
+tvb_get_ntoh64.restype = guint64
+tvb_get_ntoh64.argtypes = [POINTER(tvbuff_t), gint]
+
+# gint64 tvb_get_ntohi64(tvbuff_t *tvb, const gint offset);
+tvb_get_ntohi64 = libwireshark.tvb_get_ntohi64
+tvb_get_ntohi64.restype = gint64
+tvb_get_ntohi64.argtypes = [POINTER(tvbuff_t), gint]
+
+# gfloat tvb_get_ntohieee_float(tvbuff_t *tvb, const gint offset);
+tvb_get_ntohieee_float = libwireshark.tvb_get_ntohieee_float
+tvb_get_ntohieee_float.restype = gfloat
+tvb_get_ntohieee_float.argtypes = [POINTER(tvbuff_t), gint]
+
+# gdouble tvb_get_ntohieee_double(tvbuff_t *tvb,
+#     const gint offset);
+tvb_get_ntohieee_double = libwireshark.tvb_get_ntohieee_double
+tvb_get_ntohieee_double.restype = gdouble
+tvb_get_ntohieee_double.argtypes = [POINTER(tvbuff_t), gint]
+
+# guint16 tvb_get_letohs(tvbuff_t *tvb, const gint offset);
+tvb_get_letohs = libwireshark.tvb_get_letohs
+tvb_get_letohs.restype = guint16
+tvb_get_letohs.argtypes = [POINTER(tvbuff_t), gint]
+
+# gint16 tvb_get_letohis(tvbuff_t *tvb, const gint offset);
+tvb_get_letohis = libwireshark.tvb_get_letohis
+tvb_get_letohis.restype = gint16
+tvb_get_letohis.argtypes = [POINTER(tvbuff_t), gint]
+
+# guint32 tvb_get_letoh24(tvbuff_t *tvb, const gint offset);
+tvb_get_letoh24 = libwireshark.tvb_get_letoh24
+tvb_get_letoh24.restype = guint32
+tvb_get_letoh24.argtypes = [POINTER(tvbuff_t), gint]
+
+# gint32 tvb_get_letohi24(tvbuff_t *tvb, const gint offset);
+tvb_get_letohi24 = libwireshark.tvb_get_letohi24
+tvb_get_letohi24.restype = gint32
+tvb_get_letohi24.argtypes = [POINTER(tvbuff_t), gint]
+
+# guint32 tvb_get_letohl(tvbuff_t *tvb, const gint offset);
+tvb_get_letohl = libwireshark.tvb_get_letohl
+tvb_get_letohl.restype = guint32
+tvb_get_letohl.argtypes = [POINTER(tvbuff_t), gint]
+
+# gint32 tvb_get_letohil(tvbuff_t *tvb, const gint offset);
+tvb_get_letohil = libwireshark.tvb_get_letohil
+tvb_get_letohil.restype = gint32
+tvb_get_letohil.argtypes = [POINTER(tvbuff_t), gint]
+
+# guint64 tvb_get_letoh40(tvbuff_t *tvb, const gint offset);
+tvb_get_letoh40 = libwireshark.tvb_get_letoh40
+tvb_get_letoh40.restype = guint64
+tvb_get_letoh40.argtypes = [POINTER(tvbuff_t), gint]
+
+# gint64 tvb_get_letohi40(tvbuff_t *tvb, const gint offset);
+tvb_get_letohi40 = libwireshark.tvb_get_letohi40
+tvb_get_letohi40.restype = gint64
+tvb_get_letohi40.argtypes = [POINTER(tvbuff_t), gint]
+
+# guint64 tvb_get_letoh48(tvbuff_t *tvb, const gint offset);
+tvb_get_letoh48 = libwireshark.tvb_get_letoh48
+tvb_get_letoh48.restype = guint64
+tvb_get_letoh48.argtypes = [POINTER(tvbuff_t), gint]
+
+# gint64 tvb_get_letohi48(tvbuff_t *tvb, const gint offset);
+tvb_get_letohi48 = libwireshark.tvb_get_letohi48
+tvb_get_letohi48.restype = gint64
+tvb_get_letohi48.argtypes = [POINTER(tvbuff_t), gint]
+
+# guint64 tvb_get_letoh56(tvbuff_t *tvb, const gint offset);
+tvb_get_letoh56 = libwireshark.tvb_get_letoh56
+tvb_get_letoh56.restype = guint64
+tvb_get_letoh56.argtypes = [POINTER(tvbuff_t), gint]
+
+# gint64 tvb_get_letohi56(tvbuff_t *tvb, const gint offset);
+tvb_get_letohi56 = libwireshark.tvb_get_letohi56
+tvb_get_letohi56.restype = gint64
+tvb_get_letohi56.argtypes = [POINTER(tvbuff_t), gint]
+
+# guint64 tvb_get_letoh64(tvbuff_t *tvb, const gint offset);
+tvb_get_letoh64 = libwireshark.tvb_get_letoh64
+tvb_get_letoh64.restype = guint64
+tvb_get_letoh64.argtypes = [POINTER(tvbuff_t), gint]
+
+# gint64 tvb_get_letohi64(tvbuff_t *tvb, const gint offset);
+tvb_get_letohi64 = libwireshark.tvb_get_letohi64
+tvb_get_letohi64.restype = gint64
+tvb_get_letohi64.argtypes = [POINTER(tvbuff_t), gint]
+
+# gfloat tvb_get_letohieee_float(tvbuff_t *tvb, const gint offset);
+tvb_get_letohieee_float = libwireshark.tvb_get_letohieee_float
+tvb_get_letohieee_float.restype = gfloat
+tvb_get_letohieee_float.argtypes = [POINTER(tvbuff_t), gint]
+
+# gdouble tvb_get_letohieee_double(tvbuff_t *tvb,
+#     const gint offset);
+tvb_get_letohieee_double = libwireshark.tvb_get_letohieee_double
+tvb_get_letohieee_double.restype = gdouble
+tvb_get_letohieee_double.argtypes = [POINTER(tvbuff_t), gint]
+
+# guint16 tvb_get_guint16(tvbuff_t *tvb, const gint offset, const guint
+# encoding);
+tvb_get_guint16 = libwireshark.tvb_get_guint16
+tvb_get_guint16.restype = guint16
+tvb_get_guint16.argtypes = [POINTER(tvbuff_t), gint, guint]
+
+# gint16 tvb_get_gint16(tvbuff_t *tvb, const gint offset, const guint
+# encoding);
+tvb_get_gint16 = libwireshark.tvb_get_gint16
+tvb_get_gint16.restype = gint16
+tvb_get_gint16.argtypes = [POINTER(tvbuff_t), gint, guint]
+
+# guint32 tvb_get_guint24(tvbuff_t *tvb, const gint offset, const guint
+# encoding);
+tvb_get_guint24 = libwireshark.tvb_get_guint24
+tvb_get_guint24.restype = guint32
+tvb_get_guint24.argtypes = [POINTER(tvbuff_t), gint, guint]
+
+# gint32 tvb_get_gint24(tvbuff_t *tvb, const gint offset, const guint
+# encoding);
+tvb_get_gint24 = libwireshark.tvb_get_gint24
+tvb_get_gint24.restype = gint32
+tvb_get_gint24.argtypes = [POINTER(tvbuff_t), gint, guint]
+
+# guint32 tvb_get_guint32(tvbuff_t *tvb, const gint offset, const guint
+# encoding);
+tvb_get_guint32 = libwireshark.tvb_get_guint32
+tvb_get_guint32.restype = guint32
+tvb_get_guint32.argtypes = [POINTER(tvbuff_t), gint, guint]
+
+# gint32 tvb_get_gint32(tvbuff_t *tvb, const gint offset, const guint
+# encoding);
+tvb_get_gint32 = libwireshark.tvb_get_gint32
+tvb_get_gint32.restype = gint32
+tvb_get_gint32.argtypes = [POINTER(tvbuff_t), gint, guint]
+
+# guint64 tvb_get_guint40(tvbuff_t *tvb, const gint offset, const guint
+# encoding);
+tvb_get_guint40 = libwireshark.tvb_get_guint40
+tvb_get_guint40.restype = guint64
+tvb_get_guint40.argtypes = [POINTER(tvbuff_t), gint, guint]
+
+# gint64 tvb_get_gint40(tvbuff_t *tvb, const gint offset, const guint
+# encoding);
+tvb_get_gint40 = libwireshark.tvb_get_gint40
+tvb_get_gint40.restype = gint64
+tvb_get_gint40.argtypes = [POINTER(tvbuff_t), gint, guint]
+
+# guint64 tvb_get_guint48(tvbuff_t *tvb, const gint offset, const guint
+# encoding);
+tvb_get_guint48 = libwireshark.tvb_get_guint48
+tvb_get_guint48.restype = guint64
+tvb_get_guint48.argtypes = [POINTER(tvbuff_t), gint, guint]
+
+# gint64 tvb_get_gint48(tvbuff_t *tvb, const gint offset, const guint
+# encoding);
+tvb_get_gint48 = libwireshark.tvb_get_gint48
+tvb_get_gint48.restype = gint64
+tvb_get_gint48.argtypes = [POINTER(tvbuff_t), gint, guint]
+
+# guint64 tvb_get_guint56(tvbuff_t *tvb, const gint offset, const guint
+# encoding);
+tvb_get_guint56 = libwireshark.tvb_get_guint56
+tvb_get_guint56.restype = guint64
+tvb_get_guint56.argtypes = [POINTER(tvbuff_t), gint, guint]
+
+# gint64 tvb_get_gint56(tvbuff_t *tvb, const gint offset, const guint
+# encoding);
+tvb_get_gint56 = libwireshark.tvb_get_gint56
+tvb_get_gint56.restype = gint64
+tvb_get_gint56.argtypes = [POINTER(tvbuff_t), gint, guint]
+
+# guint64 tvb_get_guint64(tvbuff_t *tvb, const gint offset, const guint
+# encoding);
+tvb_get_guint64 = libwireshark.tvb_get_guint64
+tvb_get_guint64.restype = guint64
+tvb_get_guint64.argtypes = [POINTER(tvbuff_t), gint, guint]
+
+# gint64 tvb_get_gint64(tvbuff_t *tvb, const gint offset, const guint
+# encoding);
+tvb_get_gint64 = libwireshark.tvb_get_gint64
+tvb_get_gint64.restype = gint64
+tvb_get_gint64.argtypes = [POINTER(tvbuff_t), gint, guint]
+
+# gfloat tvb_get_ieee_float(tvbuff_t *tvb, const gint offset, const guint
+# encoding);
+tvb_get_ieee_float = libwireshark.tvb_get_ieee_float
+tvb_get_ieee_float.restype = gfloat
+tvb_get_ieee_float.argtypes = [POINTER(tvbuff_t), gint, guint]
+
+# gdouble tvb_get_ieee_double(tvbuff_t *tvb, const gint offset, const
+# guint encoding);
+tvb_get_ieee_double = libwireshark.tvb_get_ieee_double
+tvb_get_ieee_double.restype = gdouble
+tvb_get_ieee_double.argtypes = [POINTER(tvbuff_t), gint, guint]
+
+# #if G_BYTE_ORDER == G_LITTLE_ENDIAN
+if sys.byteorder == 'little':
+    # #define tvb_get_h_guint16   tvb_get_letohs
+    tvb_get_h_guint16 = tvb_get_letohs
+
+    # #define tvb_get_h_guint32   tvb_get_letohl
+    tvb_get_h_guint32 = tvb_get_letohl
+
+# #elif G_BYTE_ORDER == G_BIG_ENDIAN
+elif sys.byteorder == 'big':
+    # #define tvb_get_h_guint16   tvb_get_ntohs
+    tvb_get_h_guint16 = tvb_get_ntohs
+
+    # #define tvb_get_h_guint32   tvb_get_ntohl
+    tvb_get_h_guint32 = tvb_get_ntohl
+
+
+# nstime_t* tvb_get_string_time(tvbuff_t *tvb, const gint offset, const gint length,
+# const guint encoding, nstime_t* ns, gint *endoff);
+tvb_get_string_time = libwireshark.tvb_get_string_time
+tvb_get_string_time.restype = POINTER(nstime_t)
+tvb_get_string_time.argtypes = [POINTER(tvbuff_t),
+                                gint,
+                                gint,
+                                guint,
+                                POINTER(nstime_t),
+                                POINTER(gint)]
+
+# GByteArray* tvb_get_string_bytes(tvbuff_t *tvb, const gint offset, const gint length,
+# const guint encoding, GByteArray* bytes, gint *endoff);
+tvb_get_string_bytes = libwireshark.tvb_get_string_bytes
+tvb_get_string_bytes.restype = POINTER(GByteArray)
+tvb_get_string_bytes.argtypes = [POINTER(tvbuff_t),
+                                 gint,
+                                 gint,
+                                 guint,
+                                 POINTER(GByteArray),
+                                 POINTER(gint)]
+
+# guint32 tvb_get_ipv4(tvbuff_t *tvb, const gint offset);
+tvb_get_ipv4 = libwireshark.tvb_get_ipv4
+tvb_get_ipv4.restype = guint32
+tvb_get_ipv4.argtypes = [POINTER(tvbuff_t), gint]
+
+# void tvb_get_ipv6(tvbuff_t *tvb, const gint offset,
+#     ws_in6_addr *addr);
+tvb_get_ipv6 = libwireshark.tvb_get_ipv6
+tvb_get_ipv6.restype = None
+tvb_get_ipv6.argtypes = [POINTER(tvbuff_t), gint, POINTER(ws_in6_addr)]
+
+# void tvb_get_ntohguid(tvbuff_t *tvb, const gint offset,
+#     e_guid_t *guid);
+tvb_get_ntohguid = libwireshark.tvb_get_ntohguid
+tvb_get_ntohguid.restype = None
+tvb_get_ntohguid.argtypes = [POINTER(tvbuff_t), gint, POINTER(e_guid_t)]
+
+# void tvb_get_letohguid(tvbuff_t *tvb, const gint offset,
+#     e_guid_t *guid);
+tvb_get_letohguid = libwireshark.tvb_get_letohguid
+tvb_get_letohguid.restype = None
+tvb_get_letohguid.argtypes = [POINTER(tvbuff_t), gint, POINTER(e_guid_t)]
+
+# void tvb_get_guid(tvbuff_t *tvb, const gint offset,
+#     e_guid_t *guid, const guint encoding);
+tvb_get_guid = libwireshark.tvb_get_guid
+tvb_get_guid.restype = None
+tvb_get_guid.argtypes = [POINTER(tvbuff_t),
+                         gint,
+                         POINTER(e_guid_t),
+                         guint]
+
+# guint8 tvb_get_bits8(tvbuff_t *tvb, guint bit_offset,
+#     const gint no_of_bits);
+tvb_get_bits8 = libwireshark.tvb_get_bits8
+tvb_get_bits8.restype = guint8
+tvb_get_bits8.argtypes = [POINTER(tvbuff_t), guint, gint]
+
+# guint16 tvb_get_bits16(tvbuff_t *tvb, guint bit_offset,
+#     const gint no_of_bits, const guint encoding);
+tvb_get_bits16 = libwireshark.tvb_get_bits16
+tvb_get_bits16.restype = guint16
+tvb_get_bits16.argtypes = [POINTER(tvbuff_t),
+                           guint,
+                           gint,
+                           guint]
+
+# guint32 tvb_get_bits32(tvbuff_t *tvb, guint bit_offset,
+#     const gint no_of_bits, const guint encoding);
+tvb_get_bits32 = libwireshark.tvb_get_bits32
+tvb_get_bits32.restype = guint32
+tvb_get_bits32.argtypes = [POINTER(tvbuff_t),
+                           guint,
+                           gint,
+                           guint]
+
+# guint64 tvb_get_bits64(tvbuff_t *tvb, guint bit_offset,
+#     const gint no_of_bits, const guint encoding);
+tvb_get_bits64 = libwireshark.tvb_get_bits64
+tvb_get_bits64.restype = guint64
+tvb_get_bits64.argtypes = [POINTER(tvbuff_t),
+                           guint,
+                           gint,
+                           guint]
+
+# guint32 tvb_get_bits(tvbuff_t *tvb, const guint bit_offset,
+#     const gint no_of_bits, const guint encoding);
+tvb_get_bits = libwireshark.tvb_get_bits
+tvb_get_bits.restype = guint32
+tvb_get_bits.argtypes = [POINTER(tvbuff_t), guint, gint, guint]
+
+# void *tvb_memcpy(tvbuff_t *tvb, void *target, const gint offset,
+#     size_t length);
+tvb_memcpy = libwireshark.tvb_memcpy
+tvb_memcpy.restype = c_void_p
+tvb_memcpy.argtypes = [POINTER(tvbuff_t), c_void_p, gint, c_size_t]
+
+# void *tvb_memdup(wmem_allocator_t *scope, tvbuff_t *tvb,
+#     const gint offset, size_t length);
+tvb_memdup = libwireshark.tvb_memdup
+tvb_memdup.restype = c_void_p
+tvb_memdup.argtypes = [POINTER(wmem_allocator_t),
+                       POINTER(tvbuff_t),
+                       gint,
+                       c_size_t]
+
+# const guint8 *tvb_get_ptr(tvbuff_t *tvb, const gint offset,
+#     const gint length);
+tvb_get_ptr = libwireshark.tvb_get_ptr
+tvb_get_ptr.restype = POINTER(guint8)
+tvb_get_ptr.argtypes = [POINTER(tvbuff_t), gint, gint]
+
+# gint tvb_find_guint8(tvbuff_t *tvb, const gint offset,
+#     const gint maxlength, const guint8 needle);
+tvb_find_guint8 = libwireshark.tvb_find_guint8
+tvb_find_guint8.restype = gint
+tvb_find_guint8.argtypes = [POINTER(tvbuff_t), gint, gint, guint8]
+
+# gint tvb_find_guint16(tvbuff_t *tvb, const gint offset,
+#     const gint maxlength, const guint16 needle);
+tvb_find_guint16 = libwireshark.tvb_find_guint16
+tvb_find_guint16.restype = gint
+tvb_find_guint16.argtypes = [POINTER(tvbuff_t), gint, gint, guint16]
+
+# gint tvb_ws_mempbrk_pattern_guint8(tvbuff_t *tvb, const gint offset,
+# const gint maxlength, const ws_mempbrk_pattern* pattern, guchar
+# *found_needle);
+tvb_ws_mempbrk_pattern_guint8 = libwireshark.tvb_ws_mempbrk_pattern_guint8
+tvb_ws_mempbrk_pattern_guint8.restype = gint
+tvb_ws_mempbrk_pattern_guint8.argtypes = [POINTER(tvbuff_t),
+                                          gint,
+                                          gint,
+                                          POINTER(ws_mempbrk_pattern),
+                                          POINTER(guchar)]
+
+# guint tvb_strsize(tvbuff_t *tvb, const gint offset);
+tvb_strsize = libwireshark.tvb_strsize
+tvb_strsize.restype = guint
+tvb_strsize.argtypes = [POINTER(tvbuff_t), gint]
+
+# guint tvb_unicode_strsize(tvbuff_t *tvb, const gint offset);
+tvb_unicode_strsize = libwireshark.tvb_unicode_strsize
+tvb_unicode_strsize.restype = guint
+tvb_unicode_strsize.argtypes = [POINTER(tvbuff_t), gint]
+
+# gint tvb_strnlen(tvbuff_t *tvb, const gint offset,
+#     const guint maxlength);
+tvb_strnlen = libwireshark.tvb_strnlen
+tvb_strnlen.restype = gint
+tvb_strnlen.argtypes = [POINTER(tvbuff_t), gint, guint]
+
+# gchar *tvb_format_text(tvbuff_t *tvb, const gint offset,
+#     const gint size);
+tvb_format_text = libwireshark.tvb_format_text
+tvb_format_text.restype = gchar_p
+tvb_format_text.argtypes = [POINTER(tvbuff_t), gint, gint]
+
+# gchar *tvb_format_text_wsp(wmem_allocator_t* allocator, tvbuff_t *tvb, const gint offset,
+#     const gint size);
+tvb_format_text_wsp = libwireshark.tvb_format_text_wsp
+tvb_format_text_wsp.restype = gchar_p
+tvb_format_text_wsp.argtypes = [POINTER(wmem_allocator_t),
+                                POINTER(tvbuff_t),
+                                gint,
+                                gint]
+
+# guint8 *tvb_get_string_enc(wmem_allocator_t *scope,
+# tvbuff_t *tvb, const gint offset, const gint length, const guint
+# encoding);
+tvb_get_string_enc = libwireshark.tvb_get_string_enc
+tvb_get_string_enc.restype = POINTER(guint8)
+tvb_get_string_enc.argtypes = [POINTER(wmem_allocator_t),
+                               POINTER(tvbuff_t),
+                               gint,
+                               gint,
+                               guint]
+
+# gchar *tvb_get_ts_23_038_7bits_string(wmem_allocator_t *scope,
+#     tvbuff_t *tvb, const gint bit_offset, gint no_of_chars);
+tvb_get_ts_23_038_7bits_string = libwireshark.tvb_get_ts_23_038_7bits_string
+tvb_get_ts_23_038_7bits_string.restype = gchar_p
+tvb_get_ts_23_038_7bits_string.argtypes = [POINTER(wmem_allocator_t),
+                                           POINTER(tvbuff_t),
+                                           gint,
+                                           gint]
+
+# gchar *tvb_get_ascii_7bits_string(wmem_allocator_t *scope,
+#     tvbuff_t *tvb, const gint bit_offset, gint no_of_chars);
+tvb_get_ascii_7bits_string = libwireshark.tvb_get_ascii_7bits_string
+tvb_get_ascii_7bits_string.restype = gchar_p
+tvb_get_ascii_7bits_string.argtypes = [POINTER(wmem_allocator_t),
+                                       POINTER(tvbuff_t),
+                                       gint,
+                                       gint]
+
+# guint8 *tvb_get_stringzpad(wmem_allocator_t *scope,
+# tvbuff_t *tvb, const gint offset, const gint length, const guint
+# encoding);
+tvb_get_stringzpad = libwireshark.tvb_get_stringzpad
+tvb_get_stringzpad.restype = POINTER(guint8)
+tvb_get_stringzpad.argtypes = [POINTER(wmem_allocator_t),
+                               POINTER(tvbuff_t),
+                               gint,
+                               gint,
+                               guint]
+
+# guint8 *tvb_get_stringz_enc(wmem_allocator_t *scope,
+#     tvbuff_t *tvb, const gint offset, gint *lengthp, const guint encoding);
+tvb_get_stringz_enc = libwireshark.tvb_get_stringz_enc
+tvb_get_stringz_enc.restype = POINTER(guint8)
+tvb_get_stringz_enc.argtypes = [POINTER(wmem_allocator_t),
+                                POINTER(tvbuff_t),
+                                gint,
+                                POINTER(gint),
+                                guint]
+
+# const guint8 *tvb_get_const_stringz(tvbuff_t *tvb,
+#     const gint offset, gint *lengthp);
+tvb_get_const_stringz = libwireshark.tvb_get_const_stringz
+tvb_get_const_stringz.restype = POINTER(guint8)
+tvb_get_const_stringz.argtypes = [POINTER(tvbuff_t), gint, POINTER(gint)]
+
+# gint tvb_get_nstringz(tvbuff_t *tvb, const gint offset,
+#     const guint bufsize, guint8 *buffer);
+tvb_get_nstringz = libwireshark.tvb_get_nstringz
+tvb_get_nstringz.restype = gint
+tvb_get_nstringz.argtypes = [POINTER(tvbuff_t), gint, guint, POINTER(guint8)]
+
+# gint tvb_get_nstringz0(tvbuff_t *tvb, const gint offset,
+#     const guint bufsize, guint8 *buffer);
+tvb_get_nstringz0 = libwireshark.tvb_get_nstringz0
+tvb_get_nstringz0.restype = gint
+tvb_get_nstringz0.argtypes = [POINTER(tvbuff_t),
+                              gint,
+                              guint,
+                              POINTER(guint8)]
+
+# gint tvb_get_raw_bytes_as_string(tvbuff_t *tvb, const gint offset, char
+# *buffer, size_t bufsize);
+tvb_get_raw_bytes_as_string = libwireshark.tvb_get_raw_bytes_as_string
+tvb_get_raw_bytes_as_string.restype = gint
+tvb_get_raw_bytes_as_string.argtypes = [POINTER(tvbuff_t),
+                                        gint,
+                                        c_char_p,
+                                        c_size_t]
+
+# gboolean tvb_ascii_isprint(tvbuff_t *tvb, const gint offset,
+# 	const gint length);
+tvb_ascii_isprint = libwireshark.tvb_ascii_isprint
+tvb_ascii_isprint.restype = gboolean
+tvb_ascii_isprint.argtypes = [POINTER(tvbuff_t),
+                              gint,
+                              gint]
+
+# gint tvb_find_line_end(tvbuff_t *tvb, const gint offset, int len,
+#     gint *next_offset, const gboolean desegment);
+tvb_find_line_end = libwireshark.tvb_find_line_end
+tvb_find_line_end.restype = gint
+tvb_find_line_end.argtypes = [POINTER(tvbuff_t),
+                              gint,
+                              c_int,
+                              POINTER(gint),
+                              gboolean]
+
+# gint tvb_find_line_end_unquoted(tvbuff_t *tvb, const gint offset,
+#     int len, gint *next_offset);
+tvb_find_line_end_unquoted = libwireshark.tvb_find_line_end_unquoted
+tvb_find_line_end_unquoted.restype = gint
+tvb_find_line_end_unquoted.argtypes = [POINTER(tvbuff_t),
+                                       gint,
+                                       c_int,
+                                       POINTER(gint)]
+
+# gint tvb_skip_wsp(tvbuff_t *tvb, const gint offset,
+#     const gint maxlength);
+tvb_skip_wsp = libwireshark.tvb_skip_wsp
+tvb_skip_wsp.restype = gint
+tvb_skip_wsp.argtypes = [POINTER(tvbuff_t),
+                         gint,
+                         gint]
+
+# gint tvb_skip_wsp_return(tvbuff_t *tvb, const gint offset);
+tvb_skip_wsp_return = libwireshark.tvb_skip_wsp_return
+tvb_skip_wsp_return.restype = gint
+tvb_skip_wsp_return.argtypes = [POINTER(tvbuff_t), gint]
+
+# int tvb_get_token_len(tvbuff_t *tvb, const gint offset, int len, gint
+# *next_offset, const gboolean desegment);
+tvb_get_token_len = libwireshark.tvb_get_token_len
+tvb_get_token_len.restype = c_int
+tvb_get_token_len.argtypes = [POINTER(tvbuff_t),
+                              gint,
+                              c_int,
+                              POINTER(gint),
+                              gboolean]
+
+# gint tvb_strneql(tvbuff_t *tvb, const gint offset,
+#     const gchar *str, const size_t size);
+tvb_strneql = libwireshark.tvb_strneql
+tvb_strneql.restype = gint
+tvb_strneql.argtypes = [POINTER(tvbuff_t),
+                        gint,
+                        gchar_p,
+                        c_size_t]
+
+# gint tvb_strncaseeql(tvbuff_t *tvb, const gint offset,
+#     const gchar *str, const size_t size);
+tvb_strncaseeql = libwireshark.tvb_strncaseeql
+tvb_strncaseeql.restype = gint
+tvb_strncaseeql.argtypes = [POINTER(tvbuff_t),
+                            gint,
+                            gchar_p,
+                            c_size_t]
+
+# gint tvb_memeql(tvbuff_t *tvb, const gint offset,
+#     const guint8 *str, size_t size);
+tvb_memeql = libwireshark.tvb_memeql
+tvb_memeql.restype = gint
+tvb_memeql.argtypes = [POINTER(tvbuff_t),
+                       gint,
+                       POINTER(guint8),
+                       c_size_t]
+
+# gchar *tvb_bytes_to_str_punct(wmem_allocator_t *scope, tvbuff_t *tvb, const gint offset,
+#     const gint len, const gchar punct);
+tvb_bytes_to_str_punct = libwireshark.tvb_bytes_to_str_punct
+tvb_bytes_to_str_punct.restype = gchar_p
+tvb_bytes_to_str_punct.argtypes = [POINTER(wmem_allocator_t),
+                                   POINTER(tvbuff_t),
+                                   gint,
+                                   gint,
+                                   gchar]
+
+# gchar *tvb_bytes_to_str(wmem_allocator_t *allocator, tvbuff_t *tvb,
+#     const gint offset, const gint len);
+tvb_bytes_to_str = libwireshark.tvb_bytes_to_str
+tvb_bytes_to_str.restype = gchar_p
+tvb_bytes_to_str.argtypes = [POINTER(wmem_allocator_t),
+                             POINTER(tvbuff_t),
+                             gint,
+                             gint]
+
+
+# typedef struct dgt_set_t {
+#     const unsigned char out[16];
+# } dgt_set_t;
+class dgt_set_t(Structure):
+    _fields_ = [('out', c_char * 16)]
+
+
+# const gchar *tvb_bcd_dig_to_wmem_packet_str(tvbuff_t *tvb,
+#     const gint offset, const gint len, const dgt_set_t *dgt,
+#     gboolean skip_first);
+tvb_bcd_dig_to_wmem_packet_str = libwireshark.tvb_bcd_dig_to_wmem_packet_str
+tvb_bcd_dig_to_wmem_packet_str.restype = gchar_p
+tvb_bcd_dig_to_wmem_packet_str.argtypes = [POINTER(tvbuff_t),
+                                           gint,
+                                           gint,
+                                           POINTER(dgt_set_t),
+                                           gboolean]
+
+# gint tvb_find_tvb(tvbuff_t *haystack_tvb, tvbuff_t *needle_tvb,
+#     const gint haystack_offset);
+tvb_find_tvb = libwireshark.tvb_find_tvb
+tvb_find_tvb.restype = gint
+tvb_find_tvb.argtypes = [POINTER(tvbuff_t),
+                         POINTER(tvbuff_t),
+                         gint]
+
+# tvbuff_t *tvb_uncompress(tvbuff_t *tvb, const int offset,
+#     int comprlen);
+tvb_uncompress = libwireshark.tvb_uncompress
+tvb_uncompress.restype = POINTER(tvbuff_t)
+tvb_uncompress.argtypes = [POINTER(tvbuff_t), c_int, c_int]
+
+# tvbuff_t *tvb_child_uncompress(tvbuff_t *parent, tvbuff_t *tvb,
+#     const int offset, int comprlen);
+tvb_child_uncompress = libwireshark.tvb_child_uncompress
+tvb_child_uncompress.restype = POINTER(tvbuff_t)
+tvb_child_uncompress.argtypes = [POINTER(tvbuff_t),
+                                 POINTER(tvbuff_t),
+                                 c_int,
+                                 c_int]
+
+# tvbuff_t *tvb_uncompress_brotli(tvbuff_t *tvb, const int offset,
+#     int comprlen);
+tvb_uncompress_brotli = libwireshark.tvb_uncompress_brotli
+tvb_uncompress_brotli.restype = POINTER(tvbuff_t)
+tvb_uncompress_brotli.argtypes = [POINTER(tvbuff_t), c_int, c_int]
+
+# tvbuff_t *tvb_child_uncompress_brotli(tvbuff_t *parent, tvbuff_t *tvb,
+#     const int offset, int comprlen);
+tvb_child_uncompress_brotli = libwireshark.tvb_child_uncompress_brotli
+tvb_child_uncompress_brotli.restype = POINTER(tvbuff_t)
+tvb_child_uncompress_brotli.argtypes = [POINTER(tvbuff_t),
+                                        POINTER(tvbuff_t),
+                                        c_int,
+                                        c_int]
+
+# tvbuff_t *tvb_uncompress_lz77(tvbuff_t *tvb,
+#     const int offset, int comprlen);
+tvb_uncompress_lz77 = libwireshark.tvb_uncompress_lz77
+tvb_uncompress_lz77.restype = POINTER(tvbuff_t)
+tvb_uncompress_lz77.argtypes = [POINTER(tvbuff_t), c_int, c_int]
+
+# tvbuff_t *tvb_child_uncompress_lz77(tvbuff_t *parent,
+#      tvbuff_t *tvb, const int offset, int comprlen);
+tvb_child_uncompress_lz77 = libwireshark.tvb_child_uncompress_lz77
+tvb_child_uncompress_lz77.restype = POINTER(tvbuff_t)
+tvb_child_uncompress_lz77.argtypes = [POINTER(tvbuff_t),
+                                      POINTER(tvbuff_t),
+                                      c_int,
+                                      c_int]
+
+# tvbuff_t *tvb_uncompress_lz77huff(tvbuff_t *tvb,
+#     const int offset, int comprlen);
+tvb_uncompress_lz77huff = libwireshark.tvb_uncompress_lz77huff
+tvb_uncompress_lz77huff.restype = POINTER(tvbuff_t)
+tvb_uncompress_lz77huff.argtypes = [POINTER(tvbuff_t), c_int, c_int]
+
+# tvbuff_t *tvb_child_uncompress_lz77huff(tvbuff_t *parent,
+#     tvbuff_t *tvb, const int offset, int comprlen);
+tvb_child_uncompress_lz77huff = libwireshark.tvb_child_uncompress_lz77huff
+tvb_child_uncompress_lz77huff.restype = POINTER(tvbuff_t)
+tvb_child_uncompress_lz77huff.argtypes = [POINTER(tvbuff_t),
+                                          POINTER(tvbuff_t),
+                                          c_int,
+                                          c_int]
+
+# tvbuff_t *tvb_uncompress_lznt1(tvbuff_t *tvb,
+#     const int offset, int comprlen);
+tvb_uncompress_lznt1 = libwireshark.tvb_uncompress_lznt1
+tvb_uncompress_lznt1.restype = POINTER(tvbuff_t)
+tvb_uncompress_lznt1.argtypes = [POINTER(tvbuff_t), c_int, c_int]
+
+# tvbuff_t *tvb_child_uncompress_lznt1(tvbuff_t *parent,
+#     tvbuff_t *tvb, const int offset, int comprlen);
+tvb_child_uncompress_lznt1 = libwireshark.tvb_child_uncompress_lznt1
+tvb_child_uncompress_lznt1.restype = POINTER(tvbuff_t)
+tvb_child_uncompress_lznt1.argtypes = [POINTER(tvbuff_t),
+                                       POINTER(tvbuff_t),
+                                       c_int,
+                                       c_int]
+
+# guint tvb_get_varint(tvbuff_t *tvb, guint offset, guint maxlen, guint64
+# *value, const guint encoding);
+tvb_get_varint = libwireshark.tvb_get_varint
+tvb_get_varint.restype = guint
+tvb_get_varint.argtypes = [POINTER(tvbuff_t),
+                           guint,
+                           POINTER(guint64),
+                           guint]
