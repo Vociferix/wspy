@@ -69,10 +69,11 @@ def wmem_new(allocator, type):
 # #define wmem_safe_mult(A, B) \
 #     ((((A) <= 0) || ((B) <= 0) || ((gsize)(A) > (G_MAXSSIZE / (gsize)(B)))) ? 0 : ((A) * (B)))
 def wmem_safe_mult(A, B):
-    if A <= 0 or B <= 0 or cast(A, gsize) > ~(gsize(0) / cast(B, gisize)):
-        return 0
+    if A.value <= 0 or B.value <= 0 or A.value > gsize(
+            ~(gsize(0).value)).value / B.value:
+        return gsize(0)
     else:
-        return A * B
+        return gsize(A.value * B.value)
 
 
 # #define wmem_alloc_array(allocator, type, num) \

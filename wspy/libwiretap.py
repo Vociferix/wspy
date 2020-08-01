@@ -1963,7 +1963,7 @@ PHDR_802_11AD_MAX_FREQUENCY = 71000
 # #define IS_80211AD(frequency) (((frequency) >= PHDR_802_11AD_MIN_FREQUENCY) &&\
 #                                ((frequency) <= PHDR_802_11AD_MAX_FREQUENCY))
 def IS_80211AD(frequency):
-    return frequency >= PHDR_802_11AD_MIN_FREQUENCY and frequency <= PHDR_802_11AD_MAX_FREQUENCY
+    return frequency.value >= PHDR_802_11AD_MIN_FREQUENCY and frequency.value <= PHDR_802_11AD_MAX_FREQUENCY
 
 
 # struct ieee_802_11ad {
@@ -2831,7 +2831,8 @@ PACK_FLAGS_DIRECTION_SHIFT = 0
 
 # #define PACK_FLAGS_DIRECTION(pack_flags) (((pack_flags) & PACK_FLAGS_DIRECTION_MASK) >> PACK_FLAGS_DIRECTION_SHIFT)
 def PACK_FLAGS_DIRECTION(pack_flags):
-    return (pack_flags & PACK_FLAGS_DIRECTION_MASK) >> PACK_FLAGS_DIRECTION_SHIFT
+    return (pack_flags.value &
+            PACK_FLAGS_DIRECTION_MASK) >> PACK_FLAGS_DIRECTION_SHIFT
 
 
 # #define PACK_FLAGS_DIRECTION_UNKNOWN  0
@@ -2853,8 +2854,8 @@ PACK_FLAGS_RECEPTION_TYPE_SHIFT = 2
 
 # #define PACK_FLAGS_RECEPTION_TYPE(pack_flags) (((pack_flags) & PACK_FLAGS_RECEPTION_TYPE_MASK) >> PACK_FLAGS_RECEPTION_TYPE_SHIFT)
 def PACK_FLAGS_RECEPTION_TYPE(pack_flags):
-    return (
-        pack_flags & PACK_FLAGS_RECEPTION_TYPE_MASK) >> PACK_FLAGS_RECEPTION_TYPE_SHIFT
+    return (pack_flags.value &
+            PACK_FLAGS_RECEPTION_TYPE_MASK) >> PACK_FLAGS_RECEPTION_TYPE_SHIFT
 
 
 # #define PACK_FLAGS_RECEPTION_TYPE_UNSPECIFIED 0
@@ -2882,7 +2883,8 @@ PACK_FLAGS_FCS_LENGTH_SHIFT = 5
 
 # #define PACK_FLAGS_FCS_LENGTH(pack_flags) (((pack_flags) & PACK_FLAGS_FCS_LENGTH_MASK) >> PACK_FLAGS_FCS_LENGTH_SHIFT)
 def PACK_FLAGS_FCS_LENGTH(pack_flags):
-    return (pack_flags & PACK_FLAGS_FCS_LENGTH_MASK) >> PACK_FLAGS_FCS_LENGTH_SHIFT
+    return (pack_flags.value &
+            PACK_FLAGS_FCS_LENGTH_MASK) >> PACK_FLAGS_FCS_LENGTH_SHIFT
 
 
 # #define PACK_FLAGS_RESERVED_MASK                          0x0000FE00
@@ -2924,10 +2926,10 @@ def PACK_FLAGS_VALUE(
         reception_type,
         fcs_length,
         ll_dependent_errors):
-    return (
-        direction << 30) | (
-        reception_type << 27) | (
-            fcs_length << 23) | ll_dependend_errors
+    return guint32((
+        direction.value << 30) | (
+        reception_type.value << 27) | (
+            fcs_length.value << 23) | ll_dependend_errors.value)
 
 
 # typedef struct {
@@ -4505,8 +4507,8 @@ def PBSWAP16(p):
 #         (p)[1] = (guint8)((v) >> 0);    \
 #     }
 def phtons(p, v):
-    p[0] = cast(v >> 8, guint8)
-    p[1] = cast(v, guint8)
+    p[0] = guint8((v.value >> 8) & 0xFF)
+    p[1] = guint8(v.value & 0xFF)
 
 
 # #define phton24(p, v) \
@@ -4516,9 +4518,9 @@ def phtons(p, v):
 #         (p)[2] = (guint8)((v) >> 0);     \
 #     }
 def phton24(p, v):
-    p[0] = cast(v >> 16, guint8)
-    p[1] = cast(v >> 8, guint8)
-    p[2] = cast(v, guint8)
+    p[0] = guint8((v.value >> 16) & 0xFF)
+    p[1] = guint8((v.value >> 8) & 0xFF)
+    p[2] = guint8(v.value & 0xFF)
 
 
 # #define phtonl(p, v) \
@@ -4529,10 +4531,10 @@ def phton24(p, v):
 #         (p)[3] = (guint8)((v) >> 0);     \
 #     }
 def phtonl(p, v):
-    p[0] = cast(v >> 24, guint8)
-    p[1] = cast(v >> 16, guint8)
-    p[2] = cast(v >> 8, guint8)
-    p[3] = cast(v, guint8)
+    p[0] = guint8((v.value >> 24) & 0xFF)
+    p[1] = guint8((v.value >> 16) & 0xFF)
+    p[2] = guint8((v.value >> 8) & 0xFF)
+    p[3] = guint8(v.value & 0xFF)
 
 
 # #define phtonll(p, v) \
@@ -4547,14 +4549,14 @@ def phtonl(p, v):
 #         (p)[7] = (guint8)((v) >> 0);     \
 #     }
 def phtonll(p, v):
-    p[0] = cast(v >> 56, guint8)
-    p[1] = cast(v >> 48, guint8)
-    p[2] = cast(v >> 40, guint8)
-    p[3] = cast(v >> 32, guint8)
-    p[4] = cast(v >> 24, guint8)
-    p[5] = cast(v >> 16, guint8)
-    p[6] = cast(v >> 8, guint8)
-    p[7] = cast(v, guint8)
+    p[0] = guint8((v.value >> 56) & 0xFF)
+    p[1] = guint8((v.value >> 48) & 0xFF)
+    p[2] = guint8((v.value >> 40) & 0xFF)
+    p[3] = guint8((v.value >> 32) & 0xFF)
+    p[4] = guint8((v.value >> 24) & 0xFF)
+    p[5] = guint8((v.value >> 16) & 0xFF)
+    p[6] = guint8((v.value >> 8) & 0xFF)
+    p[7] = guint8(v.value & 0xFF)
 
 
 # #define phtole8(p, v) \
@@ -4562,7 +4564,7 @@ def phtonll(p, v):
 #         (p)[0] = (guint8)((v) >> 0);    \
 #     }
 def phtole8(p, v):
-    p[0] = cast(v, guint8)
+    p[0] = guint8(v.value & 0xFF)
 
 
 # #define phtoles(p, v) \
@@ -4571,8 +4573,8 @@ def phtole8(p, v):
 #         (p)[1] = (guint8)((v) >> 8);    \
 #     }
 def phtoles(p, v):
-    p[0] = cast(v, guint8)
-    p[1] = cast(v >> 8, guint8)
+    p[0] = guint8(v.value & 0xFF)
+    p[1] = guint8((v.value >> 8) & 0xFF)
 
 
 # #define phtole24(p, v) \
@@ -4582,9 +4584,9 @@ def phtoles(p, v):
 #         (p)[2] = (guint8)((v) >> 16);    \
 #     }
 def phtole24(p, v):
-    p[0] = cast(v, guint8)
-    p[1] = cast(v >> 8, guint8)
-    p[2] = cast(v >> 16, guint8)
+    p[0] = guint8(v.value & 0xFF)
+    p[1] = guint8((v.value >> 8) & 0xFF)
+    p[2] = guint8((v.value >> 16) & 0xFF)
 
 
 # #define phtolel(p, v) \
@@ -4595,10 +4597,10 @@ def phtole24(p, v):
 #         (p)[3] = (guint8)((v) >> 24);    \
 #     }
 def phtolel(p, v):
-    p[0] = cast(v, guint8)
-    p[1] = cast(v >> 8, guint8)
-    p[2] = cast(v >> 16, guint8)
-    p[3] = cast(v >> 24, guint8)
+    p[0] = guint8(v.value & 0xFF)
+    p[1] = guint8((v.value >> 8) & 0xFF)
+    p[2] = guint8((v.value >> 16) & 0xFF)
+    p[3] = guint8((v.value >> 24) & 0xFF)
 
 
 # #define phtolell(p, v) \
@@ -4613,14 +4615,14 @@ def phtolel(p, v):
 #         (p)[7] = (guint8)((v) >> 56);    \
 #     }
 def phtolell(p, v):
-    p[0] = cast(v, guint8)
-    p[1] = cast(v >> 8, guint8)
-    p[2] = cast(v >> 16, guint8)
-    p[3] = cast(v >> 24, guint8)
-    p[4] = cast(v >> 32, guint8)
-    p[5] = cast(v >> 40, guint8)
-    p[6] = cast(v >> 48, guint8)
-    p[7] = cast(v >> 56, guint8)
+    p[0] = guint8(v.value & 0xFF)
+    p[1] = guint8((v.value >> 8) & 0xFF)
+    p[2] = guint8((v.value >> 16) & 0xFF)
+    p[3] = guint8((v.value >> 24) & 0xFF)
+    p[4] = guint8((v.value >> 32) & 0xFF)
+    p[5] = guint8((v.value >> 40) & 0xFF)
+    p[6] = guint8((v.value >> 48) & 0xFF)
+    p[7] = guint8((v.value >> 56) & 0xFF)
 
 
 # #define g_ptr_array_len(a)      ((a)->len)

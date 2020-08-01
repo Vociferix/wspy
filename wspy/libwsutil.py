@@ -78,13 +78,13 @@ WS_IN4_LOOPBACK = ws_in4_addr(0x7f000001)
 # #define in4_addr_is_local_network_control_block(addr) \
 #   ((addr & 0xffffff00) == 0xe0000000)
 def in4_addr_is_local_network_control_block(addr):
-    return (addr & 0xffffff00) == 0xe0000000
+    return (addr.value & 0xffffff00) == 0xe0000000
 
 
 # #define in4_addr_is_multicast(addr) \
 #   ((addr & 0xf0000000) == 0xe0000000)
 def in4_addr_is_multicast(addr):
-    return (addr & 0xf0000000) == 0xe0000000
+    return (addr.value & 0xf0000000) == 0xe0000000
 
 
 ###############
@@ -194,17 +194,17 @@ IP6F_MORE_FRAG = 0x0001
 
 # static inline gboolean in6_addr_is_linklocal(const ws_in6_addr* a);
 def in6_addr_is_linklocal(a):
-    return a[0].bytes[0] == 0xfe and (a[0].bytes[1] & 0xc0) == 0x80
+    return a[0].bytes[0].value == 0xfe and (a[0].bytes[1].value & 0xc0) == 0x80
 
 
 # static inline gboolean in6_addr_is_sitelocal(const ws_in6_addr* a);
 def in6_addr_is_sitelocal(a):
-    return a[0].bytes[0] == 0xfe and (a[0].bytes[1] & 0xc0) == 0xc0
+    return a[0].bytes[0].value == 0xfe and (a[0].bytes[1].value & 0xc0) == 0xc0
 
 
 # static inline gboolean in6_addr_is_multicast(const ws_in6_addr* a);
 def in6_addr_is_multicast(a):
-    return a[0].bytes[0] == 0xff
+    return a[0].bytes[0].value == 0xff
 
 
 ###############
@@ -320,11 +320,11 @@ ws_base32_decode.argtypes = [POINTER(guint8),
 
 # static inline int ws_count_ones(const guint64 x);
 def ws_count_ones(x):
-    bits = bits - ((bits >> 1) & guint64(0x5555555555555555))
-    bits = (bits & guint64(0x3333333333333333)) + \
-        ((bits >> 2) & guint64(0x3333333333333333))
-    bits = (bits + (bits >> 4)) & guint64(0x0F0F0F0F0F0F0F0F)
-    return c_int((bits * guint64(0x0101010101010101)) >> 56)
+    bits = x.value - ((x.value >> 1) & 0x5555555555555555)
+    bits = (bits & 0x3333333333333333) + \
+        ((bits >> 2) & 0x3333333333333333)
+    bits = (bits + (bits >> 4)) & 0x0F0F0F0F0F0F0F0F
+    return c_int((bits * 0x0101010101010101) >> 56)
 
 
 ##############
@@ -337,17 +337,17 @@ __ws_ctz32_table = [0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8,
 
 
 def __ws_ctz32(x):
-    return c_int(__ws_ctz32_table[int(guint32(x & -gint32(x)) >> 27)])
+    return c_int(__ws_ctz32_table[(x.value & -(x.value & 0xFFFFFFFF)) >> 27])
 
 
 # static inline int ws_ctz(guint64 x);
 def ws_ctz(x):
-    hi = guint32(x >> 32)
-    lo = guint32(x)
+    hi = (x.value >> 32) & 0xFFFFFFFF
+    lo = x.value & 0xFFFFFFFF
     if lo == 0:
-        return 32 + __ws_ctz32(hi)
+        return c_int(32 + __ws_ctz32(guint32(hi)).value)
     else:
-        return __ws_ctz32(lo)
+        return __ws_ctz32(guint32(lo))
 
 
 # static inline int __ws_ilog2_32(guint32 x);
@@ -387,22 +387,23 @@ __ws_ilog2_32_table = [
 
 
 def __ws_ilog2_32(x):
+    x = x.value
     x |= x >> 1
     x |= x >> 2
     x |= x >> 4
     x |= x >> 8
     x |= x >> 16
-    return c_int(__ws_ilog2_32_table[int(guint32(x * 0x07C4ACDD) >> 27)])
+    return c_int(__ws_ilog2_32_table[(x * 0x07C4ACDD) >> 27])
 
 
 # static inline int ws_ilog2(guint64 x);
 def ws_ilog2(x):
-    hi = guint32(x >> 32)
-    lo = guint32(x)
+    hi = (x.value >> 32) & 0xFFFFFFFF
+    lo = x.value & 0xFFFFFFFF
     if hi == 0:
-        return __ws_ilog2_32(lo)
+        return __ws_ilog2_32(guint32(lo))
     else:
-        return 32 + __ws_ilog2_32(hi)
+        return c_int(32 + __ws_ilog2_32(guint32(hi)).value)
 
 
 #############
@@ -465,7 +466,10 @@ ws_buffer_cleanup.argtypes = []
 
 # #define ws_buffer_length(buffer) ((buffer)->first_free - (buffer)->start)
 def ws_buffer_length(buffer):
-    return buffer[0].first_free - buffer[0].start
+    return type(
+        buffer[0].first_free)(
+        buffer[0].first_free.value -
+        buffer[0].start.value)
 
 
 # #define ws_buffer_clean(buffer) ws_buffer_remove_start((buffer), ws_buffer_length(buffer))
@@ -475,17 +479,23 @@ def ws_buffer_clean(buffer):
 
 # #define ws_buffer_increase_length(buffer,bytes) (buffer)->first_free += (bytes)
 def ws_buffer_increase_length(buffer, bytes):
-    buffer[0].first_free += bytes
+    buffer[0].first_free = type(
+        buffer[0].first_free)(
+        buffer[0].first_free.value +
+        bytes.value)
 
 
 # #define ws_buffer_start_ptr(buffer) ((buffer)->data + (buffer)->start)
 def ws_buffer_start_ptr(buffer):
-    return buffer[0].data + buffer[0].start
+    return type(buffer[0].data)(buffer[0].data.value + buffer[0].start.value)
 
 
 # #define ws_buffer_end_ptr(buffer) ((buffer)->data + (buffer)->first_free)
 def ws_buffer_end_ptr(buffer):
-    return buffer[0].data + buffer[0].first_free
+    return type(
+        buffer[0].data)(
+        buffer[0].data.value +
+        buffer[0].first_free.value)
 
 
 # #define ws_buffer_append_buffer(buffer,src_buffer) ws_buffer_append((buffer), ws_buffer_start_ptr(src_buffer), ws_buffer_length(src_buffer))
@@ -638,10 +648,10 @@ class color_t(Structure):
 def color_t_to_rgb(color):
     return (
         c_uint(
-            color[0].red >> 8) << 16) | (
+            color[0].red.value >> 8) << 16) | (
         c_uint(
-            color[0].green >> 8) << 8) | c_uint(
-        color[0].blue >> 8)
+            color[0].green.value >> 8) << 8) | c_uint(
+        color[0].blue.value >> 8)
 
 
 ##############
@@ -768,7 +778,7 @@ crc16_plain_update.argtypes = [crc16_plain_t, POINTER(c_ubyte), c_size_t]
 
 # static inline crc16_plain_t crc16_plain_finalize(crc16_plain_t crc);
 def crc16_plain_finalize(crc):
-    return crc ^ crc16_plain_t(0)
+    return crc
 
 
 # guint16 crc16_8005_noreflect_noxor(const guint8* data, guint64 data_len);
@@ -797,8 +807,11 @@ CRC32_MPEG2_SEED = 0xFFFFFFFF
 #          ((crc32c_value & 0x0000ff00) <<  8)    |       \
 #          ((crc32c_value & 0x000000ff) << 24))
 def CRC32C_SWAP(crc32c_value):
-    return ((crc32c_value & 0xFF000000) >> 24) | ((crc32c_value & 0x00FF0000) >> 8) | (
-        (crc32c_value & 0x0000FF00) << 8) | ((crc32c_value & 0x000000FF) << 24)
+    return type(crc32c_value)(
+        ((crc32c_value.value & 0xFF000000) >> 24) | (
+            (crc32c_value.value & 0x00FF0000) >> 8) | (
+            (crc32c_value.value & 0x0000FF00) << 8) | (
+                (crc32c_value.value & 0x000000FF) << 24))
 
 
 # guint32 crc32_ccitt_table_lookup(guchar pos);
@@ -900,7 +913,7 @@ crc7update.argtypes = [guint8, POINTER(c_ubyte), c_int]
 
 # static inline guint8 crc7finalize(guint8 crc);
 def crc7finalize(crc):
-    return (crc >> 1) ^ 0
+    return type(crc)(crc.value >> 1)
 
 
 ##########
@@ -1277,7 +1290,7 @@ ieee80211_mhz_to_str.argtypes = [guint]
 
 # #define FREQ_IS_BG(freq) (freq <= 2484)
 def FREQ_IS_BG(freq):
-    return freq <= 2484
+    return freq.value <= 2484
 
 
 ##########
@@ -1469,67 +1482,67 @@ json_dumper_finish.argtypes = [POINTER(json_dumper)]
 
 # #define MPA_UNMARSHAL_SYNC(n)       ((n) >> 21 & 0x7ff)
 def MPA_UNMARHAL_SYNC(n):
-    return c_uint((n >> 21) & 0x7ff)
+    return c_uint((n.value >> 21) & 0x7ff)
 
 
 # #define MPA_UNMARSHAL_VERSION(n)    ((n) >> 19 & 0x3)
 def MPA_UNMARSHAL_VERSION(n):
-    return c_uint((n >> 19) & 0x3)
+    return c_uint((n.value >> 19) & 0x3)
 
 
 # #define MPA_UNMARSHAL_LAYER(n)      ((n) >> 17 & 0x3)
 def MPA_UNMARSHAL_LAYER(n):
-    return c_uint((n >> 17) & 0x3)
+    return c_uint((n.value >> 17) & 0x3)
 
 
 # #define MPA_UNMARSHAL_PROTECTION(n) ((n) >> 16 & 0x1)
 def MPA_UNMARSHAL_PROTECTION(n):
-    return c_uint((n >> 16) & 0x1)
+    return c_uint((n.value >> 16) & 0x1)
 
 
 # #define MPA_UNMARSHAL_BITRATE(n)    ((n) >> 12 & 0xf)
 def MPA_UNMARSHAL_BITRATE(n):
-    return c_uint((n >> 12) & 0xf)
+    return c_uint((n.value >> 12) & 0xf)
 
 
 # #define MPA_UNMARSHAL_FREQUENCY(n)  ((n) >> 10 & 0x3)
 def MPA_UNMARSHAL_FREQUENCY(n):
-    return c_uint((n >> 10) & 0x3)
+    return c_uint((n.value >> 10) & 0x3)
 
 
 # #define MPA_UNMARSHAL_PADDING(n)    ((n) >>  9 & 0x1)
 def MPA_UNMARSHAL_PADDING(n):
-    return c_uint((n >> 9) & 0x1)
+    return c_uint((n.value >> 9) & 0x1)
 
 
 # #define MPA_UNMARSHAL_PRIVATE(n)    ((n) >>  8 & 0x1)
 def MPA_UNMARSHAL_PRIVATE(n):
-    return c_uint((n >> 8) & 0x1)
+    return c_uint((n.value >> 8) & 0x1)
 
 
 # #define MPA_UNMARSHAL_MODE(n)       ((n) >>  6 & 0x3)
 def MPA_UNMARSHAL_MODE(n):
-    return c_uint((n >> 6) & 0x3)
+    return c_uint((n.value >> 6) & 0x3)
 
 
 # #define MPA_UNMARSHAL_MODEEXT(n)    ((n) >>  4 & 0x3)
 def MPA_UNMARSHAL_MODEEXT(n):
-    return c_uint((n >> 4) & 0x3)
+    return c_uint((n.value >> 4) & 0x3)
 
 
 # #define MPA_UNMARSHAL_COPYRIGHT(n)  ((n) >>  3 & 0x1)
 def MPA_UNMARSHAL_COPYRIGHT(n):
-    return c_uint((n >> 3) & 0x1)
+    return c_uint((n.value >> 3) & 0x1)
 
 
 # #define MPA_UNMARSHAL_ORIGINAL(n)   ((n) >>  2 & 0x1)
 def MPA_UNMARSHAL_ORIGINAL(n):
-    return c_uint((n >> 2) & 0x1)
+    return c_uint((n.value >> 2) & 0x1)
 
 
 # #define MPA_UNMARSHAL_EMPHASIS(n)   ((n) >>  0 & 0x3)
 def MPA_UNMARSHAL_EMPHASIS(n):
-    return c_uint(n & 0x3)
+    return c_uint(n.value & 0x3)
 
 
 # struct mpa {
@@ -1628,18 +1641,25 @@ mpa_padding.argtypes = [POINTER(mpa)]
 # #define MPA_DATA_BYTES(mpa) (mpa_bitrate(mpa) * mpa_samples(mpa) \
 #                 / mpa_frequency(mpa) / 8)
 def MPA_DATA_BYTES(mpa):
-    return mpa_bitrate(mpa) * mpa_samples(mpa) / mpa_frequency(mpa) / 8
+    return c_uint(
+        mpa_bitrate(mpa).value *
+        mpa_samples(mpa).value /
+        mpa_frequency(mpa).value /
+        8)
 
 
 # #define MPA_BYTES(mpa) (MPA_DATA_BYTES(mpa) + mpa_padding(mpa))
 def MPA_BYTES(mpa):
-    return MPA_DATA_BYTES(mpa) + mpa_padding(mpa)
+    return c_uint(MPA_DATA_BYTES(mpa).value + mpa_padding(mpa).value)
 
 
 # #define MPA_DURATION_NS(mpa) \
 #         (1000000000 / mpa_frequency(mpa) * mpa_samples(mpa))
 def MPA_DURATION_NS(mpa):
-    return 1000000000 / mpa_frequency(mpa) * mpa_samples(mpa)
+    return c_uint(
+        1000000000 /
+        mpa_frequency(mpa).value *
+        mpa_samples(mpa).value)
 
 
 # enum { MPA_SYNC = 0x7ff };
@@ -1648,27 +1668,27 @@ MPA_SYNC = 0x7ff
 
 # #define MPA_SYNC_VALID(mpa)      ((mpa)->sync == MPA_SYNC)
 def MPA_SYNC_VALID(mpa):
-    return mpa[0].sync == MPA_SYNC
+    return mpa[0].sync.value == MPA_SYNC
 
 
 # #define MPA_VERSION_VALID(mpa)   (mpa_version(mpa) >= 0)
 def MPA_VERSION_VALID(mpa):
-    return mpa_version(mpa) >= 0
+    return mpa_version(mpa).value >= 0
 
 
 # #define MPA_LAYER_VALID(mpa)     (mpa_layer(mpa) >= 0)
 def MPA_LAYER_VALID(mpa):
-    return mpa_layer(mpa) >= 0
+    return mpa_layer(mpa).value >= 0
 
 
 # #define MPA_BITRATE_VALID(mpa)   (mpa_bitrate(mpa) > 0)
 def MPA_BITRATE_VALID(mpa):
-    return mpa_bitrate(mpa) > 0
+    return mpa_bitrate(mpa).value > 0
 
 
 # #define MPA_FREQUENCY_VALID(mpa) (mpa_frequency(mpa) > 0)
 def MPA_FREQUENCY_VALID(mpa):
-    return mpa_frequency(mpa) > 0
+    return mpa_frequency(mpa).value > 0
 
 
 # #define MPA_VALID(mpa) (MPA_SYNC_VALID(mpa) \
@@ -1705,12 +1725,12 @@ def NSTIME_INIT_SECS_NSECS(secs, nsecs):
 
 # #define NSTIME_INIT_SECS_USECS(secs, usecs)     {secs, usecs*1000}
 def NSTIME_INIT_SECS_USECS(secs, usecs):
-    return nstime_t(secs, usecs * 1000)
+    return nstime_t(secs, usecs.value * 1000)
 
 
 # #define NSTIME_INIT_SECS_MSECS(secs, msecs)     {secs, msecs*1000000}
 def NSTIME_INIT_SECS_MSECS(secs, msecs):
-    return nstime_t(secs, msecs * 1000000)
+    return nstime_t(secs, msecs.value * 1000000)
 
 
 # #define NSTIME_INIT_SECS(secs)                  {secs, 0}
@@ -1804,296 +1824,196 @@ get_os_version_info.argtypes = [POINTER(GString)]
 # static inline guint16 pntoh16(const void *p)
 def pntoh16(p):
     tmp = cast(p, POINTER(guint8))
-    return (cast(tmp[0], guint16) << 8) | tmp[1]
+    return guint16((tmp[0].value << 8) | tmp[1].value)
 
 
 # static inline guint32 pntoh24(const void *p)
 def pntoh24(p):
     tmp = cast(p, POINTER(guint8))
-    return (cast(tmp[0], guint32) << 16) | (
-        cast(tmp[1], guint32) << 8) | tmp[2]
+    return guint32((tmp[0].value << 16) | (
+        tmp[1].value << 8) | tmp[2].value)
 
 
 # static inline guint32 pntoh32(const void *p)
 def pntoh32(p):
     tmp = cast(p, POINTER(guint8))
-    return (
-        cast(
-            tmp[0],
-            guint32) << 24) | (
-        cast(
-            tmp[1],
-            guint32) << 16) | (
-        cast(
-            tmp[2],
-            guint32) << 8) | tmp[3]
+    return guint32((
+        tmp[0].value << 24) | (
+        tmp[1].value << 16) | (
+        tmp[2].value << 8) | tmp[3].value)
 
 
 # static inline guint64 pntoh40(const void *p)
 def pntoh40(p):
     tmp = cast(p, POINTER(guint8))
-    return (
-        cast(
-            tmp[0],
-            guint64) << 32) | (
-        cast(
-            tmp[1],
-            guint64) << 24) | (
-        cast(
-            tmp[2],
-            guint64) << 16) | (
-        cast(
-            tmp[3],
-            guint64) << 8) | tmp[4]
+    return guint64((
+        tmp[0].value << 32) | (
+        tmp[1].value << 24) | (
+        tmp[2].value << 16) | (
+        tmp[3].value << 8) | tmp[4].value)
 
 
 # static inline guint64 pntoh48(const void *p)
 def pntoh48(p):
     tmp = cast(p, POINTER(guint8))
-    return (
-        cast(
-            tmp[0],
-            guint64) << 40) | (
-        cast(
-            tmp[1],
-            guint64) << 32) | (
-        cast(
-            tmp[2],
-            guint64) << 24) | (
-        cast(
-            tmp[3],
-            guint64) << 16) | (
-        cast(
-            tmp[4],
-            guint64) << 8) | tmp[5]
+    return guint64((
+        tmp[0].value << 40) | (
+        tmp[1].value << 32) | (
+        tmp[2].value << 24) | (
+        tmp[3].value << 16) | (
+        tmp[4].value << 8) | tmp[5].value)
 
 
 # static inline guint64 pntoh56(const void *p)
 def pntoh56(p):
     tmp = cast(p, POINTER(guint8))
-    return (
-        cast(
-            tmp[0],
-            guint64) << 48) | (
-        cast(
-            tmp[1],
-            guint64) << 40) | (
-        cast(
-            tmp[2],
-            guint64) << 32) | (
-        cast(
-            tmp[3],
-            guint64) << 24) | (
-        cast(
-            tmp[4],
-            guint64) << 16) | (
-        cast(
-            tmp[5],
-            guint64) << 8) | tmp[6]
+    return guint64((
+        tmp[0].value << 48) | (
+        tmp[1].value << 40) | (
+        tmp[2].value << 32) | (
+        tmp[3].value << 24) | (
+        tmp[4].value << 16) | (
+        tmp[5].value << 8) | tmp[6].value)
 
 
 # static inline guint64 pntoh64(const void *p)
 def pntoh64(p):
     tmp = cast(p, POINTER(guint8))
-    return (
-        cast(
-            tmp[0],
-            guint64) << 56) | (
-        cast(
-            tmp[1],
-            guint64) << 48) | (
-        cast(
-            tmp[2],
-            guint64) << 40) | (
-        cast(
-            tmp[3],
-            guint64) << 32) | (
-        cast(
-            tmp[4],
-            guint64) << 24) | (
-        cast(
-            tmp[5],
-            guint64) << 16) | (
-        cast(
-            tmp[6],
-            guint64) << 8) | tmp[7]
+    return guint64((
+        tmp[0].value << 56) | (
+        tmp[1].value << 48) | (
+        tmp[2].value << 40) | (
+        tmp[3].value << 32) | (
+        tmp[4].value << 24) | (
+        tmp[5].value << 16) | (
+        tmp[6].value << 8) | tmp[7].value)
 
 
 # static inline guint16 pletoh16(const void *p)
 def pletoh16(p):
     tmp = cast(p, POINTER(guint8))
-    return (cast(tmp[1], guint16) << 8) | tmp[0]
+    return guint16((tmp[1].value << 8) | tmp[0].value)
 
 
 # static inline guint32 pletoh24(const void *p)
 def pletoh24(p):
     tmp = cast(p, POINTER(guint8))
-    return (cast(tmp[2], guint32) << 16) | (
-        cast(tmp[1], guint32) << 8) | tmp[0]
+    return guint32((tmp[2].value << 16) | (
+        tmp[1].value << 8) | tmp[0].value)
 
 
 # static inline guint32 pletoh32(const void *p)
 def pletoh32(p):
     tmp = cast(p, POINTER(guint8))
-    return (
-        cast(
-            tmp[3],
-            guint32) << 24) | (
-        cast(
-            tmp[2],
-            guint32) << 16) | (
-        cast(
-            tmp[1],
-            guint32) << 8) | tmp[0]
+    return guint32((
+        tmp[3].value << 24) | (
+        tmp[2].value << 16) | (
+        tmp[1].value << 8) | tmp[0].value)
 
 
 # static inline guint64 pletoh40(const void *p)
 def pletoh40(p):
     tmp = cast(p, POINTER(guint8))
-    return (
-        cast(
-            tmp[4],
-            guint64) << 32) | (
-        cast(
-            tmp[3],
-            guint64) << 24) | (
-        cast(
-            tmp[2],
-            guint64) << 16) | (
-        cast(
-            tmp[1],
-            guint64) << 8) | tmp[0]
+    return guint64((
+        tmp[4].value << 32) | (
+        tmp[3].value << 24) | (
+        tmp[2].value << 16) | (
+        tmp[1].value << 8) | tmp[0].value)
 
 
 # static inline guint64 pletoh48(const void *p)
 def pletoh48(p):
     tmp = cast(p, POINTER(guint8))
-    return (
-        cast(
-            tmp[5],
-            guint64) << 40) | (
-        cast(
-            tmp[4],
-            guint64) << 32) | (
-        cast(
-            tmp[3],
-            guint64) << 24) | (
-        cast(
-            tmp[2],
-            guint64) << 16) | (
-        cast(
-            tmp[1],
-            guint64) << 8) | tmp[0]
+    return guint64((
+        tmp[5].value << 40) | (
+        tmp[4].value << 32) | (
+        tmp[3].value << 24) | (
+        tmp[2].value << 16) | (
+        tmp[1].value << 8) | tmp[0].value)
 
 
 # static inline guint64 pletoh56(const void *p)
 def pletoh56(p):
     tmp = cast(p, POINTER(guint8))
-    return (
-        cast(
-            tmp[6],
-            guint64) << 48) | (
-        cast(
-            tmp[5],
-            guint64) << 40) | (
-        cast(
-            tmp[4],
-            guint64) << 32) | (
-        cast(
-            tmp[3],
-            guint64) << 24) | (
-        cast(
-            tmp[2],
-            guint64) << 16) | (
-        cast(
-            tmp[1],
-            guint64) << 8) | tmp[0]
+    return guint64((
+        tmp[6].value << 48) | (
+        tmp[5].value << 40) | (
+        tmp[4].value << 32) | (
+        tmp[3].value << 24) | (
+        tmp[2].value << 16) | (
+        tmp[1].value << 8) | tmp[0].value)
 
 
 # static inline guint64 pletoh64(const void *p)
 def pntoh64(p):
     tmp = cast(p, POINTER(guint8))
-    return (
-        cast(
-            tmp[7],
-            guint64) << 56) | (
-        cast(
-            tmp[6],
-            guint64) << 48) | (
-        cast(
-            tmp[5],
-            guint64) << 40) | (
-        cast(
-            tmp[4],
-            guint64) << 32) | (
-        cast(
-            tmp[3],
-            guint64) << 24) | (
-        cast(
-            tmp[2],
-            guint64) << 16) | (
-        cast(
-            tmp[1],
-            guint64) << 8) | tmp[0]
+    return guint64((
+        tmp[7].value << 56) | (
+        tmp[6].value << 48) | (
+        tmp[5].value << 40) | (
+        tmp[4].value << 32) | (
+        tmp[3].value << 24) | (
+        tmp[2].value << 16) | (
+        tmp[1].value << 8) | tmp[0].value)
 
 
 # static inline void phton16(guint8 *p, guint16 v)
 def phton16(p, v):
     tmp = cast(p, POINTER(guint8))
-    tmp[0] = cast(v >> 8, guint8)
-    tmp[1] = cast(v, guint8)
+    tmp[0] = guint8(v.value >> 8)
+    tmp[1] = guint8(v.value & 0xFF)
 
 
 # static inline void phton32(guint8 *p, guint32 v)
 def phton32(p, v):
     tmp = cast(p, POINTER(guint8))
-    tmp[0] = cast(v >> 24, guint8)
-    tmp[1] = cast(v >> 16, guint8)
-    tmp[2] = cast(v >> 8, guint8)
-    tmp[3] = cast(v, guint8)
+    tmp[0] = guint8((v.value >> 24) & 0xFF)
+    tmp[1] = guint8((v.value >> 16) & 0xFF)
+    tmp[2] = guint8((v.value >> 8) & 0xFF)
+    tmp[3] = guint8(v.value & 0xFF)
 
 
 # static inline void phton64(guint8 *p, guint64 v) {
 def phton64(p, v):
     tmp = cast(p, POINTER(guint8))
-    tmp[0] = cast(v >> 56, guint8)
-    tmp[1] = cast(v >> 48, guint8)
-    tmp[2] = cast(v >> 40, guint8)
-    tmp[3] = cast(v >> 32, guint8)
-    tmp[4] = cast(v >> 24, guint8)
-    tmp[5] = cast(v >> 16, guint8)
-    tmp[6] = cast(v >> 8, guint8)
-    tmp[7] = cast(v, guint8)
+    tmp[0] = guint8((v.value >> 56) & 0xFF)
+    tmp[1] = guint8((v.value >> 48) & 0xFF)
+    tmp[2] = guint8((v.value >> 40) & 0xFF)
+    tmp[3] = guint8((v.value >> 32) & 0xFF)
+    tmp[4] = guint8((v.value >> 24) & 0xFF)
+    tmp[5] = guint8((v.value >> 16) & 0xFF)
+    tmp[6] = guint8((v.value >> 8) & 0xFF)
+    tmp[7] = guint8(v.value & 0xFF)
 
 
 # static inline void phtole32(guint8 *p, guint32 v) {
 def phtole32(p, v):
     tmp = cast(p, POINTER(guint8))
-    tmp[0] = cast(v, guint8)
-    tmp[1] = cast(v >> 8, guint8)
-    tmp[2] = cast(v >> 16, guint8)
-    tmp[3] = cast(v >> 24, guint8)
+    tmp[0] = guint8(v.value & 0xFF)
+    tmp[1] = guint8((v.value >> 8) & 0xFF)
+    tmp[2] = guint8((v.value >> 16) & 0xFF)
+    tmp[3] = guint8((v.value >> 24) & 0xFF)
 
 
 # static inline void phtole64(guint8 *p, guint64 v) {
 def phtole64(p, v):
     tmp = cast(p, POINTER(guint8))
-    tmp[0] = cast(v, guint8)
-    tmp[1] = cast(v >> 8, guint8)
-    tmp[2] = cast(v >> 16, guint8)
-    tmp[3] = cast(v >> 24, guint8)
-    tmp[4] = cast(v >> 32, guint8)
-    tmp[5] = cast(v >> 40, guint8)
-    tmp[6] = cast(v >> 48, guint8)
-    tmp[7] = cast(v >> 56, guint8)
+    tmp[0] = guint8(v.value & 0xFF)
+    tmp[1] = guint8((v.value >> 8) & 0xFF)
+    tmp[2] = guint8((v.value >> 16) & 0xFF)
+    tmp[3] = guint8((v.value >> 24) & 0xFF)
+    tmp[4] = guint8((v.value >> 32) & 0xFF)
+    tmp[5] = guint8((v.value >> 40) & 0xFF)
+    tmp[6] = guint8((v.value >> 48) & 0xFF)
+    tmp[7] = guint8((v.value >> 56) & 0xFF)
 
 
 # #define guint32_wraparound_diff(higher, lower) ((higher>lower)?(higher-lower):(higher+0xffffffff-lower+1))
 def guint32_wraparound_diff(higher, lower):
-    if higher > lower:
-        return higher - lower
+    if higher.value > lower.value:
+        return guint32(higher.value - lower.value)
     else:
-        return higher + 0xffffffff - lower + 1
+        return guint32(higher.value + 0xffffffff - lower.value + 1)
 
 
 #######################
@@ -2169,43 +2089,43 @@ plugins_cleanup.argtypes = [POINTER(plugins_t)]
 ##########
 
 # #define pow2(type, m)     (((type)1U) << (m))
-def pow2(type, m):
-    return cast(c_uint(1), type) << m
+def pow2(type_, m):
+    return type_(1 << m.value)
 
 
 # #define pow4(type, m)     (((type)1U) << (2*(m)))
-def pow4(type, m):
-    return cast(c_uint(1), type) << (2 * m)
+def pow4(type_, m):
+    return type_(1 << (2 * m.value))
 
 
 # #define pow8(type, m)     (((type)1U) << (3*(m)))
-def pow8(type, m):
-    return cast(c_uint(1), type) << (3 * m)
+def pow8(type_, m):
+    return type_(1 << (3 * m.value))
 
 
 # #define pow16(type, m)    (((type)1U) << (4*(m)))
-def pow16(type, m):
-    return cast(c_uint(1), type) << (4 * m)
+def pow16(type_, m):
+    return type_(1 << (4 * m.value))
 
 
 # #define pow32(type, m)    (((type)1U) << (5*(m)))
-def pow32(type, m):
-    return cast(c_uint(1), type) << (5 * m)
+def pow32(type_, m):
+    return type_(1 << (5 * m.value))
 
 
 # #define pow64(type, m)    (((type)1U) << (6*(m)))
-def pow64(type, m):
-    return cast(c_uint(1), type) << (6 * m)
+def pow64(type_, m):
+    return type_(1 << (6 * m.value))
 
 
 # #define pow128(type, m)   (((type)1U) << (7*(m)))
-def pow128(type, m):
-    return cast(c_uint(1), type) << (7 * m)
+def pow128(type_, m):
+    return type_(1 << (7 * m.value))
 
 
 # #define pow256(type, m)   (((type)1U) << (8*(m)))
-def pow256(type, m):
-    return cast(c_uint(1), type) << (8 * m)
+def pow256(type_, m):
+    return type_(1 << (8 * m.value))
 
 
 ################
@@ -2440,20 +2360,20 @@ rsa_private_key_free.argtypes = [gpointer]
 
 # static inline guint32 ws_sign_ext32(guint32 val, int no_of_bits);
 def ws_sign_ext32(val, no_of_bits):
-    if no_of_bits == 0 or no_of_bits == 32:
+    if no_of_bits.value == 0 or no_of_bits.value == 32:
         return val
-    if val & (1 << (no_of_bits - 1)):
-        val |= 0xFFFFFFFF << no_of_bits
+    if val.value & (1 << (no_of_bits.value - 1)):
+        val = type(val)(val.value | (0xFFFFFFFF << no_of_bits.value))
     return val
 
 
 # static inline guint64 ws_sign_ext64(guint64 val, int no_of_bits);
 def ws_sign_ext64(val, no_of_bits):
-    if no_of_bits == 0 or no_of_bits == 64:
+    if no_of_bits.value == 0 or no_of_bits.value == 64:
         return val
-    if val & (1 << (no_of_bits - 1)):
-        val |= 0xFFFFFFFFFFFFFFFF << no_of_bits
-    return val
+    if val.value & (1 << (no_of_bits.value - 1)):
+        val = type(val)(val.value | (0xFFFFFFFFFFFFFFFF << no_of_bits.value))
+    return valt
 
 
 ##############
@@ -2715,7 +2635,7 @@ printable_char_or_period.argtypes = [gchar]
 
 # #define plurality(d,s,p) ((d) == 1 ? (s) : (p))
 def plurality(d, s, p):
-    if d == 1:
+    if d.value == 1:
         return s
     else:
         return p
@@ -2945,8 +2865,7 @@ ws_pipe_init.argtypes = [POINTER(ws_pipe_t)]
 
 # static inline gboolean ws_pipe_valid(ws_pipe_t* ws_pipe);
 def ws_pipe_valid(ws_pipe):
-    return ws_pipe != c_void_p(
-        0) and ws_pipe[0].pid != 0 and ws_pipe.pid != WS_INVALID_PID
+    return ws_pipe.value != 0 and ws_pipe[0].pid.value != 0 and ws_pipe.pid.value != WS_INVALID_PID
 
 
 # GPid ws_pipe_spawn_async(ws_pipe_t* ws_pipe, GPtrArray* args);
