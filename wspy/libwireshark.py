@@ -1850,3 +1850,824 @@ tvb_get_varint.argtypes = [POINTER(tvbuff_t),
                            guint,
                            POINTER(guint64),
                            guint]
+
+
+############
+# params.h #
+############
+
+# typedef struct {
+# 	const char	*name;
+# 	const char	*description;
+# 	gint		value;
+# } enum_val_t;
+class enum_val_t(Structure):
+    _fields_ = [('name', c_char_p),
+                ('description', c_char_p),
+                ('value', gint)]
+
+
+###########
+# range.h #
+###########
+
+# #define MAX_SCTP_PORT 65535
+MAX_SCTP_PORT = 65535
+
+# #define MAX_TCP_PORT 65535
+MAX_TCP_PORT = 65535
+
+# #define MAX_UDP_PORT 65535
+MAX_UDP_PORT = 65535
+
+# #define MAX_DCCP_PORT 65535
+MAX_DCCP_PORT = 65535
+
+
+# typedef struct range_admin_tag {
+#     guint32 low;
+#     guint32 high;
+# } range_admin_t;
+class range_admin_tag(Structure):
+    _fields_ = [('low', guint32),
+                ('high', guint32)]
+
+
+range_admin_t = range_admin_tag
+
+
+# #define RANGE_ADMIN_T_INITIALIZER { 0, 0 }
+RANGE_ADMIN_T_INITIALIZER = range_admin_tag(0, 0)
+
+# typedef struct epan_range {
+#     guint           nranges;
+#     range_admin_t   ranges[1];
+# } range_t;
+
+
+class epan_range(Structure):
+    _fields_ = [('nranges', guint),
+                ('ranges', range_admin_t * 1)]
+
+
+range_t = epan_range
+
+
+# typedef enum {
+#     CVT_NO_ERROR,
+#     CVT_SYNTAX_ERROR,
+#     CVT_NUMBER_TOO_BIG
+# } convert_ret_t;
+convert_ret_t = c_int
+CVT_NO_ERROR = c_int(0)
+CVT_SYNTAX_ERROR = c_int(1)
+CVT_NUMBER_TOO_BIG = c_int(2)
+
+# range_t *range_empty(wmem_allocator_t *scope);
+range_empty = libwireshark.range_empty
+range_empty.restype = POINTER(range_t)
+range_empty.argtypes = [POINTER(wmem_allocator_t)]
+
+# convert_ret_t range_convert_str(wmem_allocator_t *scope, range_t **range, const gchar *es,
+#     guint32 max_value);
+range_convert_str = libwireshark.range_convert_str
+range_convert_str.restype = convert_ret_t
+range_convert_str.argtypes = [POINTER(wmem_allocator_t),
+                              POINTER(POINTER(range_t)),
+                              gchar_p,
+                              guint32]
+
+# convert_ret_t range_convert_str_work(wmem_allocator_t *scope, range_t **range, const gchar *es,
+#     guint32 max_value, gboolean err_on_max);
+range_convert_str_work = libwireshark.range_convert_str_work
+range_convert_str_work.restype = convert_ret_t
+range_convert_str_work.argtypes = [POINTER(wmem_allocator_t),
+                                   POINTER(POINTER(range_t)),
+                                   gchar_p,
+                                   guint32,
+                                   gboolean]
+
+# gboolean value_is_in_range(range_t *range, guint32 val);
+value_is_in_range = libwireshark.value_is_in_range
+value_is_in_range.restype = gboolean
+value_is_in_range.argtypes = [POINTER(range_t), guint32]
+
+# gboolean range_add_value(wmem_allocator_t *scope, range_t **range,
+# guint32 val);
+range_add_value = libwireshark.range_add_value
+range_add_value.restype = gboolean
+range_add_value.argtypes = [POINTER(wmem_allocator_t),
+                            POINTER(POINTER(range_t)),
+                            guint32]
+
+# gboolean range_remove_value(wmem_allocator_t *scope, range_t **range,
+# guint32 val);
+range_remove_value = libwireshark.range_remove_value
+range_remove_value.restype = gboolean
+range_remove_value.argtypes = [POINTER(wmem_allocator_t),
+                               POINTER(POINTER(range_t)),
+                               guint32]
+
+# gboolean ranges_are_equal(range_t *a, range_t *b);
+ranges_are_equal = libwireshark.ranges_are_equal
+ranges_are_equal.restype = gboolean
+ranges_are_equal.argtypes = [POINTER(range_t), POINTER(range_t)]
+
+# void range_foreach(range_t *range, void (*callback)(guint32 val,
+# gpointer ptr), gpointer ptr);
+range_foreach = libwireshark.range_foreach
+range_foreach.restype = None
+range_foreach.argtypes = [POINTER(range_t),
+                          CFUNCTYPE(None, guint32, gpointer, gpointer),
+                          gpointer]
+
+# char *range_convert_range(wmem_allocator_t *scope, const range_t *range);
+range_convert_range = libwireshark.range_convert_range
+range_convert_range.restype = c_char_p
+range_convert_range.argtypes = [POINTER(wmem_allocator_t), POINTER(range_t)]
+
+# range_t *range_copy(wmem_allocator_t *scope, range_t *src);
+range_copy = libwireshark.range_copy
+range_copy.restype = POINTER(range_t)
+range_copy.argtypes = [POINTER(wmem_allocator_t), POINTER(range_t)]
+
+
+###########
+# prefs.h #
+###########
+
+# #define DEF_WIDTH 750
+DEF_WIDTH = 750
+
+# #define DEF_HEIGHT 550
+DEF_HEIGHT = 550
+
+# #define MAX_VAL_LEN  1024
+MAX_VAL_LEN = 1024
+
+# #define TAP_UPDATE_DEFAULT_INTERVAL 3000
+TAP_UPDATE_DEFAULT_INTERVAL = 3000
+
+# #define ST_DEF_BURSTRES 5
+ST_DEF_BURSTRES = 5
+
+# #define ST_DEF_BURSTLEN 100
+ST_DEF_BURSTLEN = 100
+
+# #define ST_MAX_BURSTRES 600000
+ST_MAX_BURSTRES = 600000
+
+# #define ST_MAX_BURSTBUCKETS 100
+ST_MAX_BURSTBUCKETS = 100
+
+
+# struct epan_uat;
+class epan_uat(Structure):
+    _fields_ = []
+
+
+# struct _e_addr_resolve;
+class _e_addr_resolve(Structure):
+    _fields_ = []
+
+
+# char string_to_name_resolve(const char *string, struct _e_addr_resolve
+# *name_resolve);
+string_to_name_resolve = libwireshark.string_to_name_resolve
+string_to_name_resolve.restype = c_char
+string_to_name_resolve.argtypes = [c_char_p, POINTER(_e_addr_resolve)]
+
+# #define FO_STYLE_LAST_OPENED    0
+FO_STYLE_LAST_OPENED = 0
+
+# #define FO_STYLE_SPECIFIED      1
+FO_STYLE_SPECIFIED = 1
+
+# #define TB_STYLE_ICONS          0
+TB_STYLE_ICONS = 0
+
+# #define TB_STYLE_TEXT           1
+TB_STYLE_TEXT = 1
+
+# #define TB_STYLE_BOTH           2
+TB_STYLE_BOTH = 2
+
+# #define COLOR_STYLE_DEFAULT     0
+COLOR_STYLE_DEFAULT = 0
+
+# #define COLOR_STYLE_FLAT        1
+COLOR_STYLE_FLAT = 1
+
+# #define COLOR_STYLE_GRADIENT    2
+COLOR_STYLE_GRADIENT = 2
+
+# #define COLOR_STYLE_ALPHA       0.25
+COLOR_STYLE_ALPHA = 0.25
+
+# typedef enum {
+#     layout_unused,
+#     layout_type_5,
+#     layout_type_2,
+#     layout_type_1,
+#     layout_type_4,
+#     layout_type_3,
+#     layout_type_6,
+#     layout_type_max
+# } layout_type_e;
+layout_type_e = c_int
+layout_unused = c_int(0)
+layout_type_5 = c_int(1)
+layout_type_2 = c_int(2)
+layout_type_1 = c_int(3)
+layout_type_4 = c_int(4)
+layout_type_3 = c_int(5)
+layout_type_6 = c_int(6)
+layout_type_max = c_int(7)
+
+# typedef enum {
+#     layout_pane_content_none,
+#     layout_pane_content_plist,
+#     layout_pane_content_pdetails,
+#     layout_pane_content_pbytes
+# } layout_pane_content_e;
+layout_pane_content_e = c_int
+layout_pane_content_none = c_int(0)
+layout_pane_content_plist = c_int(1)
+layout_pane_content_pdetails = c_int(2)
+layout_pane_content_pbytes = c_int(3)
+
+# typedef enum {
+#     console_open_never,
+#     console_open_auto,
+#     console_open_always
+# } console_open_e;
+console_open_e = c_int
+console_open_never = c_int(0)
+console_open_auto = c_int(1)
+console_open_always = c_int(2)
+
+# typedef enum {
+#     version_welcome_only,
+#     version_title_only,
+#     version_both,
+#     version_neither
+# } version_info_e;
+version_info_e = c_int
+version_welcome_only = c_int(0)
+version_title_only = c_int(1)
+version_both = c_int(2)
+version_neither = c_int(3)
+
+# typedef enum {
+#     pref_default,
+#     pref_stashed,
+#     pref_current
+# } pref_source_t;
+pref_source_t = c_int
+pref_default = c_int(0)
+pref_stashed = c_int(1)
+pref_current = c_int(2)
+
+# typedef enum {
+#     ELIDE_LEFT,
+#     ELIDE_RIGHT,
+#     ELIDE_MIDDLE,
+#     ELIDE_NONE
+# } elide_mode_e;
+elide_mode_e = c_int
+ELIDE_LEFT = c_int(0)
+ELIDE_RIGHT = c_int(1)
+ELIDE_MIDDLE = c_int(2)
+ELIDE_NONE = c_int(3)
+
+# typedef enum {
+#     UPDATE_CHANNEL_DEVELOPMENT,
+#     UPDATE_CHANNEL_STABLE
+# } software_update_channel_e;
+software_update_channel_e = c_int
+UPDATE_CHANNEL_DEVELOPMENT = c_int(0)
+UPDATE_CHANNEL_STABLE = c_int(1)
+
+# typedef struct _e_prefs {
+#   GList       *col_list;
+#   gint         num_cols;
+#   color_t      st_client_fg, st_client_bg, st_server_fg, st_server_bg;
+#   color_t      gui_text_valid, gui_text_invalid, gui_text_deprecated;
+#   gboolean     restore_filter_after_following_stream;
+#   gint         gui_toolbar_main_style;
+#   gchar       *gui_qt_font_name;
+#   color_t      gui_active_fg;
+#   color_t      gui_active_bg;
+#   gint         gui_active_style;
+#   color_t      gui_inactive_fg;
+#   color_t      gui_inactive_bg;
+#   gint         gui_inactive_style;
+#   color_t      gui_marked_fg;
+#   color_t      gui_marked_bg;
+#   color_t      gui_ignored_fg;
+#   color_t      gui_ignored_bg;
+#   gchar       *gui_colorized_fg;
+#   gchar       *gui_colorized_bg;
+#   gboolean     gui_geometry_save_position;
+#   gboolean     gui_geometry_save_size;
+#   gboolean     gui_geometry_save_maximized;
+#   console_open_e gui_console_open;
+#   guint        gui_recent_df_entries_max;
+#   guint        gui_recent_files_count_max;
+#   guint        gui_fileopen_style;
+#   gchar       *gui_fileopen_dir;
+#   guint        gui_fileopen_preview;
+#   gboolean     gui_ask_unsaved;
+#   gboolean     gui_autocomplete_filter;
+#   gboolean     gui_find_wrap;
+#   gchar       *gui_window_title;
+#   gchar       *gui_prepend_window_title;
+#   gchar       *gui_start_title;
+#   version_info_e gui_version_placement;
+#   guint        gui_max_export_objects;
+#   layout_type_e gui_layout_type;
+#   layout_pane_content_e gui_layout_content_1;
+#   layout_pane_content_e gui_layout_content_2;
+#   layout_pane_content_e gui_layout_content_3;
+#   gchar       *gui_interfaces_hide_types;
+#   gboolean     gui_interfaces_show_hidden;
+#   gboolean     gui_interfaces_remote_display;
+#   gint         console_log_level;
+#   gchar       *capture_device;
+#   gchar       *capture_devices_linktypes;
+#   gchar       *capture_devices_descr;
+#   gchar       *capture_devices_hide;
+#   gchar       *capture_devices_monitor_mode;
+#   gchar       *capture_devices_buffersize;
+#   gchar       *capture_devices_snaplen;
+#   gchar       *capture_devices_pmode;
+#   gchar       *capture_devices_filter;
+#   gboolean     capture_prom_mode;
+#   gboolean     capture_pcap_ng;
+#   gboolean     capture_real_time;
+#   gboolean     capture_auto_scroll;
+#   gboolean     capture_no_interface_load;
+#   gboolean     capture_no_extcap;
+#   gboolean     capture_show_info;
+#   GList       *capture_columns;
+#   guint        tap_update_interval;
+#   gboolean     display_hidden_proto_items;
+#   gboolean     display_byte_fields_with_spaces;
+#   gboolean     enable_incomplete_dissectors_check;
+#   gboolean     incomplete_dissectors_check_debug;
+#   gboolean     strict_conversation_tracking_heuristics;
+#   gboolean     filter_expressions_old;
+#   gboolean     gui_update_enabled;
+#   software_update_channel_e gui_update_channel;
+#   gint         gui_update_interval;
+#   gchar       *saved_at_version;
+#   gboolean     unknown_prefs;
+#   gboolean     unknown_colorfilters;
+#   gboolean     gui_qt_packet_list_separator;
+#   gboolean     gui_qt_packet_header_column_definition;
+#   gboolean     gui_qt_show_selected_packet;
+#   gboolean     gui_qt_show_file_load_time;
+#   gboolean     gui_packet_editor;
+#   elide_mode_e gui_packet_list_elide_mode;
+#   gboolean     gui_packet_list_show_related;
+#   gboolean     gui_packet_list_show_minimap;
+#   gboolean     st_enable_burstinfo;
+#   gboolean     st_burst_showcount;
+#   gint         st_burst_resolution;
+#   gint         st_burst_windowlen;
+#   gboolean     st_sort_casesensitve;
+#   gboolean     st_sort_rng_fixorder;
+#   gboolean     st_sort_rng_nameonly;
+#   gint         st_sort_defcolflag;
+#   gboolean     st_sort_defdescending;
+#   gboolean     st_sort_showfullname;
+#   gboolean     extcap_save_on_start;
+# } e_prefs;
+
+
+class _e_prefs(Structure):
+    _fields_ = [('col_list', POINTER(GList)),
+                ('num_cols', gint),
+                ('st_client_fg', color_t),
+                ('st_client_bg', color_t),
+                ('st_server_fg', color_t),
+                ('st_server_bg', color_t),
+                ('gui_text_valid', color_t),
+                ('gui_text_invalid', color_t),
+                ('gui_text_deprecated', color_t),
+                ('resotre_filter_after_following_stream', gboolean),
+                ('gui_toolbar_main_style', gint),
+                ('gui_qt_font_name', gchar_p),
+                ('gui_active_fg', color_t),
+                ('gui_active_bg', color_t),
+                ('gui_active_style', gint),
+                ('gui_inactive_fg', color_t),
+                ('gui_inactive_bg', color_t),
+                ('gui_inactive_style', gint),
+                ('gui_marked_fg', color_t),
+                ('gui_marked_bg', color_t),
+                ('gui_ignored_fg', color_t),
+                ('gui_ignored_bg', color_t),
+                ('gui_colorized_fg', gchar_p),
+                ('gui_colorized_bg', gchar_p),
+                ('gui_geometry_save_position', gboolean),
+                ('gui_geometry_save_size', gboolean),
+                ('gui_geometry_save_maximized', gboolean),
+                ('gui_console_open', console_open_e),
+                ('gui_recent_df_entries_max', guint),
+                ('gui_recent_file_count_max', guint),
+                ('gui_fileopen_style', guint),
+                ('gui_fileopen_dir', gchar_p),
+                ('gui_fileopen_preview', guint),
+                ('gui_ask_unsaved', gboolean),
+                ('gui_autocomplete_filter', gboolean),
+                ('gui_find_wrap', gboolean),
+                ('gui_window_title', gchar_p),
+                ('gui_prepend_window_title', gchar_p),
+                ('gui_start_title', gchar_p),
+                ('gui_layout_type', version_info_e),
+                ('gui_max_export_objects', guint),
+                ('gui_layout_type', layout_type_e),
+                ('gui_layout_content_1', layout_pane_content_e),
+                ('gui_layout_content_2', layout_pane_content_e),
+                ('gui_layout_content_3', layout_pane_content_e),
+                ('gui_interfaces_hide_types', gchar_p),
+                ('gui_interfaces_show_hidden', gboolean),
+                ('gui_interfaces_remote_display', gboolean),
+                ('console_log_level', gint),
+                ('caputre_device', gchar_p),
+                ('capture_devices_linktypes', gchar_p),
+                ('capture_devices_descr', gchar_p),
+                ('capture_devices_hide', gchar_p),
+                ('capture_devices_monitor_mode', gchar_p),
+                ('capture_devices_buffersize', gchar_p),
+                ('capture_devices_snaplen', gchar_p),
+                ('capture_devices_pmode', gchar_p),
+                ('capture_devices_filter', gchar_p),
+                ('capture_prom_mode', gboolean),
+                ('capture_pcap_ng', gboolean),
+                ('capture_real_time', gboolean),
+                ('capture_auto_scroll', gboolean),
+                ('capture_no_interface_load', gboolean),
+                ('capture_no_extcap', gboolean),
+                ('caputre_show_info', gboolean),
+                ('capture_columns', POINTER(GList)),
+                ('tap_update_interval', guint),
+                ('display_hidden_proto_items', gboolean),
+                ('display_byte_fields_with_spaces', gboolean),
+                ('enable_incomplete_dissectors_check', gboolean),
+                ('incomplete_dissectors_check_debug', gboolean),
+                ('strict_conversation_tracking_heuristics', gboolean),
+                ('filter_expressions_old', gboolean),
+                ('gui_update_enabled', gboolean),
+                ('gui_update_channel', software_update_channel_e),
+                ('gui_update_interval', gint),
+                ('saved_at_version', gchar_p),
+                ('unknown_prefs', gboolean),
+                ('unknown_colorfilters', gboolean),
+                ('gui_qt_packet_list_separator', gboolean),
+                ('gui_qt_packet_header_column_definition', gboolean),
+                ('gui_qt_show_selected_packet', gboolean),
+                ('gui_qt_show_file_load_time', gboolean),
+                ('gui_packet_editor', gboolean),
+                ('gui_packet_list_elide_mode', elide_mode_e),
+                ('gui_packet_list_show_related', gboolean),
+                ('gui_packet_list_show_minimap', gboolean),
+                ('st_enable_burstinfo', gboolean),
+                ('st_burst_showcount', gboolean),
+                ('st_burst_resolution', gint),
+                ('st_burst_windowlen', gint),
+                ('st_sort_casesensitve', gboolean),
+                ('st_sort_rng_fixorder', gboolean),
+                ('st_sort_rng_nameonly', gboolean),
+                ('st_sort_defcolflag', gint),
+                ('st_sort_defdescending', gboolean),
+                ('st_sort_showfullname', gboolean),
+                ('extcap_save_on_start', gboolean)]
+
+
+e_prefs = _e_prefs
+
+
+# e_prefs prefs;
+prefs = e_prefs.in_dll(libwireshark, 'prefs')
+
+
+# struct pref_module;
+class pref_module(Structure):
+    _fields_ = []
+
+
+# struct pref_custom_cbs;
+class pref_custom_cbs(Structure):
+    _fields_ = []
+
+
+# typedef struct pref_module module_t;
+module_t = pref_module
+
+# void prefs_reset(void);
+prefs_reset = libwireshark.prefs_reset
+prefs_reset.restype = None
+prefs_reset.argtypes = []
+
+# void prefs_set_gui_theme_is_dark(gboolean is_dark);
+prefs_set_gui_theme_is_dark = libwireshark.prefs_set_gui_theme_is_dark
+prefs_set_gui_theme_is_dark.restype = None
+prefs_set_gui_theme_is_dark.argtypes = [gboolean]
+
+# module_t *prefs_register_protocol(int id, void (*apply_cb)(void));
+prefs_register_protocol = libwireshark.prefs_register_protocol
+prefs_register_protocol.restype = POINTER(module_t)
+prefs_register_protocol.argtypes = [c_int, CFUNCTYPE(None)]
+
+# void prefs_register_module_alias(const char *name, module_t *module);
+prefs_register_module_alias = libwireshark.prefs_register_module_alias
+prefs_register_module_alias.restype = None
+prefs_register_module_alias.argtypes = [c_char_p, POINTER(module_t)]
+
+# module_t *prefs_register_stat(const char *name, const char *title,
+#     const char *description, void (*apply_cb)(void));
+prefs_register_stat = libwireshark.prefs_register_stat
+prefs_register_stat.restype = POINTER(module_t)
+prefs_register_stat.argtypes = [c_char_p,
+                                c_char_p,
+                                c_char_p,
+                                CFUNCTYPE(None)]
+
+# module_t *prefs_register_codec(const char *name, const char *title,
+#     const char *description, void (*apply_cb)(void));
+prefs_register_codec = libwireshark.prefs_register_codec
+prefs_register_codec.restype = POINTER(module_t)
+prefs_register_codec.argtypes = [c_char_p,
+                                 c_char_p,
+                                 c_char_p,
+                                 CFUNCTYPE(None)]
+
+# module_t *prefs_register_protocol_subtree(const char *subtree, int id,
+#     void (*apply_cb)(void));
+prefs_register_protocol_subtree = libwireshark.prefs_register_protocol_subtree
+prefs_register_protocol_subtree.restype = POINTER(module_t)
+prefs_register_protocol_subtree.argtypes = [c_char_p, c_int, CFUNCTYPE(None)]
+
+# typedef guint (*module_cb)(module_t *module, gpointer user_data);
+module_cb = CFUNCTYPE(guint, POINTER(module_t), gpointer)
+
+# gboolean prefs_module_has_submodules(module_t *module);
+prefs_module_has_submodules = libwireshark.prefs_module_has_submodules
+prefs_module_has_submodules.restype = gboolean
+prefs_module_has_submodules.argtypes = [POINTER(module_t)]
+
+# guint prefs_modules_foreach(module_cb callback, gpointer user_data);
+prefs_modules_foreach = libwireshark.prefs_modules_foreach
+prefs_modules_foreach.restype = guint
+prefs_modules_foreach.argtypes = [module_cb, gpointer]
+
+# guint prefs_modules_foreach_submodules(module_t *module, module_cb
+# callback, gpointer user_data);
+prefs_modules_foreach_submodules = libwireshark.prefs_modules_foreach_submodules
+prefs_modules_foreach_submodules.restype = guint
+prefs_modules_foreach_submodules.argtypes = [
+    POINTER(module_t), module_cb, gpointer]
+
+# void prefs_apply_all(void);
+prefs_apply_all = libwireshark.prefs_apply_all
+prefs_apply_all.restype = None
+prefs_apply_all.argtypes = []
+
+# void prefs_apply(module_t *module);
+prefs_apply = libwireshark.prefs_apply
+prefs_apply.restype = None
+prefs_apply.argtypes = [POINTER(module_t)]
+
+
+# struct preference;
+class preference(Structure):
+    _fields_ = []
+
+
+# typedef struct preference pref_t;
+pref_t = preference
+
+# gboolean prefs_is_registered_protocol(const char *name);
+prefs_is_registered_protocol = libwireshark.prefs_is_registered_protocol
+prefs_is_registered_protocol.restype = gboolean
+prefs_is_registered_protocol.argtypes = [c_char_p]
+
+# const char *prefs_get_title_by_name(const char *name);
+prefs_get_title_by_name = libwireshark.prefs_get_title_by_name
+prefs_get_title_by_name.restype = c_char_p
+prefs_get_title_by_name.argtypes = [c_char_p]
+
+# module_t *prefs_find_module(const char *name);
+prefs_find_module = libwireshark.prefs_find_module
+prefs_find_module.restype = POINTER(module_t)
+prefs_find_module.argtypes = [c_char_p]
+
+# pref_t *prefs_find_preference(module_t * module, const char *pref);
+prefs_find_preference = libwireshark.prefs_find_preference
+prefs_find_preference.restype = POINTER(pref_t)
+prefs_find_preference.argtypes = [POINTER(module_t), c_char_p]
+
+# void prefs_register_uint_preference(module_t *module, const char *name,
+#     const char *title, const char *description, guint base, guint *var);
+prefs_register_uint_preference = libwireshark.prefs_register_uint_preference
+prefs_register_uint_preference.restype = None
+prefs_register_uint_preference.argtypes = [POINTER(module_t),
+                                           c_char_p,
+                                           c_char_p,
+                                           c_char_p,
+                                           guint,
+                                           POINTER(guint)]
+
+# void prefs_register_bool_preference(module_t *module, const char *name,
+#     const char *title, const char *description, gboolean *var);
+prefs_register_bool_preference = libwireshark.prefs_register_bool_preference
+prefs_register_bool_preference.restype = None
+prefs_register_bool_preference.argtypes = [POINTER(module_t),
+                                           c_char_p,
+                                           c_char_p,
+                                           c_char_p,
+                                           gboolean]
+
+# void prefs_register_enum_preference(module_t *module, const char *name,
+#     const char *title, const char *description, gint *var,
+#     const enum_val_t *enumvals, gboolean radio_buttons);
+prefs_register_enum_preference = libwireshark.prefs_register_enum_preference
+prefs_register_enum_preference.restype = None
+prefs_register_enum_preference.argtypes = [POINTER(module_t),
+                                           c_char_p,
+                                           c_char_p,
+                                           c_char_p,
+                                           POINTER(gint),
+                                           POINTER(enum_val_t),
+                                           gboolean]
+
+# void prefs_register_string_preference(module_t *module, const char *name,
+#     const char *title, const char *description, const char **var);
+prefs_register_string_preference = libwireshark.prefs_register_string_preference
+prefs_register_string_preference.restype = None
+prefs_register_string_preference.argtypes = [POINTER(module_t),
+                                             c_char_p,
+                                             c_char_p,
+                                             c_char_p,
+                                             POINTER(c_char_p)]
+
+# void prefs_register_filename_preference(module_t *module, const char *name,
+# const char *title, const char *description, const char **var, gboolean
+# for_writing);
+prefs_register_filename_preference = libwireshark.prefs_register_filename_preference
+prefs_register_filename_preference.restype = None
+prefs_register_filename_preference.argtypes = [POINTER(module_t),
+                                               c_char_p,
+                                               c_char_p,
+                                               c_char_p,
+                                               POINTER(c_char_p),
+                                               gboolean]
+
+# void prefs_register_directory_preference(module_t *module, const char *name,
+#     const char *title, const char *description, const char **var);
+prefs_register_directory_preference = libwireshark.prefs_register_directory_preference
+prefs_register_directory_preference.restype = None
+prefs_register_directory_preference.argtypes = [POINTER(module_t),
+                                                c_char_p,
+                                                c_char_p,
+                                                c_char_p,
+                                                POINTER(c_char_p)]
+
+# void prefs_register_range_preference(module_t *module, const char *name,
+#     const char *title, const char *description, range_t **var,
+#     guint32 max_value);
+prefs_register_range_preference = libwireshark.prefs_register_range_preference
+prefs_register_range_preference.restype = None
+prefs_register_range_preference.argtypes = [POINTER(module_t),
+                                            c_char_p,
+                                            c_char_p,
+                                            c_char_p,
+                                            POINTER(POINTER(range_t)),
+                                            guint32]
+
+# void prefs_register_static_text_preference(module_t *module, const char *name,
+#     const char *title, const char *description);
+prefs_register_static_text_preference = libwireshark.prefs_register_static_text_preference
+prefs_register_static_text_preference.restype = None
+prefs_register_static_text_preference.argtypes = [POINTER(module_t),
+                                                  c_char_p,
+                                                  c_char_p,
+                                                  c_char_p]
+
+# void prefs_register_uat_preference(module_t *module,
+# const char *name, const char* title, const char *description,  struct
+# epan_uat* uat);
+prefs_register_uat_preference = libwireshark.prefs_register_uat_preference
+prefs_register_uat_preference.restype = None
+prefs_register_uat_preference.argtypes = [POINTER(module_t),
+                                          c_char_p,
+                                          c_char_p,
+                                          c_char_p,
+                                          POINTER(epan_uat)]
+
+# void prefs_register_uat_preference_qt(module_t *module,
+# const char *name, const char* title, const char *description,  struct
+# epan_uat* uat);
+prefs_register_uat_preference_qt = libwireshark.prefs_register_uat_preference_qt
+prefs_register_uat_preference_qt.restype = None
+prefs_register_uat_preference_qt.argtypes = [POINTER(module_t),
+                                             c_char_p,
+                                             c_char_p,
+                                             c_char_p,
+                                             POINTER(epan_uat)]
+
+# void prefs_register_obsolete_preference(module_t *module,
+#     const char *name);
+prefs_register_obsolete_preference = libwireshark.prefs_register_obsolete_preference
+prefs_register_obsolete_preference.restype = None
+prefs_register_obsolete_preference.argtypes = [POINTER(module_t), c_char_p]
+
+# typedef guint (*pref_cb)(pref_t *pref, gpointer user_data);
+pref_cb = CFUNCTYPE(guint, POINTER(pref_t), gpointer)
+
+# guint prefs_pref_foreach(module_t *module, pref_cb callback,
+#     gpointer user_data);
+prefs_pref_foreach = libwireshark.prefs_pref_foreach
+prefs_pref_foreach.restype = guint
+prefs_pref_foreach.argtypes = [POINTER(module_t), pref_cb, gpointer]
+
+# GList *prefs_get_string_list(const gchar *str);
+prefs_get_string_list = libwireshark.prefs_get_string_list
+prefs_get_string_list.restype = POINTER(GList)
+prefs_get_string_list.argtypes = [gchar_p]
+
+# void prefs_clear_string_list(GList *sl);
+prefs_clear_string_list = libwireshark.prefs_clear_string_list
+prefs_clear_string_list.restype = None
+prefs_clear_string_list.argtypes = [POINTER(GList)]
+
+# const char *prefs_pref_type_name(pref_t *pref);
+prefs_pref_type_name = libwireshark.prefs_pref_type_name
+prefs_pref_type_name.restype = c_char_p
+prefs_pref_type_name.argtypes = [POINTER(pref_t)]
+
+# char *prefs_pref_type_description(pref_t *pref);
+prefs_pref_type_description = libwireshark.prefs_pref_type_description
+prefs_pref_type_description.restype = c_char_p
+prefs_pref_type_description.argtypes = [POINTER(pref_t)]
+
+# char *prefs_pref_to_str(pref_t *pref, pref_source_t source);
+prefs_pref_to_str = libwireshark.prefs_pref_to_str
+prefs_pref_to_str.restype = c_char_p
+prefs_pref_to_str.argtypes = [POINTER(pref_t), pref_source_t]
+
+# int write_prefs(char **);
+write_prefs = libwireshark.write_prefs
+write_prefs.restype = c_int
+write_prefs.argtypes = [POINTER(c_char_p)]
+
+# typedef enum {
+#     PREFS_SET_OK,
+#     PREFS_SET_SYNTAX_ERR,
+#     PREFS_SET_NO_SUCH_PREF,
+#     PREFS_SET_OBSOLETE
+# } prefs_set_pref_e;
+prefs_set_pref_e = c_int
+PREFS_SET_OK = c_int(0)
+PREFS_SET_SYNTAX_ERR = c_int(1)
+PREFS_SET_NO_SUCH_PREF = c_int(2)
+PREFS_SET_OBSOLETE = c_int(3)
+
+# prefs_set_pref_e prefs_set_pref(char *prefarg, char **errmsg);
+prefs_set_pref = libwireshark.prefs_set_pref
+prefs_set_pref.restype = prefs_set_pref_e
+prefs_set_pref.argtypes = [c_char_p, POINTER(c_char_p)]
+
+# guint prefs_get_uint_value(const char *module_name, const char* pref_name);
+prefs_get_uint_value = libwireshark.prefs_get_uint_value
+prefs_get_uint_value.restype = guint
+prefs_get_uint_value.argtypes = [c_char_p, c_char_p]
+
+# range_t* prefs_get_range_value(const char *module_name, const char*
+# pref_name);
+prefs_get_range_value = libwireshark.prefs_get_range_value
+prefs_get_range_value.restype = POINTER(range_t)
+prefs_get_range_value.argtypes = [c_char_p, c_char_p]
+
+# gboolean prefs_is_capture_device_hidden(const char *name);
+prefs_is_capture_device_hidden = libwireshark.prefs_is_capture_device_hidden
+prefs_is_capture_device_hidden.restype = gboolean
+prefs_is_capture_device_hidden.argtypes = [c_char_p]
+
+# gboolean prefs_capture_device_monitor_mode(const char *name);
+prefs_capture_device_monitor_mode = libwireshark.prefs_capture_device_monitor_mode
+prefs_capture_device_monitor_mode.restype = gboolean
+prefs_capture_device_monitor_mode.argtypes = [c_char_p]
+
+# gboolean prefs_capture_options_dialog_column_is_visible(const gchar *column);
+prefs_capture_options_dialog_column_is_visible = libwireshark.prefs_capture_options_dialog_column_is_visible
+prefs_capture_options_dialog_column_is_visible.restype = gboolean
+prefs_capture_options_dialog_column_is_visible.argtypes = [gchar_p]
+
+# gboolean prefs_has_layout_pane_content (layout_pane_content_e
+# layout_pane_content);
+prefs_has_layout_pane_content = libwireshark.prefs_has_layout_pane_content
+prefs_has_layout_pane_content.restype = gboolean
+prefs_has_layout_pane_content.argtypes = [layout_pane_content_e]
