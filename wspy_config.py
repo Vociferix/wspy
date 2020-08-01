@@ -22,11 +22,14 @@ from os import environ
 from ctypes.util import find_library
 from wspy.errors import LibNotFound
 
+
 def set_libdir(path):
     environ['WSPY_LIBDIR'] = path
 
+
 def get_libdir():
     return environ.get('WSPY_LIBDIR')
+
 
 def _get_lib(name):
     if 'WSPY_LIB{}'.format(name.upper()) not in environ:
@@ -51,23 +54,29 @@ def _get_lib(name):
 
     if path is None:
         raise LibNotFound(name)
-       
+
     return path
+
 
 def set_libwireshark(path):
     environ['WSPY_LIBWIRESHARK'] = path
 
+
 def get_libwireshark():
     return _get_lib('wireshark')
+
 
 def set_libwiretap(path):
     environ['WSPY_LIBWIRETAP'] = path
 
+
 def get_libwiretap():
     return _get_lib('wiretap')
 
+
 def set_libwsutil(path):
     environ['WSPY_LIBWSUTIL'] = path
+
 
 def get_libwsutil():
     return _get_lib('wsutil')
