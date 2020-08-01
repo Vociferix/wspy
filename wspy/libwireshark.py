@@ -22,6 +22,7 @@ from ctypes import *
 from wspy.errors import *
 from wspy.libglib2 import *
 from wspy.libwsutil import *
+from wspy.libwiretap import *
 import wspy_config as config
 import sys
 
@@ -2671,3 +2672,429 @@ prefs_capture_options_dialog_column_is_visible.argtypes = [gchar_p]
 prefs_has_layout_pane_content = libwireshark.prefs_has_layout_pane_content
 prefs_has_layout_pane_content.restype = gboolean
 prefs_has_layout_pane_content.argtypes = [layout_pane_content_e]
+
+
+################
+# frame_data.h #
+################
+
+# struct _packet_info;
+class _packet_info(Structure):
+    _fields_ = []
+
+
+# struct epan_session;
+class epan_session(Structure):
+    _fields_ = []
+
+
+# #define PINFO_FD_VISITED(pinfo)   ((pinfo)->fd->visited)
+def PINFO_FD_VISITED(pinfo):
+    return pinfo[0].fd[0].visited
+
+
+# typedef enum {
+#   PACKET_CHAR_ENC_CHAR_ASCII     = 0,
+#   PACKET_CHAR_ENC_CHAR_EBCDIC    = 1
+# } packet_char_enc;
+packet_char_end = c_int
+PACKET_CHAR_ENC_CHAR_ASCII = c_int(0)
+PACKET_CHAR_END_CHAR_EBCDIC = c_int(1)
+
+
+# struct _color_filter;
+class _color_filter(Structure):
+    _fields_ = []
+
+
+# typedef struct _frame_data {
+#   guint32      num;
+#   guint32      pkt_len;
+#   guint32      cap_len;
+#   guint32      cum_bytes;
+#   gint64       file_off;
+#   GSList      *pfd;
+#   const struct _color_filter *color_filter;
+#   guint16      subnum;
+#   unsigned int passed_dfilter   : 1;
+#   unsigned int dependent_of_displayed : 1;
+#   unsigned int encoding         : 1;
+#   unsigned int visited          : 1;
+#   unsigned int marked           : 1;
+#   unsigned int ref_time         : 1;
+#   unsigned int ignored          : 1;
+#   unsigned int has_ts           : 1;
+#   unsigned int has_phdr_comment : 1;
+#   unsigned int has_user_comment : 1;
+#   unsigned int need_colorize    : 1;
+#   unsigned int tsprec           : 4;
+#   nstime_t     abs_ts;
+#   nstime_t     shift_offset;
+#   guint32      frame_ref_num;
+#   guint32      prev_dis_num;
+# } frame_data;
+class _frame_data(Structure):
+    _fields_ = [('num', guint32),
+                ('pkt_len', guint32),
+                ('cap_len', guint32),
+                ('cum_bytes', guint32),
+                ('file_off', gint64),
+                ('pfd', POINTER(GSList)),
+                ('color_filter', POINTER(_color_filter)),
+                ('subnum', guint16),
+                ('passed_dfilter', c_uint, 1),
+                ('dependent_of_displayed', c_uint, 1),
+                ('encoding', c_uint, 1),
+                ('visited', c_uint, 1),
+                ('marked', c_uint, 1),
+                ('ref_time', c_uint, 1),
+                ('ignored', c_uint, 1),
+                ('has_ts', c_uint, 1),
+                ('has_phdr_comment', c_uint, 1),
+                ('has_user_comment', c_uint, 1),
+                ('need_colorize', c_uint, 1),
+                ('tsprec', c_uint, 4),
+                ('abs_ts', nstime_t),
+                ('shift_offset', nstime_t),
+                ('frame_ref_num', guint32),
+                ('prev_dis_num', guint32)]
+
+
+frame_data = _frame_data
+
+# gint frame_data_compare(const struct epan_session *epan, const
+# frame_data *fdata1, const frame_data *fdata2, int field);
+frame_data_compare = libwireshark.frame_data_compare
+frame_data_compare.restype = gint
+frame_data_compare.argtypes = [POINTER(epan_session),
+                               POINTER(frame_data),
+                               POINTER(frame_data),
+                               c_int]
+
+# void frame_data_reset(frame_data *fdata);
+frame_data_reset = libwireshark.frame_data_reset
+frame_data_reset.restype = None
+frame_data_reset.argtypes = [POINTER(frame_data)]
+
+# void frame_data_destroy(frame_data *fdata);
+frame_data_destroy = libwireshark.frame_data_destroy
+frame_data_destroy.restype = None
+frame_data_destroy.argtypes = [POINTER(frame_data)]
+
+# void frame_data_init(frame_data *fdata, guint32 num,
+#                 const wtap_rec *rec, gint64 offset,
+#                 guint32 cum_bytes);
+frame_data_init = libwireshark.frame_data_init
+frame_data_init.restype = None
+frame_data_init.argtypes = [POINTER(frame_data),
+                            guint32,
+                            POINTER(wtap_rec),
+                            gint64,
+                            guint32]
+
+# void frame_data_set_before_dissect(frame_data *fdata,
+#                 nstime_t *elapsed_time,
+#                 const frame_data **frame_ref,
+#                 const frame_data *prev_dis);
+frame_data_set_before_dissect = libwireshark.frame_data_set_before_dissect
+frame_data_set_before_dissect.restype = None
+frame_data_set_before_dissect.argtypes = [POINTER(frame_data),
+                                          POINTER(nstime_t),
+                                          POINTER(POINTER(frame_data)),
+                                          POINTER(frame_data)]
+
+# void frame_data_set_after_dissect(frame_data *fdata,
+#                 guint32 *cum_bytes);
+frame_data_set_after_dissect = libwireshark.frame_data_set_after_dissect
+frame_data_set_after_dissect.restype = None
+frame_data_set_after_dissect.argtypes = [POINTER(frame_data), POINTER(guint32)]
+
+
+##############
+# register.h #
+##############
+
+# typedef enum {
+#     RA_NONE,
+#     RA_DISSECTORS,
+#     RA_LISTENERS,
+#     RA_EXTCAP,
+#     RA_REGISTER,
+#     RA_PLUGIN_REGISTER,
+#     RA_HANDOFF,
+#     RA_PLUGIN_HANDOFF,
+#     RA_LUA_PLUGINS,
+#     RA_LUA_DEREGISTER,
+#     RA_PREFERENCES,
+#     RA_INTERFACES
+# } register_action_e;
+register_action_e = c_int
+RA_NONE = c_int(0)
+RA_DISSECTORS = c_int(1)
+RA_LISTENERS = c_int(2)
+RA_EXTCAP = c_int(3)
+RA_REGISTER = c_int(4)
+RA_PLUGIN_REGISTER = c_int(5)
+RA_HANDOFF = c_int(6)
+RA_PLUGIN_HANDOFF = c_int(7)
+RA_LUA_PLUGINS = c_int(8)
+RA_LUA_DEREGISTER = c_int(9)
+RA_PREFERENCES = c_int(10)
+RA_INTERFACES = c_int(11)
+
+# #define RA_BASE_COUNT (RA_INTERFACES - 3)
+RA_BASE_COUNT = c_int(RA_INTERFACES.value - 3)
+
+# typedef void (*register_cb)(register_action_e action, const char
+# *message, gpointer client_data);
+register_cb = CFUNCTYPE(None, register_action_e, c_char_p, gpointer)
+
+
+##########
+# epan.h #
+##########
+
+# typedef struct epan_dissect epan_dissect_t;
+class epan_dissect(Structure):
+    _fields_ = []
+
+
+epan_dissect_t = epan_dissect
+
+
+# struct epan_dfilter;
+class epan_dfilter(Structure):
+    _fields_ = []
+
+
+# struct epan_column_info;
+class epan_column_info(Structure):
+    _fields_ = []
+
+
+# struct packet_provider_data;
+class packet_provider_data(Structure):
+    _fields_ = []
+
+
+# struct packet_provider_funcs {
+# 	const nstime_t *(*get_frame_ts)(struct packet_provider_data *prov, guint32 frame_num);
+# 	const char *(*get_interface_name)(struct packet_provider_data *prov, guint32 interface_id);
+# 	const char *(*get_interface_description)(struct packet_provider_data *prov, guint32 interface_id);
+# 	const char *(*get_user_comment)(struct packet_provider_data *prov, const frame_data *fd);
+# };
+class packet_provider_funcs(Structure):
+    _fields_ = [
+        ('get_frame_ts', CFUNCTYPE(
+            POINTER(nstime_t), POINTER(packet_provider_data), guint32)), ('get_interface_name', CFUNCTYPE(
+                c_char_p, POINTER(packet_provider_data), guint32)), ('get_interface_description', CFUNCTYPE(
+                    c_char_p, POINTER(packet_provider_data), guint32)), ('get_user_comment', CFUNCTYPE(
+                        c_char_p, POINTER(packet_provider_data), POINTER(frame_data)))]
+
+
+# gboolean epan_init(register_cb cb, void *client_data, gboolean load_plugins);
+epan_init = libwireshark.epan_init
+epan_init.restype = gboolean
+epan_init.argtypes = [register_cb, c_void_p, gboolean]
+
+# e_prefs *epan_load_settings(void);
+epan_load_settings = libwireshark.epan_load_settings
+epan_load_settings.restype = POINTER(e_prefs)
+epan_load_settings.argtypes = []
+
+# void epan_cleanup(void);
+epan_cleanup = libwireshark.epan_cleanup
+epan_cleanup.restype = None
+epan_cleanup.argtypes = []
+
+
+# typedef struct {
+# 	void (*init)(void);
+# 	void (*dissect_init)(epan_dissect_t *);
+# 	void (*dissect_cleanup)(epan_dissect_t *);
+# 	void (*cleanup)(void);
+# 	void (*register_all_protocols)(register_cb, gpointer);
+# 	void (*register_all_handoffs)(register_cb, gpointer);
+# 	void (*register_all_tap_listeners)(void);
+# } epan_plugin;
+class epan_plugin(Structure):
+    _fields_ = [('init', CFUNCTYPE(None)),
+                ('dissect_init', CFUNCTYPE(None, POINTER(epan_dissect_t))),
+                ('dissect_cleanup', CFUNCTYPE(None, POINTER(epan_dissect_t))),
+                ('cleanup', CFUNCTYPE(None)),
+                ('register_all_protocols', CFUNCTYPE(None, register_cb, gpointer)),
+                ('register_all_handoffs', CFUNCTYPE(None, register_cb, gpointer)),
+                ('register_all_tap_listeners', CFUNCTYPE(None))]
+
+
+# void epan_register_plugin(const epan_plugin *plugin);
+epan_register_plugin = libwireshark.epan_register_plugin
+epan_register_plugin.restype = None
+epan_register_plugin.argtypes = [POINTER(epan_plugin)]
+
+# typedef struct epan_session epan_t;
+epan_t = epan_session
+
+# epan_t *epan_new(struct packet_provider_data *prov,
+#     const struct packet_provider_funcs *funcs);
+epan_new = libwireshark.epan_new
+epan_new.restype = POINTER(epan_t)
+epan_new.argtypes = [POINTER(packet_provider_data),
+                     POINTER(packet_provider_funcs)]
+
+# const char *epan_get_user_comment(const epan_t *session, const
+# frame_data *fd);
+epan_get_user_comment = libwireshark.epan_get_user_comment
+epan_get_user_comment.restype = c_char_p
+epan_get_user_comment.argtypes = [POINTER(epan_t), POINTER(frame_data)]
+
+# const char *epan_get_interface_name(const epan_t *session, guint32
+# interface_id);
+epan_get_interface_name = libwireshark.epan_get_interface_name
+epan_get_interface_name.restype = c_char_p
+epan_get_interface_name.argtypes = [POINTER(epan_t), guint32]
+
+# const char *epan_get_interface_description(const epan_t *session,
+# guint32 interface_id);
+epan_get_interface_description = libwireshark.epan_get_interface_description
+epan_get_interface_description.restype = c_char_p
+epan_get_interface_description.argtypes = [POINTER(epan_t), guint32]
+
+# void epan_free(epan_t *session);
+epan_free = libwireshark.epan_free
+epan_free.restype = None
+epan_free.argtypes = [POINTER(epan_t)]
+
+# const gchar* epan_get_version(void);
+epan_get_version = libwireshark.epan_get_version
+epan_get_version.restype = gchar_p
+epan_get_version.argtypes = []
+
+# void epan_get_version_number(int *major, int *minor, int *micro);
+epan_get_version_number = libwireshark.epan_get_version_number
+epan_get_version_number.restype = None
+epan_get_version_number.argtypes = [POINTER(c_int),
+                                    POINTER(c_int),
+                                    POINTER(c_int)]
+
+# void epan_dissect_init(epan_dissect_t *edt, epan_t *session, const
+# gboolean create_proto_tree, const gboolean proto_tree_visible);
+epan_dissect_init = libwireshark.epan_dissect_init
+epan_dissect_init.restype = None
+epan_dissect_init.argtypes = [POINTER(epan_dissect_t),
+                              POINTER(epan_t),
+                              gboolean,
+                              gboolean]
+
+# epan_dissect_t* epan_dissect_new(epan_t *session, const gboolean
+# create_proto_tree, const gboolean proto_tree_visible);
+epan_dissect_new = libwireshark.epan_dissect_new
+epan_dissect_new.restype = POINTER(epan_dissect_t)
+epan_dissect_new.argtypes = [POINTER(epan_t), gboolean, gboolean]
+
+# void epan_dissect_reset(epan_dissect_t *edt);
+epan_dissect_reset = libwireshark.epan_dissect_reset
+epan_dissect_reset.restype = None
+epan_dissect_reset.argtypes = [POINTER(epan_dissect_t)]
+
+# void epan_dissect_fake_protocols(epan_dissect_t *edt, const gboolean
+# fake_protocols);
+epan_dissect_fake_protocols = libwireshark.epan_dissect_fake_protocols
+epan_dissect_fake_protocols.restype = None
+epan_dissect_fake_protocols.argtypes = [POINTER(epan_dissect_t), gboolean]
+
+# void epan_dissect_run(epan_dissect_t *edt, int file_type_subtype,
+#         wtap_rec *rec, tvbuff_t *tvb, frame_data *fd,
+#         struct epan_column_info *cinfo);
+epan_dissect_run = libwireshark.epan_dissect_run
+epan_dissect_run.restype = None
+epan_dissect_run.argtypes = [POINTER(epan_dissect_t),
+                             c_int,
+                             POINTER(wtap_rec),
+                             POINTER(tvbuff_t),
+                             POINTER(frame_data),
+                             POINTER(epan_column_info)]
+
+# void epan_dissect_run_with_taps(epan_dissect_t *edt, int file_type_subtype,
+#         wtap_rec *rec, tvbuff_t *tvb, frame_data *fd,
+#         struct epan_column_info *cinfo);
+epan_dissect_run_with_taps = libwireshark.epan_dissect_run_with_taps
+epan_dissect_run_with_taps.restype = None
+epan_dissect_run_with_taps.argtypes = [POINTER(epan_dissect_t),
+                                       c_int,
+                                       POINTER(wtap_rec),
+                                       POINTER(tvbuff_t),
+                                       POINTER(frame_data),
+                                       POINTER(epan_column_info)]
+
+# void epan_dissect_file_run(epan_dissect_t *edt, wtap_rec *rec,
+#         tvbuff_t *tvb, frame_data *fd, struct epan_column_info *cinfo);
+epan_dissect_file_run = libwireshark.epan_dissect_file_run
+epan_dissect_file_run.restype = None
+epan_dissect_file_run.argtypes = [POINTER(epan_dissect_t),
+                                  POINTER(wtap_rec),
+                                  POINTER(tvbuff_t),
+                                  POINTER(frame_data),
+                                  POINTER(epan_column_info)]
+
+# void epan_dissect_file_run_with_taps(epan_dissect_t *edt, wtap_rec *rec,
+#         tvbuff_t *tvb, frame_data *fd, struct epan_column_info *cinfo);
+epan_dissect_file_run_with_taps = libwireshark.epan_dissect_file_run_with_taps
+epan_dissect_file_run_with_taps.restype = None
+epan_dissect_file_run_with_taps.argtypes = [POINTER(epan_dissect_t),
+                                            POINTER(wtap_rec),
+                                            POINTER(tvbuff_t),
+                                            POINTER(frame_data),
+                                            POINTER(epan_column_info)]
+
+# void epan_dissect_prime_with_dfilter(epan_dissect_t *edt, const struct
+# epan_dfilter *dfcode);
+epan_dissect_prime_with_dfilter = libwireshark.epan_dissect_prime_with_dfilter
+epan_dissect_prime_with_dfilter.restype = None
+epan_dissect_prime_with_dfilter.argtypes = [POINTER(epan_dissect_t),
+                                            POINTER(epan_dfilter)]
+
+# void epan_dissect_prime_with_hfid(epan_dissect_t *edt, int hfid);
+epan_dissect_prime_with_hfid = libwireshark.epan_dissect_prime_with_hfid
+epan_dissect_prime_with_hfid.restype = None
+epan_dissect_prime_with_hfid.argtypes = [POINTER(epan_dissect_t), c_int]
+
+# void epan_dissect_prime_with_hfid_array(epan_dissect_t *edt, GArray *hfids);
+epan_dissect_prime_with_hfid_array = libwireshark.epan_dissect_prime_with_hfid_array
+epan_dissect_prime_with_hfid_array.restype = None
+epan_dissect_prime_with_hfid_array.argtypes = [
+    POINTER(epan_dissect_t), POINTER(GArray)]
+
+# void epan_dissect_fill_in_columns(epan_dissect_t *edt, const gboolean
+# fill_col_exprs, const gboolean fill_fd_colums);
+epan_dissect_fill_in_columns = libwireshark.epan_dissect_fill_in_columns
+epan_dissect_fill_in_columns.restype = None
+epan_dissect_fill_in_columns.argtypes = [
+    POINTER(epan_dissect_t), gboolean, gboolean]
+
+# gboolean epan_dissect_packet_contains_field(epan_dissect_t* edt,
+#                                    const char *field_name);
+epan_dissect_packet_contains_field = libwireshark.epan_dissect_packet_contains_field
+epan_dissect_packet_contains_field.restype = gboolean
+epan_dissect_packet_contains_field.argtypes = [
+    POINTER(epan_dissect_t), c_char_p]
+
+# void epan_dissect_cleanup(epan_dissect_t* edt);
+epan_dissect_cleanup = libwireshark.epan_dissect_cleanup
+epan_dissect_cleanup.restype = None
+epan_dissect_cleanup.argtypes = [POINTER(epan_dissect_t)]
+
+# void epan_dissect_free(epan_dissect_t* edt);
+epan_dissect_free = libwireshark.epan_dissect_free
+epan_dissect_free.restype = None
+epan_dissect_free.argtypes = [POINTER(epan_dissect_t)]
+
+# void epan_get_compiled_version_info(GString *str);
+epan_get_compiled_version_info = libwireshark.epan_get_compiled_version_info
+epan_get_compiled_version_info.restype = None
+epan_get_compiled_version_info.argtypes = [POINTER(GString)]
+
+# void epan_get_runtime_version_info(GString *str);
+epan_get_runtime_version_info = libwireshark.epan_get_runtime_version_info
+epan_get_runtime_version_info.restype = None
+epan_get_runtime_version_info.argtypes = [POINTER(GString)]
