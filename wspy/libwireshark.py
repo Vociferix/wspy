@@ -7800,3 +7800,1459 @@ proto_checksum_vals = POINTER(value_string).in_dll(
 proto_check_field_name = libwireshark.proto_check_field_name
 proto_check_field_name.restype = guchar
 proto_check_field_name.argtypes = [gchar_p]
+
+
+##################
+# column-utils.h #
+##################
+
+# struct epan_column_info;
+class epan_column_info(Structure):
+    _fields_ = []
+
+
+# typedef struct epan_column_info column_info;
+column_info = epan_column_info
+
+# enum {
+#   COL_8021Q_VLAN_ID,
+#   COL_ABS_YMD_TIME,
+#   COL_ABS_YDOY_TIME,
+#   COL_ABS_TIME,
+#   COL_VSAN,
+#   COL_CUMULATIVE_BYTES,
+#   COL_CUSTOM,
+#   COL_DCE_CALL,
+#   COL_DELTA_TIME,
+#   COL_DELTA_TIME_DIS,
+#   COL_RES_DST,
+#   COL_UNRES_DST,
+#   COL_RES_DST_PORT,
+#   COL_UNRES_DST_PORT,
+#   COL_DEF_DST,
+#   COL_DEF_DST_PORT,
+#   COL_EXPERT,
+#   COL_IF_DIR,
+#   COL_FREQ_CHAN,
+#   COL_DEF_DL_DST,
+#   COL_DEF_DL_SRC,
+#   COL_RES_DL_DST,
+#   COL_UNRES_DL_DST,
+#   COL_RES_DL_SRC,
+#   COL_UNRES_DL_SRC,
+#   COL_RSSI,
+#   COL_TX_RATE,
+#   COL_DSCP_VALUE,
+#   COL_INFO,
+#   COL_RES_NET_DST,
+#   COL_UNRES_NET_DST,
+#   COL_RES_NET_SRC,
+#   COL_UNRES_NET_SRC,
+#   COL_DEF_NET_DST,
+#   COL_DEF_NET_SRC,
+#   COL_NUMBER,
+#   COL_PACKET_LENGTH,
+#   COL_PROTOCOL,
+#   COL_REL_TIME,
+#   COL_DEF_SRC,
+#   COL_DEF_SRC_PORT,
+#   COL_RES_SRC,
+#   COL_UNRES_SRC,
+#   COL_RES_SRC_PORT,
+#   COL_UNRES_SRC_PORT,
+#   COL_TEI,
+#   COL_UTC_YMD_TIME,
+#   COL_UTC_YDOY_TIME,
+#   COL_UTC_TIME,
+#   COL_CLS_TIME,
+#   NUM_COL_FMTS
+# };
+COL_8021Q_VLAN_ID = c_int(0)
+COL_ABS_YMD_TIME = c_int(1)
+COL_ABS_YDOY_TIME = c_int(2)
+COL_ABS_TIME = c_int(3)
+COL_VSAN = c_int(4)
+COL_CUMULATIVE_BYTES = c_int(5)
+COL_CUSTOM = c_int(6)
+COL_DCE_CALL = c_int(7)
+COL_DELTA_TIME = c_int(8)
+COL_DELTA_TIME_DIS = c_int(9)
+COL_RES_DST = c_int(10)
+COL_UNRES_DST = c_int(11)
+COL_RES_DST_PORT = c_int(12)
+COL_UNRES_DST_PORT = c_int(13)
+COL_DEF_DST = c_int(14)
+COL_DEF_DST_PORT = c_int(15)
+COL_EXPERT = c_int(16)
+COL_IF_DIR = c_int(17)
+COL_FREQ_CHAN = c_int(18)
+COL_DEF_DL_DST = c_int(19)
+COL_DEF_DL_SRC = c_int(20)
+COL_RES_DL_DST = c_int(21)
+COL_UNRES_DL_DST = c_int(22)
+COL_RES_DL_SRC = c_int(23)
+COL_UNRES_DL_SRC = c_int(24)
+COL_RSSI = c_int(25)
+COL_TX_RATE = c_int(26)
+COL_DSCP_VALUE = c_int(27)
+COL_INFO = c_int(28)
+COL_RES_NET_DST = c_int(29)
+COL_UNRES_NET_DST = c_int(30)
+COL_RES_NET_SRC = c_int(31)
+COL_UNRES_NET_SRC = c_int(32)
+COL_DEF_NET_DST = c_int(33)
+COL_DEF_NET_SRC = c_int(34)
+COL_NUMBER = c_int(35)
+COL_PACKET_LENGTH = c_int(36)
+COL_PROTOCOL = c_int(37)
+COL_REL_TIME = c_int(38)
+COL_DEF_SRC = c_int(39)
+COL_DEF_SRC_PORT = c_int(40)
+COL_RES_SRC = c_int(41)
+COL_UNRES_SRC = c_int(42)
+COL_RES_SRC_PORT = c_int(43)
+COL_UNRES_SRC_PORT = c_int(44)
+COL_TEI = c_int(45)
+COL_UTC_YMD_TIME = c_int(46)
+COL_UTC_YDOY_TIME = c_int(47)
+COL_UTC_TIME = c_int(48)
+COL_CLS_TIME = c_int(49)
+NUM_COL_FMTS = c_int(50)
+
+# void col_setup(column_info *cinfo, const gint num_cols);
+col_setup = libwireshark.col_setup
+col_setup.restype = None
+col_setup.argtypes = [POINTER(column_info), gint]
+
+# void col_cleanup(column_info *cinfo);
+col_cleanup = libwireshark.col_cleanup
+col_cleanup.restype = None
+col_cleanup.argtypes = [POINTER(column_info)]
+
+# void col_fill_in_frame_data(const frame_data *fd, column_info *cinfo,
+# const gint col, gboolean const fill_col_exprs);
+col_fill_in_frame_data = libwireshark.col_fill_in_frame_data
+col_fill_in_frame_data.restype = None
+col_fill_in_frame_data.argtypes = [POINTER(frame_data),
+                                   POINTER(column_info),
+                                   gint,
+                                   gboolean]
+
+# void col_fill_in(packet_info *pinfo, const gboolean fill_col_exprs,
+# const gboolean fill_fd_colums);
+col_fill_in = libwireshark.col_fill_in
+col_fill_in.restype = None
+col_fill_in.argtypes = [POINTER(packet_info), gboolean, gboolean]
+
+# void col_fill_in_error(column_info *cinfo, frame_data *fdata, const
+# gboolean fill_col_exprs, const gboolean fill_fd_colums);
+col_fill_in_error = libwireshark.col_fill_in_error
+col_fill_in_error.restype = None
+col_fill_in_error.argtypes = [POINTER(column_info),
+                              POINTER(frame_data),
+                              gboolean,
+                              gboolean]
+
+# gboolean col_data_changed(void);
+col_data_changed = libwireshark.col_data_changed
+col_data_changed.restype = gboolean
+col_data_changed.argtypes = []
+
+# gboolean col_get_writable(column_info *cinfo, const gint col);
+col_get_writable = libwireshark.col_get_writable
+col_get_writable.restype = gboolean
+col_get_writable.argtypes = [POINTER(column_info), gint]
+
+# void col_set_writable(column_info *cinfo, const gint col, const gboolean
+# writable);
+col_set_writable = libwireshark.col_set_writable
+col_set_writable.restype = None
+col_set_writable.argtypes = [POINTER(column_info), gint, gboolean]
+
+# void col_set_fence(column_info *cinfo, const gint col);
+col_set_fence = libwireshark.col_set_fence
+col_set_fence.restype = None
+col_set_fence.argtypes = [POINTER(column_info), gint]
+
+# void col_clear_fence(column_info *cinfo, const gint col);
+col_clear_fence = libwireshark.col_clear_fence
+col_clear_fence.restype = None
+col_clear_fence.argtypes = [POINTER(column_info), gint]
+
+# const gchar *col_get_text(column_info *cinfo, const gint col);
+col_get_text = libwireshark.col_get_text
+col_get_text.restype = gchar_p
+col_get_text.argtypes = [POINTER(column_info), gint]
+
+# void col_clear(column_info *cinfo, const gint col);
+col_clear = libwireshark.col_clear
+col_clear.restype = None
+col_clear.argtypes = [POINTER(column_info), gint]
+
+# void col_set_str(column_info *cinfo, const gint col, const gchar * str);
+col_set_str = libwireshark.col_set_str
+col_set_str.restype = None
+col_set_str.argtypes = [POINTER(column_info), gint, gchar_p]
+
+# void col_add_str(column_info *cinfo, const gint col, const gchar *str);
+col_add_str = libwireshark.col_add_str
+col_add_str.restype = None
+col_add_str.argtypes = [POINTER(column_info), gint, gchar_p]
+
+# #define COL_ADD_LSTR_TERMINATOR (const char *) -1
+COL_ADD_LSTR_TERMINATOR = cast(c_void_p(-1), c_char_p)
+
+
+# void col_add_lstr(column_info *cinfo, const gint el, const gchar *str, ...);
+def col_add_lstr(cinfo, el, str, *argv):
+    args, types = c_va_list(*argv)
+    _col_add_lstr = libwireshark.col_add_lstr
+    _col_add_lstr.restype = None
+    _col_add_lstr.argtypes = [POINTER(column_info), gint, gchar_p] + types
+    _col_add_lstr(cinfo, el, str * args)
+
+
+# void col_add_fstr(column_info *cinfo, const gint col, const gchar
+# *format, ...);
+def col_add_fstr(cinfo, col, format, *argv):
+    args, types = c_va_list(*argv)
+    _col_add_fstr = libwireshark.col_add_fstr
+    _col_add_fstr.restype = None
+    _col_add_fstr.argtypes = [POINTER(column_info), gint, gchar_p] + types
+    _col_add_fstr(cinfo, col, format * args)
+
+
+# void col_custom_prime_edt(struct epan_dissect *edt, column_info *cinfo);
+col_custom_prime_edt = libwireshark.col_custom_prime_edt
+col_custom_prime_edt.restype = None
+col_custom_prime_edt.argtypes = [POINTER(epan_dissect), POINTER(column_info)]
+
+# gboolean have_custom_cols(column_info *cinfo);
+have_custom_cols = libwireshark.have_custom_cols
+have_custom_cols.restype = gboolean
+have_custom_cols.argtypes = [POINTER(column_info)]
+
+# gboolean have_field_extractors(void);
+have_field_extractors = libwireshark.have_field_extractors
+have_field_extractors.restype = gboolean
+have_field_extractors.argtypes = []
+
+# gboolean col_has_time_fmt(column_info *cinfo, const gint col);
+col_has_time_fmt = libwireshark.col_has_time_fmt
+col_has_time_fmt.restype = gboolean
+col_has_time_fmt.argtypes = [POINTER(column_info), gint]
+
+# gboolean col_based_on_frame_data(column_info *cinfo, const gint col);
+col_based_on_frame_data = libwireshark.col_based_on_frame_data
+col_based_on_frame_data.restype = gboolean
+col_based_on_frame_data.argtypes = [POINTER(column_info), gint]
+
+# void col_append_str(column_info *cinfo, const gint col, const gchar *str);
+col_append_str = libwireshark.col_append_str
+col_append_str.restype = None
+col_append_str.argtypes = [POINTER(column_info), gint, gchar_p]
+
+# void col_append_str_uint(column_info *cinfo, const gint col, const gchar
+# *abbrev, guint32 val, const gchar *sep);
+col_append_str_uint = libwireshark.col_append_str_uint
+col_append_str_uint.restype = None
+col_append_str_uint.argtypes = [
+    POINTER(column_info),
+    gint,
+    gchar_p,
+    guint32,
+    gchar_p]
+
+# void col_append_ports(column_info *cinfo, const gint col, port_type typ,
+# guint16 src, guint16 dst);
+col_append_ports = libwireshark.col_append_ports
+col_append_ports.restype = None
+col_append_ports.argtypes = [
+    POINTER(column_info),
+    gint,
+    port_type,
+    guint16,
+    guint16]
+
+# void col_append_frame_number(packet_info *pinfo, const gint col, const
+# gchar *fmt_str, guint frame_num);
+col_append_frame_number = libwireshark.col_append_frame_number
+col_append_frame_number.restype = None
+col_append_frame_number.argtypes = [POINTER(packet_info), gint, gchar_p, guint]
+
+
+# void col_append_lstr(column_info *cinfo, const gint el, const gchar
+# *str, ...);
+def col_append_lstr(cinfo, el, str, *argv):
+    args, types = c_va_list(*argv)
+    _col_append_lstr = libwireshark.col_append_lstr
+    _col_append_lstr.restype = None
+    _col_append_lstr.argtypes = [POINTER(column_info), gint, gchar_p] + types
+    _col_append_lstr(cinfo, el, str, *args)
+
+
+# void col_append_fstr(column_info *cinfo, const gint col, const gchar
+# *format, ...);
+def col_append_fstr(cinfo, col, format, *argv):
+    args, types = c_va_list(*argv)
+    _col_append_fstr = libwireshark.col_append_fstr
+    _col_append_fstr.restype = None
+    _col_append_fstr.argtypes = [POINTER(column_info), gint, gchar_p] + types
+    _col_append_fstr(cinfo, col, format, *args)
+
+
+# void col_prepend_fstr(column_info *cinfo, const gint col, const gchar
+# *format, ...);
+def col_prepend_fstr(cinfo, col, format, *argv):
+    args, types = c_va_list(*argv)
+    _col_prepend_fstr = libwireshark.col_prepend_fstr
+    _col_prepend_fstr.restype = None
+    _col_prepend_fstr.argtypes = [POINTER(column_info), gint, gchar_p] + types
+    _col_prepend_fstr(cinfo, col, format, *args)
+
+
+# void col_prepend_fence_fstr(column_info *cinfo, const gint col, const
+# gchar *format, ...);
+def col_prepend_fence_fstr(cinfo, col, format, *argv):
+    args, types = c_va_list(*argv)
+    _col_prepend_fence_fstr = libwireshark.col_prepend_fence_fstr
+    _col_prepend_fence_fstr.restype = None
+    _col_prepend_fence_fstr.argtypes = [
+        POINTER(column_info), gint, gchar_p] + types
+    _col_prepend_fence_fstr(cinfo, col, format, *args)
+
+
+# void col_append_sep_str(column_info *cinfo, const gint col, const gchar *sep,
+#                         const gchar *str);
+col_append_sep_str = libwireshark.col_append_sep_str
+col_append_sep_str.restype = None
+col_append_sep_str.argtypes = [POINTER(column_info), gint, gchar_p, gchar_p]
+
+
+# void col_append_sep_fstr(column_info *cinfo, const gint col, const gchar *sep,
+#                          const gchar *format, ...);
+def col_append_sep_fstr(cinfo, col, sep, format, *argv):
+    args, types = c_va_list(*argv)
+    _col_append_sep_fstr = libwireshark.col_append_sep_fstr
+    _col_append_sep_fstr.restype = None
+    _col_append_sep_fstr.argtypes = [
+        POINTER(column_info), gint, gchar_p, gchar_p] + types
+    _col_append_sep_fstr(cinfo, col, sep, format, *args)
+
+
+# void col_set_time(column_info *cinfo, const int col,
+#                   const nstime_t *ts, const char *fieldname);
+col_set_time = libwireshark.col_set_time
+col_set_time.restype = None
+col_set_time.argtypes = [POINTER(column_info),
+                         c_int,
+                         POINTER(nstime_t),
+                         c_char_p]
+
+# void set_fd_time(const struct epan_session *epan, frame_data *fd, gchar
+# *buf);
+set_fd_time = libwireshark.set_fd_time
+set_fd_time.restype = None
+set_fd_time.argtypes = [POINTER(epan_session), POINTER(frame_data), gchar_p]
+
+
+##################
+# unit_strings.h #
+##################
+
+# typedef struct unit_name_string {
+#     char *singular;
+#     char *plural;
+# } unit_name_string;
+class unit_name_string(Structure):
+    _fields_ = [('singular', c_char_p), ('plural', c_char_p)]
+
+
+# const char* unit_name_string_get_value(guint32 value, const
+# unit_name_string* units);
+unit_name_string_get_value = libwireshark.unit_name_string_get_value
+unit_name_string_get_value.restype = c_char_p
+unit_name_string_get_value.argtypes = [guint32, POINTER(unit_name_string)]
+
+# const char* unit_name_string_get_value64(guint64 value, const
+# unit_name_string* units);
+unit_name_string_get_value64 = libwireshark.unit_name_string_get_value64
+unit_name_string_get_value64.restype = c_char_p
+unit_name_string_get_value64.argtypes = [guint64, POINTER(unit_name_string)]
+
+# const char* unit_name_string_get_double(double value, const
+# unit_name_string* units);
+unit_name_string_get_double = libwireshark.unit_name_string_get_double
+unit_name_string_get_double.restype = c_char_p
+unit_name_string_get_double.argtypes = [c_double, POINTER(unit_name_string)]
+
+# const unit_name_string units_foot_feet;
+units_foot_feet = unit_name_string.in_dll(libwireshark, 'units_foot_feet')
+
+# const unit_name_string units_bit_bits;
+units_bit_bits = unit_name_string.in_dll(libwireshark, 'units_bit_bits')
+
+# const unit_name_string units_byte_bytes;
+units_byte_bytes = unit_name_string.in_dll(libwireshark, 'units_byte_bytes')
+
+# const unit_name_string units_byte_bytespsecond;
+units_byte_bytespsecond = unit_name_string.in_dll(
+    libwireshark, 'units_byte_bytespsecond')
+
+# const unit_name_string units_octet_octets;
+units_octet_octets = unit_name_string.in_dll(
+    libwireshark, 'units_octet_octets')
+
+# const unit_name_string units_word_words;
+units_word_words = unit_name_string.in_dll(libwireshark, 'units_word_words')
+
+# const unit_name_string units_tick_ticks;
+units_tick_ticks = unit_name_string.in_dll(libwireshark, 'units_tick_ticks')
+
+# const unit_name_string units_meters;
+units_meters = unit_name_string.in_dll(libwireshark, 'units_meters')
+
+# const unit_name_string units_meter_meters;
+units_meter_meters = unit_name_string.in_dll(
+    libwireshark, 'units_meter_meters')
+
+# const unit_name_string units_week_weeks;
+units_week_weeks = unit_name_string.in_dll(libwireshark, 'units_week_weeks')
+
+# const unit_name_string units_day_days;
+units_day_days = unit_name_string.in_dll(libwireshark, 'units_day_days')
+
+# const unit_name_string units_hour_hours;
+units_hour_hours = unit_name_string.in_dll(libwireshark, 'units_hour_hours')
+
+# const unit_name_string units_hours;
+units_hours = unit_name_string.in_dll(libwireshark, 'units_hours')
+
+# const unit_name_string units_minute_minutes;
+units_minute_minutes = unit_name_string.in_dll(
+    libwireshark, 'units_minute_minutes')
+
+# const unit_name_string units_minutes;
+units_minutes = unit_name_string.in_dll(libwireshark, 'units_minutes')
+
+# const unit_name_string units_second_seconds;
+units_second_seconds = unit_name_string.in_dll(
+    libwireshark, 'units_second_seconds')
+
+# const unit_name_string units_seconds;
+units_seconds = unit_name_string.in_dll(libwireshark, 'units_seconds')
+
+# const unit_name_string units_millisecond_milliseconds;
+units_millisecond_milliseconds = unit_name_string.in_dll(
+    libwireshark, 'units_millisecond_milliseconds')
+
+# const unit_name_string units_milliseconds;
+units_milliseconds = unit_name_string.in_dll(
+    libwireshark, 'units_milliseconds')
+
+# const unit_name_string units_microsecond_microseconds;
+units_microsecond_microseconds = unit_name_string.in_dll(
+    libwireshark, 'units_microsecond_microseconds')
+
+# const unit_name_string units_microseconds;
+units_microseconds = unit_name_string.in_dll(
+    libwireshark, 'units_microseconds')
+
+# const unit_name_string units_nanosecond_nanoseconds;
+units_nanosecond_nanoseconds = unit_name_string.in_dll(
+    libwireshark, 'units_nanosecond_nanoseconds')
+
+# const unit_name_string units_nanoseconds;
+units_nanoseconds = unit_name_string.in_dll(libwireshark, 'units_nanoseconds')
+
+# const unit_name_string units_nanometers;
+units_nanometers = unit_name_string.in_dll(libwireshark, 'units_nanometers')
+
+# const unit_name_string units_degree_degrees;
+units_degree_degrees = unit_name_string.in_dll(
+    libwireshark, 'units_degree_degrees')
+
+# const unit_name_string units_degree_celsius;
+units_degree_celsius = unit_name_string.in_dll(
+    libwireshark, 'units_degree_celsius')
+
+# const unit_name_string units_degree_bearing;
+units_degree_bearing = unit_name_string.in_dll(
+    libwireshark, 'units_degree_bearing')
+
+# const unit_name_string units_decibels;
+units_decibels = unit_name_string.in_dll(libwireshark, 'units_decibels')
+
+# const unit_name_string units_dbm;
+units_dbm = unit_name_string.in_dll(libwireshark, 'units_dbm')
+
+# const unit_name_string units_dbi;
+units_dbi = unit_name_string.in_dll(libwireshark, 'units_dbi')
+
+# const unit_name_string units_mbm;
+units_mbm = unit_name_string.in_dll(libwireshark, 'units_mbm')
+
+# const unit_name_string units_percent;
+units_percent = unit_name_string.in_dll(libwireshark, 'units_percent')
+
+# const unit_name_string units_khz;
+units_khz = unit_name_string.in_dll(libwireshark, 'units_khz')
+
+# const unit_name_string units_ghz;
+units_ghz = unit_name_string.in_dll(libwireshark, 'units_ghz')
+
+# const unit_name_string units_mhz;
+units_mhz = unit_name_string.in_dll(libwireshark, 'units_mhz')
+
+# const unit_name_string units_hz;
+units_hz = unit_name_string.in_dll(libwireshark, 'units_hz')
+
+# const unit_name_string units_hz_s;
+units_hz_s = unit_name_string.in_dll(libwireshark, 'units_hz_s')
+
+# const unit_name_string units_kbit;
+units_kbit = unit_name_string.in_dll(libwireshark, 'units_kbit')
+
+# const unit_name_string units_kbps;
+units_kbps = unit_name_string.in_dll(libwireshark, 'units_kbps')
+
+# const unit_name_string units_kibps;
+units_kibps = unit_name_string.in_dll(libwireshark, 'units_kibps')
+
+# const unit_name_string units_pkts;
+units_pkts = unit_name_string.in_dll(libwireshark, 'units_pkts')
+
+# const unit_name_string units_pkts_per_sec;
+units_pkts_per_sec = unit_name_string.in_dll(
+    libwireshark, 'units_pkts_per_sec')
+
+# const unit_name_string units_km;
+units_km = unit_name_string.in_dll(libwireshark, 'units_km')
+
+# const unit_name_string units_kmh;
+units_kmh = unit_name_string.in_dll(libwireshark, 'units_kmh')
+
+# const unit_name_string units_milliamps;
+units_milliamps = unit_name_string.in_dll(libwireshark, 'units_milliamps')
+
+# const unit_name_string units_microwatts;
+units_microwatts = unit_name_string.in_dll(libwireshark, 'units_microwatts')
+
+# const unit_name_string units_volt;
+units_volt = unit_name_string.in_dll(libwireshark, 'units_volt')
+
+# const unit_name_string units_grams_per_second;
+units_grams_per_second = unit_name_string.in_dll(
+    libwireshark, 'units_grams_per_second')
+
+# const unit_name_string units_meter_sec;
+units_meter_sec = unit_name_string.in_dll(libwireshark, 'units_meter_sec')
+
+# const unit_name_string units_meter_sec_squared;
+units_meter_sec_squared = unit_name_string.in_dll(
+    libwireshark, 'units_meter_sec_squared')
+
+# const unit_name_string units_bit_sec;
+units_bit_sec = unit_name_string.in_dll(libwireshark, 'units_bit_sec')
+
+# const unit_name_string units_segment_remaining;
+units_segment_remaining = unit_name_string.in_dll(
+    libwireshark, 'units_segment_remaining')
+
+# const unit_name_string units_frame_frames;
+units_frame_frames = unit_name_string.in_dll(
+    libwireshark, 'units_frame_frames')
+
+# const unit_name_string units_revolutions_per_minute;
+units_revolutions_per_minute = unit_name_string.in_dll(
+    libwireshark, 'units_revolutions_per_minute')
+
+# const unit_name_string units_kilopascal;
+units_kilopascal = unit_name_string.in_dll(libwireshark, 'units_kilopascal')
+
+# const unit_name_string units_newton_metre;
+units_newton_metre = unit_name_string.in_dll(
+    libwireshark, 'units_newton_metre')
+
+# const unit_name_string units_liter_per_hour;
+units_liter_per_hour = unit_name_string.in_dll(
+    libwireshark, 'units_liter_per_hour')
+
+# const unit_name_string units_amp;
+units_amp = unit_name_string.in_dll(libwireshark, 'units_amp')
+
+# const unit_name_string units_watthour;
+units_watthour = unit_name_string.in_dll(libwireshark, 'units_watthour')
+
+# const unit_name_string units_watt;
+units_watt = unit_name_string.in_dll(libwireshark, 'units_watt')
+
+# const unit_name_string units_bpm;
+units_bpm = unit_name_string.in_dll(libwireshark, 'units_bpm')
+
+# const unit_name_string units_calorie;
+units_calorie = unit_name_string.in_dll(libwireshark, 'units_calorie')
+
+
+############
+# packet.h #
+############
+
+# struct epan_range;
+class epan_range(Structure):
+    _fields_ = []
+
+
+# #define hi_nibble(b) (((b) & 0xf0) >> 4)
+def hi_nibble(b):
+    return type(b)((b.value & 0xF0) >> 4)
+
+
+# #define lo_nibble(b) ((b) & 0x0f)
+def lo_nibble(b):
+    return type(b)(b.value & 0x0F)
+
+
+# #define array_length(x)	(sizeof x / sizeof x[0])
+def array_length(x):
+    return c_size_t(len(x))
+
+
+# #define	BYTES_ARE_IN_FRAME(offset, captured_len, len) \
+# 	((guint)(offset) + (guint)(len) > (guint)(offset) && \
+# 	 (guint)(offset) + (guint)(len) <= (guint)(captured_len))
+def BYTES_ARE_IN_FRAME(offset, caputred_len, len):
+    if offset.value + len.value > offset.value and offset.value + \
+            len.value <= caputred_len:
+        return gboolean(1)
+    else:
+        return gboolean(0)
+
+
+# struct dissector_handle;
+class dissector_handle(Structure):
+    _fields_ = []
+
+
+# typedef struct dissector_handle *dissector_handle_t;
+dissector_handle_t = POINTER(dissector_handle)
+
+
+# struct dissector_table;
+class dissector_table(Structure):
+    _fields_ = []
+
+
+# typedef struct dissector_table *dissector_table_t;
+dissector_table_t = POINTER(dissector_table)
+
+# typedef int (*dissector_t)(tvbuff_t *, packet_info *, proto_tree *, void *);
+dissector_t = CFUNCTYPE(c_int, POINTER(tvbuff_t),
+                        POINTER(packet_info),
+                        POINTER(proto_tree),
+                        c_void_p)
+
+# typedef int (*dissector_cb_t)(tvbuff_t *, packet_info *, proto_tree *,
+# void *, void *);
+dissector_cb_t = CFUNCTYPE(c_int, POINTER(tvbuff_t),
+                           POINTER(packet_info),
+                           POINTER(proto_tree),
+                           c_void_p,
+                           c_void_p)
+
+# typedef gboolean (*heur_dissector_t)(tvbuff_t *tvb, packet_info *pinfo,
+# 	proto_tree *tree, void *);
+heur_dissector_t = CFUNCTYPE(gboolean, POINTER(tvbuff_t),
+                             POINTER(packet_info),
+                             POINTER(proto_tree),
+                             c_void_p)
+
+# typedef enum {
+#     HEURISTIC_DISABLE,
+#     HEURISTIC_ENABLE
+# } heuristic_enable_e;
+heuristic_enable_e = c_int
+HEURISTIC_DISABLE = c_int(0)
+HEURISTIC_ENABLE = c_int(1)
+
+# typedef void (*DATFunc) (const gchar *table_name, ftenum_t selector_type,
+#     gpointer key, gpointer value, gpointer user_data);
+DATFunc = CFUNCTYPE(None, gchar_p, ftenum_t, gpointer, gpointer, gpointer)
+
+# typedef void (*DATFunc_handle) (const gchar *table_name, gpointer value,
+#     gpointer user_data);
+DATFunc_handle = CFUNCTYPE(None, gchar_p, gpointer, gpointer)
+
+# typedef void (*DATFunc_table) (const gchar *table_name, const gchar *ui_name,
+#     gpointer user_data);
+DATFunc_table = CFUNCTYPE(None, gchar_p, gchar_p, gpointer)
+
+
+# typedef struct dtbl_entry dtbl_entry_t;
+class dtbl_entry(Structure):
+    _fields_ = []
+
+
+dtbl_entry_t = dtbl_entry
+
+# dissector_handle_t dtbl_entry_get_handle (dtbl_entry_t *dtbl_entry);
+dtbl_entry_get_handle = libwireshark.dtbl_entry_get_handle
+dtbl_entry_get_handle.restype = dissector_handle_t
+dtbl_entry_get_handle.argtypes = [POINTER(dtbl_entry_t)]
+
+# dissector_handle_t dtbl_entry_get_initial_handle (dtbl_entry_t * entry);
+dtbl_entry_get_initial_handle = libwireshark.dtbl_entry_get_initial_handle
+dtbl_entry_get_initial_handle.restype = dissector_handle_t
+dtbl_entry_get_initial_handle.argtypes = [POINTER(dtbl_entry_t)]
+
+# void dissector_table_foreach (const char *table_name, DATFunc func,
+#     gpointer user_data);
+dissector_table_foreach = libwireshark.dissector_table_foreach
+dissector_table_foreach.restype = None
+dissector_table_foreach.argtypes = [c_char_p, DATFunc, gpointer]
+
+# void dissector_all_tables_foreach_changed (DATFunc func,
+#     gpointer user_data);
+dissector_all_tables_foreach_changed = libwireshark.dissector_all_tables_foreach_changed
+dissector_all_tables_foreach_changed.restype = None
+dissector_all_tables_foreach_changed.argtypes = [DATFunc, gpointer]
+
+# void dissector_table_foreach_handle(const char *table_name, DATFunc_handle func,
+#     gpointer user_data);
+dissector_table_foreach_handle = libwireshark.dissector_table_foreach_handle
+dissector_table_foreach_handle.restype = None
+dissector_table_foreach_handle.argtypes = [c_char_p, DATFunc_handle, gpointer]
+
+# void dissector_all_tables_foreach_table (DATFunc_table func,
+#     gpointer user_data, GCompareFunc compare_key_func);
+dissector_all_tables_foreach_table = libwireshark.dissector_all_tables_foreach_table
+dissector_all_tables_foreach_table.restype = None
+dissector_all_tables_foreach_table.argtypes = [
+    DATFunc_table, gpointer, GCompareFunc]
+
+# dissector_table_t register_dissector_table(const char *name,
+# const char *ui_name, const int proto, const ftenum_t type, const int
+# param);
+register_dissector_table = libwireshark.register_dissector_table
+register_dissector_table.restype = dissector_table_t
+register_dissector_table.argtypes = [
+    c_char_p, c_char_p, c_int, ftenum_t, c_int]
+
+# dissector_table_t register_custom_dissector_table(const char *name,
+# const char *ui_name, const int proto, GHashFunc hash_func, GEqualFunc
+# key_equal_func);
+register_custom_dissector_table = libwireshark.register_custom_dissector_table
+register_custom_dissector_table.restype = dissector_table_t
+register_custom_dissector_table.argtypes = [
+    c_char_p, c_char_p, c_int, GHashFunc, GEqualFunc]
+
+# void register_dissector_table_alias(dissector_table_t dissector_table,
+#     const char *alias_name);
+register_dissector_table_alias = libwireshark.register_dissector_table_alias
+register_dissector_table_alias.restype = None
+register_dissector_table_alias.argtypes = [dissector_table_t, c_char_p]
+
+# dissector_table_t find_dissector_table(const char *name);
+find_dissector_table = libwireshark.find_dissector_table
+find_dissector_table.restype = dissector_table_t
+find_dissector_table.argtypes = [c_char_p]
+
+# const char *get_dissector_table_ui_name(const char *name);
+get_dissector_table_ui_name = libwireshark.get_dissector_table_ui_name
+get_dissector_table_ui_name.restype = c_char_p
+get_dissector_table_ui_name.argtypes = [c_char_p]
+
+# ftenum_t get_dissector_table_selector_type(const char *name);
+get_dissector_table_selector_type = libwireshark.get_dissector_table_selector_type
+get_dissector_table_selector_type.restype = ftenum_t
+get_dissector_table_selector_type.argtypes = [c_char_p]
+
+# int get_dissector_table_param(const char *name);
+get_dissector_table_param = libwireshark.get_dissector_table_param
+get_dissector_table_param.restype = c_int
+get_dissector_table_param.argtypes = [c_char_p]
+
+# void dissector_dump_dissector_tables(void);
+dissector_dump_dissector_tables = libwireshark.dissector_dump_dissector_tables
+dissector_dump_dissector_tables.restype = None
+dissector_dump_dissector_tables.argtypes = []
+
+# void dissector_add_uint(const char *name, const guint32 pattern,
+#     dissector_handle_t handle);
+dissector_add_uint = libwireshark.dissector_add_uint
+dissector_add_uint.restype = None
+dissector_add_uint.argtypes = [c_char_p, guint32, dissector_handle_t]
+
+# void dissector_add_uint_with_preference(const char *name, const guint32 pattern,
+#     dissector_handle_t handle);
+dissector_add_uint_with_preference = libwireshark.dissector_add_uint_with_preference
+dissector_add_uint_with_preference.restype = None
+dissector_add_uint_with_preference.argtypes = [
+    c_char_p, guint32, dissector_handle_t]
+
+# void dissector_add_uint_range(const char *abbrev, struct epan_range *range,
+#     dissector_handle_t handle);
+dissector_add_uint_range = libwireshark.dissector_add_uint_range
+dissector_add_uint_range.restype = None
+dissector_add_uint_range.argtypes = [
+    c_char_p, POINTER(epan_range), dissector_handle_t]
+
+# void dissector_add_uint_range_with_preference(const char *abbrev, const char* range_str,
+#     dissector_handle_t handle);
+dissector_add_uint_range_with_preference = libwireshark.dissector_add_uint_range_with_preference
+dissector_add_uint_range_with_preference.restype = None
+dissector_add_uint_range_with_preference.argtypes = [
+    c_char_p, c_char_p, dissector_handle_t]
+
+# void dissector_delete_uint(const char *name, const guint32 pattern,
+#     dissector_handle_t handle);
+dissector_delete_uint = libwireshark.dissector_delete_uint
+dissector_delete_uint.restype = None
+dissector_delete_uint.argtypes = [c_char_p, guint32, dissector_handle_t]
+
+# void dissector_delete_uint_range(const char *abbrev, struct epan_range *range,
+#     dissector_handle_t handle);
+dissector_delete_uint_range = libwireshark.dissector_delete_uint_range
+dissector_delete_uint_range.restype = None
+dissector_delete_uint_range.argtypes = [
+    c_char_p, POINTER(epan_range), dissector_handle_t]
+
+# void dissector_delete_all(const char *name, dissector_handle_t handle);
+dissector_delete_all = libwireshark.dissector_delete_all
+dissector_delete_all.restype = None
+dissector_delete_all.argtypes = [c_char_p, dissector_handle_t]
+
+# void dissector_change_uint(const char *abbrev, const guint32 pattern,
+#     dissector_handle_t handle);
+dissector_change_uint = libwireshark.dissector_change_uint
+dissector_change_uint.restype = None
+dissector_change_uint.argtypes = [c_char_p, guint32, dissector_handle_t]
+
+# void dissector_reset_uint(const char *name, const guint32 pattern);
+dissector_reset_uint = libwireshark.dissector_reset_uint
+dissector_reset_uint.restype = None
+dissector_reset_uint.argtypes = [c_char_p, guint32]
+
+# int dissector_try_uint(dissector_table_t sub_dissectors,
+# const guint32 uint_val, tvbuff_t *tvb, packet_info *pinfo, proto_tree
+# *tree);
+dissector_try_uint = libwireshark.dissector_try_uint
+dissector_try_uint.restype = c_int
+dissector_try_uint.argtypes = [
+    dissector_table_t,
+    guint,
+    POINTER(tvbuff_t),
+    POINTER(packet_info),
+    POINTER(proto_tree)]
+
+# int dissector_try_uint_new(dissector_table_t sub_dissectors,
+# const guint32 uint_val, tvbuff_t *tvb, packet_info *pinfo, proto_tree
+# *tree, const gboolean add_proto_name, void *data);
+dissector_try_uint_new = libwireshark.dissector_try_uint_new
+dissector_try_uint_new.restype = c_int
+dissector_try_uint_new.argtypes = [dissector_table_t,
+                                   guint32,
+                                   POINTER(tvbuff_t),
+                                   POINTER(packet_info),
+                                   POINTER(proto_tree),
+                                   gboolean,
+                                   c_void_p]
+
+# dissector_handle_t dissector_get_uint_handle(
+#     dissector_table_t const sub_dissectors, const guint32 uint_val);
+dissector_get_uint_handle = libwireshark.dissector_get_uint_handle
+dissector_get_uint_handle.restype = dissector_handle_t
+dissector_get_uint_handle.argtypes = [dissector_table_t, guint32]
+
+# dissector_handle_t dissector_get_default_uint_handle(
+#     const char *name, const guint32 uint_val);
+dissector_get_default_uint_handle = libwireshark.dissector_get_default_uint_handle
+dissector_get_default_uint_handle.restype = dissector_handle_t
+dissector_get_default_uint_handle.argtypes = [c_char_p, guint32]
+
+# void dissector_add_string(const char *name, const gchar *pattern,
+#     dissector_handle_t handle);
+dissector_add_string = libwireshark.dissector_add_string
+dissector_add_string.restype = None
+dissector_add_string.argtypes = [c_char_p, gchar_p, dissector_handle_t]
+
+# void dissector_delete_string(const char *name, const gchar *pattern,
+# 	dissector_handle_t handle);
+dissector_delete_string = libwireshark.dissector_delete_string
+dissector_delete_string.restype = None
+dissector_delete_string.argtypes = [c_char_p, gchar_p, dissector_handle_t]
+
+# void dissector_change_string(const char *name, const gchar *pattern,
+#     dissector_handle_t handle);
+dissector_change_string = libwireshark.dissector_change_string
+dissector_change_string.restype = None
+dissector_change_string.argtypes = [c_char_p, gchar_p, dissector_handle_t]
+
+# void dissector_reset_string(const char *name, const gchar *pattern);
+dissector_reset_string = libwireshark.dissector_reset_string
+dissector_reset_string.restype = None
+dissector_reset_string.argtypes = [c_char_p, gchar_p]
+
+# int dissector_try_string(dissector_table_t sub_dissectors,
+# const gchar *string, tvbuff_t *tvb, packet_info *pinfo, proto_tree
+# *tree, void *data);
+dissector_try_string = libwireshark.dissector_try_string
+dissector_try_string.restype = c_int
+dissector_try_string.argtypes = [
+    dissector_table_t,
+    gchar_p,
+    POINTER(tvbuff_t),
+    POINTER(packet_info),
+    POINTER(proto_tree),
+    c_void_p]
+
+# int dissector_try_string_new(dissector_table_t sub_dissectors,
+# const gchar *string, tvbuff_t *tvb, packet_info *pinfo, proto_tree
+# *tree, const gboolean add_proto_name,void *data);
+dissector_try_string_new = libwireshark.dissector_try_string_new
+dissector_try_string_new.restype = c_int
+dissector_try_string_new.argtypes = [
+    dissector_table_t,
+    gchar_p,
+    POINTER(tvbuff_t),
+    POINTER(packet_info),
+    POINTER(proto_tree),
+    gboolean,
+    c_void_p]
+
+# dissector_handle_t dissector_get_string_handle(
+#     dissector_table_t sub_dissectors, const gchar *string);
+dissector_get_string_handle = libwireshark.dissector_get_string_handle
+dissector_get_string_handle.restype = dissector_handle_t
+dissector_get_string_handle.argtypes = [dissector_table_t, gchar_p]
+
+# dissector_handle_t dissector_get_default_string_handle(
+#     const char *name, const gchar *string);
+dissector_get_default_string_handle = libwireshark.dissector_get_default_string_handle
+dissector_get_default_string_handle.restype = dissector_handle_t
+dissector_get_default_string_handle.argtypes = [c_char_p, gchar_p]
+
+# void dissector_add_custom_table_handle(const char *name, void *pattern,
+#     dissector_handle_t handle);
+dissector_add_custom_table_handle = libwireshark.dissector_add_custom_table_handle
+dissector_add_custom_table_handle.restype = None
+dissector_add_custom_table_handle.argtypes = [
+    c_char_p, c_void_p, dissector_handle_t]
+
+# dissector_handle_t dissector_get_custom_table_handle(
+#     dissector_table_t sub_dissectors, void *key);
+dissector_get_custom_table_handle = libwireshark.dissector_get_custom_table_handle
+dissector_get_custom_table_handle.restype = dissector_handle_t
+dissector_get_custom_table_handle.argtypes = [dissector_table_t, c_void_p]
+
+
+# typedef struct _guid_key {
+#     e_guid_t guid;
+#     guint16 ver;
+# } guid_key;
+class _guid_key(Structure):
+    _fields_ = [('guid', e_guid_t),
+                ('ver', guint16)]
+
+
+guid_key = _guid_key
+
+# void dissector_add_guid(const char *name, guid_key* guid_val,
+#     dissector_handle_t handle);
+dissector_add_guid = libwireshark.dissector_add_guid
+dissector_add_guid.restype = None
+dissector_add_guid.argtypes = [c_char_p, POINTER(guid_key), dissector_handle_t]
+
+# int dissector_try_guid(dissector_table_t sub_dissectors,
+#     guid_key* guid_val, tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree);
+dissector_try_guid = libwireshark.dissector_try_guid
+dissector_try_guid.restype = c_int
+dissector_try_guid.argtypes = [
+    dissector_table_t,
+    POINTER(guid_key),
+    POINTER(tvbuff_t),
+    POINTER(packet_info),
+    POINTER(proto_tree)]
+
+# int dissector_try_guid_new(dissector_table_t sub_dissectors,
+# guid_key* guid_val, tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree,
+# const gboolean add_proto_name, void *data);
+dissector_try_guid_new = libwireshark.dissector_try_guid_new
+dissector_try_guid_new.restype = c_int
+dissector_try_guid_new.argtypes = [dissector_table_t,
+                                   POINTER(guid_key),
+                                   POINTER(tvbuff_t),
+                                   POINTER(packet_info),
+                                   POINTER(proto_tree),
+                                   gboolean,
+                                   c_void_p]
+
+# dissector_handle_t dissector_get_guid_handle(
+#     dissector_table_t const sub_dissectors, guid_key* guid_val);
+dissector_get_guid_handle = libwireshark.dissector_get_guid_handle
+dissector_get_guid_handle.restype = dissector_handle_t
+dissector_get_guid_handle.argtypes = [dissector_table_t, POINTER(guid_key)]
+
+# int dissector_try_payload(dissector_table_t sub_dissectors,
+#     tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree);
+dissector_try_payload = libwireshark.dissector_try_payload
+dissector_try_payload.restype = c_int
+dissector_try_payload.argtypes = [
+    dissector_table_t,
+    POINTER(tvbuff_t),
+    POINTER(packet_info),
+    POINTER(proto_tree)]
+
+# int dissector_try_payload_new(dissector_table_t sub_dissectors,
+# tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, const gboolean
+# add_proto_name, void *data);
+dissector_try_payload_new = libwireshark.dissector_try_payload_new
+dissector_try_payload_new.restype = c_int
+dissector_try_payload_new.argtypes = [dissector_table_t,
+                                      POINTER(tvbuff_t),
+                                      POINTER(packet_info),
+                                      POINTER(proto_tree),
+                                      gboolean,
+                                      c_void_p]
+
+# void dissector_change_payload(const char *abbrev, dissector_handle_t handle);
+dissector_change_payload = libwireshark.dissector_change_payload
+dissector_change_payload.restype = None
+dissector_change_payload.argtypes = [c_char_p, dissector_handle_t]
+
+# void dissector_reset_payload(const char *name);
+dissector_reset_payload = libwireshark.dissector_reset_payload
+dissector_reset_payload.restype = None
+dissector_reset_payload.argtypes = [c_char_p]
+
+# dissector_handle_t dissector_get_payload_handle(
+#         dissector_table_t const dissector_table);
+dissector_get_payload_handle = libwireshark.dissector_get_payload_handle
+dissector_get_payload_handle.restype = dissector_handle_t
+dissector_get_payload_handle.argtypes = [dissector_table_t]
+
+# void dissector_add_for_decode_as(const char *name,
+#     dissector_handle_t handle);
+dissector_add_for_decode_as = libwireshark.dissector_add_for_decode_as
+dissector_add_for_decode_as.restype = None
+dissector_add_for_decode_as.argtypes = [c_char_p, dissector_handle_t]
+
+# void dissector_add_for_decode_as_with_preference(const char *name,
+#     dissector_handle_t handle);
+dissector_add_for_decode_as_with_preference = libwireshark.dissector_add_for_decode_as_with_preference
+dissector_add_for_decode_as_with_preference.restype = None
+dissector_add_for_decode_as_with_preference.argtypes = [
+    c_char_p, dissector_handle_t]
+
+# GSList *dissector_table_get_dissector_handles(dissector_table_t
+# dissector_table);
+dissector_table_get_dissector_handles = libwireshark.dissector_table_get_dissector_handles
+dissector_table_get_dissector_handles.restype = POINTER(GSList)
+dissector_table_get_dissector_handles.argtypes = [dissector_table_t]
+
+# dissector_handle_t
+# dissector_table_get_dissector_handle(dissector_table_t dissector_table,
+# const gchar* short_name);
+dissector_table_get_dissector_handle = libwireshark.dissector_table_get_dissector_handle
+dissector_table_get_dissector_handle.restype = dissector_handle_t
+dissector_table_get_dissector_handle.argtypes = [dissector_table_t, gchar_p]
+
+# ftenum_t dissector_table_get_type(dissector_table_t dissector_table);
+dissector_table_get_type = libwireshark.dissector_table_get_type
+dissector_table_get_type.restype = ftenum_t
+dissector_table_get_type.argtypes = [dissector_table_t]
+
+# void dissector_table_allow_decode_as(dissector_table_t dissector_table);
+dissector_table_allow_decode_as = libwireshark.dissector_table_allow_decode_as
+dissector_table_allow_decode_as.restype = None
+dissector_table_allow_decode_as.argtypes = [dissector_table_t]
+
+
+# struct heur_dissector_list;
+class heur_dissector_list(Structure):
+    _fields_ = []
+
+
+# typedef struct heur_dissector_list *heur_dissector_list_t;
+heur_dissector_list_t = POINTER(heur_dissector_list)
+
+
+# typedef struct heur_dtbl_entry {
+# 	heur_dissector_t dissector;
+# 	protocol_t *protocol;
+# 	gchar *list_name;
+# 	const gchar *display_name;
+# 	gchar *short_name;
+# 	gboolean enabled;
+# } heur_dtbl_entry_t;
+class heur_dtbl_entry(Structure):
+    _fields_ = [('dissector', heur_dissector_t),
+                ('protocol', protocol_t),
+                ('list_name', gchar_p),
+                ('display_name', gchar_p),
+                ('short_name', gchar_p),
+                ('enabled', gboolean)]
+
+
+heur_dtbl_entry_t = heur_dtbl_entry
+
+# heur_dissector_list_t register_heur_dissector_list(const char *name,
+# const int proto);
+register_heur_dissector_list = libwireshark.register_heur_dissector_list
+register_heur_dissector_list.restype = heur_dissector_list_t
+register_heur_dissector_list.argtypes = [c_char_p, c_int]
+
+# typedef void (*DATFunc_heur) (const gchar *table_name,
+#     struct heur_dtbl_entry *entry, gpointer user_data);
+DATFunc_heur = CFUNCTYPE(None, gchar_p, POINTER(heur_dtbl_entry), gpointer)
+
+# typedef void (*DATFunc_heur_table) (const char *table_name,
+#     struct heur_dissector_list *table, gpointer user_data);
+DATFunc_heur_table = CFUNCTYPE(
+    None,
+    c_char_p,
+    POINTER(heur_dissector_list),
+    gpointer)
+
+# void heur_dissector_table_foreach(const char *table_name,
+#     DATFunc_heur func, gpointer user_data);
+heur_dissector_table_foreach = libwireshark.heur_dissector_table_foreach
+heur_dissector_table_foreach.restype = None
+heur_dissector_table_foreach.argtypes = [c_char_p, DATFunc_heur, gpointer]
+
+# void dissector_all_heur_tables_foreach_table (DATFunc_heur_table func,
+#     gpointer user_data, GCompareFunc compare_key_func);
+dissector_all_heur_table_foreach_table = libwireshark.dissector_all_heur_tables_foreach_table
+dissector_all_heur_table_foreach_table.restype = None
+dissector_all_heur_table_foreach_table.argtypes = [
+    DATFunc_heur_table, gpointer, GCompareFunc]
+
+# gboolean has_heur_dissector_list(const gchar *name);
+has_heur_dissector_list = libwireshark.has_heur_dissector_list
+has_heur_dissector_list.restype = gboolean
+has_heur_dissector_list.argtypes = [gchar_p]
+
+# gboolean dissector_try_heuristic(heur_dissector_list_t sub_dissectors,
+# tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, heur_dtbl_entry_t
+# **hdtbl_entry, void *data);
+dissector_try_heuristic = libwireshark.dissector_try_heuristic
+dissector_try_heuristic.restype = gboolean
+dissector_try_heuristic.argtypes = [heur_dissector_list_t,
+                                    POINTER(tvbuff_t),
+                                    POINTER(packet_info),
+                                    POINTER(proto_tree),
+                                    POINTER(POINTER(heur_dtbl_entry_t)),
+                                    c_void_p]
+
+# heur_dissector_list_t find_heur_dissector_list(const char *name);
+find_heur_dissector_list = libwireshark.find_heur_dissector_list
+find_heur_dissector_list.restype = heur_dissector_list_t
+find_heur_dissector_list.argtypes = [c_char_p]
+
+# heur_dtbl_entry_t* find_heur_dissector_by_unique_short_name(const char
+# *short_name);
+find_heur_dissector_by_unique_short_name = libwireshark.find_heur_dissector_by_unique_short_name
+find_heur_dissector_by_unique_short_name.restype = POINTER(heur_dtbl_entry_t)
+find_heur_dissector_by_unique_short_name.argtypes = [c_char_p]
+
+# void heur_dissector_add(const char *name, heur_dissector_t dissector,
+# const char *display_name, const char *short_name, const int proto,
+# heuristic_enable_e enable);
+heur_dissector_add = libwireshark.heur_dissector_add
+heur_dissector_add.restype = None
+heur_dissector_add.argtypes = [c_char_p,
+                               heur_dissector_t,
+                               c_char_p,
+                               c_char_p,
+                               c_int,
+                               heuristic_enable_e]
+
+# void heur_dissector_delete(const char *name, heur_dissector_t dissector,
+# const int proto);
+heur_dissector_delete = libwireshark.heur_dissector_delete
+heur_dissector_delete.restype = None
+heur_dissector_delete.argtypes = [c_char_p, heur_dissector_t, c_int]
+
+# dissector_handle_t register_dissector(const char *name, dissector_t
+# dissector, const int proto);
+register_dissector = libwireshark.register_dissector
+register_dissector.restype = dissector_handle_t
+register_dissector.argtypes = [c_char_p, dissector_t, c_int]
+
+# dissector_handle_t register_dissector_with_data(const char *name,
+# dissector_cb_t dissector, const int proto, void *cb_data);
+register_dissector_with_data = libwireshark.register_dissector_with_data
+register_dissector_with_data.restype = dissector_handle_t
+register_dissector_with_data.argtypes = [
+    c_char_p, dissector_cb_t, c_int, c_void_p]
+
+# const char *dissector_handle_get_short_name(const dissector_handle_t handle);
+dissector_handle_get_short_name = libwireshark.dissector_handle_get_short_name
+dissector_handle_get_short_name.restype = c_char_p
+dissector_handle_get_short_name.argtypes = [dissector_handle_t]
+
+# int dissector_handle_get_protocol_index(const dissector_handle_t handle);
+dissector_handle_get_protocol_index = libwireshark.dissector_handle_get_protocol_index
+dissector_handle_get_protocol_index.restype = c_int
+dissector_handle_get_protocol_index.argtypes = [dissector_handle_t]
+
+# GList* get_dissector_names(void);
+get_dissector_names = libwireshark.get_dissector_names
+get_dissector_names.restype = POINTER(GList)
+get_dissector_names.argtypes = []
+
+# dissector_handle_t find_dissector(const char *name);
+find_dissector = libwireshark.find_dissector
+find_dissector.restype = dissector_handle_t
+find_dissector.argtypes = [c_char_p]
+
+# dissector_handle_t find_dissector_add_dependency(const char *name, const
+# int parent_proto);
+find_dissector_add_dependency = libwireshark.find_dissector_add_dependency
+find_dissector_add_dependency.restype = dissector_handle_t
+find_dissector_add_dependency.argtypes = [c_char_p, c_int]
+
+# const char *dissector_handle_get_dissector_name(const dissector_handle_t
+# handle);
+dissector_handle_get_dissector_name = libwireshark.dissector_handle_get_dissector_name
+dissector_handle_get_dissector_name.restype = c_char_p
+dissector_handle_get_dissector_name.argtypes = [dissector_handle_t]
+
+# dissector_handle_t create_dissector_handle(dissector_t dissector,
+#     const int proto);
+create_dissector_handle = libwireshark.create_dissector_handle
+create_dissector_handle.restype = dissector_handle_t
+create_dissector_handle.argtypes = [dissector_t, c_int]
+
+# dissector_handle_t create_dissector_handle_with_name(dissector_t dissector,
+#     const int proto, const char* name);
+create_dissector_handle_with_name = libwireshark.create_dissector_handle_with_name
+create_dissector_handle_with_name.restype = dissector_handle_t
+create_dissector_handle_with_name.argtypes = [dissector_t, c_int, c_char_p]
+
+# int call_dissector_with_data(dissector_handle_t handle, tvbuff_t *tvb,
+#     packet_info *pinfo, proto_tree *tree, void *data);
+call_dissector_with_data = libwireshark.call_dissector_with_data
+call_dissector_with_data.restype = c_int
+call_dissector_with_data.argtypes = [dissector_handle_t,
+                                     POINTER(tvbuff_t),
+                                     POINTER(packet_info),
+                                     POINTER(proto_tree),
+                                     c_void_p]
+
+# int call_dissector(dissector_handle_t handle, tvbuff_t *tvb,
+#     packet_info *pinfo, proto_tree *tree);
+call_dissector = libwireshark.call_dissector
+call_dissector.restype = c_int
+call_dissector.argtypes = [dissector_handle_t,
+                           POINTER(tvbuff_t),
+                           POINTER(packet_info),
+                           POINTER(proto_tree)]
+
+# int call_data_dissector(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree);
+call_data_dissector = libwireshark.call_data_dissector
+call_data_dissector.restype = c_int
+call_data_dissector.argtypes = [
+    POINTER(tvbuff_t),
+    POINTER(packet_info),
+    POINTER(proto_tree)]
+
+# int call_dissector_only(dissector_handle_t handle, tvbuff_t *tvb,
+#     packet_info *pinfo, proto_tree *tree, void *data);
+call_dissector_only = libwireshark.call_dissector_only
+call_dissector_only.restype = c_int
+call_dissector_only.argtypes = [dissector_handle_t,
+                                POINTER(tvbuff_t),
+                                POINTER(packet_info),
+                                POINTER(proto_tree),
+                                c_void_p]
+
+# void call_heur_dissector_direct(heur_dtbl_entry_t *heur_dtbl_entry, tvbuff_t *tvb,
+#     packet_info *pinfo, proto_tree *tree, void *data);
+call_heur_dissector_direct = libwireshark.call_heur_dissector_direct
+call_heur_dissector_direct.restype = None
+call_heur_dissector_direct.argtypes = [POINTER(heur_dtbl_entry_t),
+                                       POINTER(tvbuff_t),
+                                       POINTER(packet_info),
+                                       POINTER(proto_tree),
+                                       c_void_p]
+
+
+# struct depend_dissector_list;
+class depend_dissector_list(Structure):
+    _fields_ = []
+
+
+# typedef struct depend_dissector_list *depend_dissector_list_t;
+depend_dissector_list_t = POINTER(depend_dissector_list)
+
+# gboolean register_depend_dissector(const char* parent, const char*
+# dependent);
+register_depend_dissector = libwireshark.register_depend_dissector
+register_depend_dissector.restype = gboolean
+register_depend_dissector.argtypes = [c_char_p, c_char_p]
+
+# gboolean deregister_depend_dissector(const char* parent, const char*
+# dependent);
+deregister_depend_dissector = libwireshark.deregister_depend_dissector
+deregister_depend_dissector.restype = gboolean
+deregister_depend_dissector.argtypes = [c_char_p, c_char_p]
+
+# depend_dissector_list_t find_depend_dissector_list(const char* name);
+find_depend_dissector_list = libwireshark.find_depend_dissector_list
+find_depend_dissector_list.restype = depend_dissector_list_t
+find_depend_dissector_list.argtypes = [c_char_p]
+
+# void set_actual_length(tvbuff_t *tvb, const guint specified_len);
+set_actual_length = libwireshark.set_actual_length
+set_actual_length.restype = None
+set_actual_length.argtypes = [POINTER(tvbuff_t), guint]
+
+# void register_init_routine(void (*func)(void));
+register_init_routine = libwireshark.register_init_routine
+register_init_routine.restype = None
+register_init_routine.argtypes = [CFUNCTYPE(None)]
+
+# void register_cleanup_routine(void (*func)(void));
+register_cleanup_routine = libwireshark.register_cleanup_routine
+register_cleanup_routine.restype = None
+register_cleanup_routine.argtypes = [CFUNCTYPE(None)]
+
+# void register_shutdown_routine(void (*func)(void));
+register_shutdown_routine = libwireshark.register_shutdown_routine
+register_shutdown_routine.restype = None
+register_shutdown_routine.argtypes = [CFUNCTYPE(None)]
+
+# void register_postseq_cleanup_routine(void (*func)(void));
+register_postseq_cleanup_routine = libwireshark.register_postseq_cleanup_routine
+register_postseq_cleanup_routine.restype = None
+register_postseq_cleanup_routine.argtypes = [CFUNCTYPE(None)]
+
+# void postseq_cleanup_all_protocols(void);
+postseq_cleanup_all_protocols = libwireshark.postseq_cleanup_all_protocols
+postseq_cleanup_all_protocols.restype = None
+postseq_cleanup_all_protocols.argtypes = []
+
+# void register_final_registration_routine(void (*func)(void));
+register_final_registration_routine = libwireshark.register_final_registration_routine
+register_final_registration_routine.restype = None
+register_final_registration_routine.argtypes = [CFUNCTYPE(None)]
+
+# void add_new_data_source(packet_info *pinfo, tvbuff_t *tvb,
+#     const char *name);
+add_new_data_source = libwireshark.add_new_data_source
+add_new_data_source.restype = None
+add_new_data_source.argtypes = [
+    POINTER(packet_info),
+    POINTER(tvbuff_t),
+    c_char_p]
+
+# void remove_last_data_source(packet_info *pinfo);
+remove_last_data_source = libwireshark.remove_last_data_source
+remove_last_data_source.restype = None
+remove_last_data_source.argtypes = [POINTER(packet_info)]
+
+
+# struct data_source;
+class data_source(Structure):
+    _fields_ = []
+
+
+# char *get_data_source_name(const struct data_source *src);
+get_data_source_name = libwireshark.get_data_source_name
+get_data_source_name.restype = c_char_p
+get_data_source_name.argtypes = [POINTER(data_source)]
+
+# tvbuff_t *get_data_source_tvb(const struct data_source *src);
+get_data_source_tvb = libwireshark.get_data_source_tvb
+get_data_source_tvb.restype = POINTER(tvbuff_t)
+get_data_source_tvb.argtypes = [POINTER(data_source)]
+
+# tvbuff_t *get_data_source_tvb_by_name(packet_info *pinfo, const char *name);
+get_data_source_tvb_by_name = libwireshark.get_data_source_tvb_by_name
+get_data_source_tvb_by_name.restype = POINTER(tvbuff_t)
+get_data_source_tvb_by_name.argtypes = [POINTER(packet_info), c_char_p]
+
+# void mark_frame_as_depended_upon(packet_info *pinfo, guint32 frame_num);
+mark_frame_as_depended_upon = libwireshark.mark_frame_as_depended_upon
+mark_frame_as_depended_upon.restype = None
+mark_frame_as_depended_upon.argtypes = [POINTER(packet_info), guint32]
+
+
+# typedef struct frame_data_s {
+#     int file_type_subtype;
+#     const gchar  *pkt_comment;
+#     struct epan_dissect *color_edt;
+# } frame_data_t;
+class frame_data_s(Structure):
+    _fields_ = [('file_type_subtype', c_int),
+                ('pkt_comment', gchar_p),
+                ('color_edt', POINTER(epan_dissect))]
+
+
+frame_data_t = frame_data_s
+
+
+# typedef struct file_data_s {
+#     const gchar  *pkt_comment;
+#     struct epan_dissect *color_edt;
+# } file_data_t;
+class file_data_s(Structure):
+    _fields_ = [('pkt_comment', gchar_p),
+                ('color_edt', POINTER(epan_dissect))]
+
+
+file_data_t = file_data_s
+
+
+# typedef struct ethertype_data_s {
+#     guint16 etype;
+#     int offset_after_ethertype;
+#     proto_tree *fh_tree;
+#     int etype_id;
+#     int trailer_id;
+#     int fcs_len;
+# } ethertype_data_t;
+class ethertype_data_s(Structure):
+    _fields_ = [('etype', guint16),
+                ('offset_after_ethertype', c_int),
+                ('fh_tree', POINTER(proto_tree)),
+                ('etype_id', c_int),
+                ('trailer_id', c_int),
+                ('fcs_len', c_int)]
+
+
+ethertype_data_t = ethertype_data_s
+
+
+# void dissector_dump_decodes(void);
+dissector_dump_decodes = libwireshark.dissector_dump_decodes
+dissector_dump_decodes.restype = None
+dissector_dump_decodes.argtypes = []
+
+# void dissector_dump_heur_decodes(void);
+dissector_dump_heur_decodes = libwireshark.dissector_dump_heur_decodes
+dissector_dump_heur_decodes.restype = None
+dissector_dump_heur_decodes.argtypes = []
+
+# void register_postdissector(dissector_handle_t handle);
+register_postdissector = libwireshark.register_postdissector
+register_postdissector.restype = None
+register_postdissector.argtypes = [dissector_handle_t]
+
+# void set_postdissector_wanted_hfids(dissector_handle_t handle,
+#     GArray *wanted_hfids);
+set_postdissector_wanted_hfids = libwireshark.set_postdissector_wanted_hfids
+set_postdissector_wanted_hfids.restype = None
+set_postdissector_wanted_hfids.argtypes = [dissector_handle_t, POINTER(GArray)]
+
+# gboolean postdissectors_want_hfids(void);
+postdissectors_want_hfids = libwireshark.postdissectors_want_hfids
+postdissectors_want_hfids.restype = gboolean
+postdissectors_want_hfids.argtypes = []
+
+# void prime_epan_dissect_with_postdissector_wanted_hfids(epan_dissect_t *edt);
+prime_epan_dissect_with_postdissector_wanted_hfids = libwireshark.prime_epan_dissect_with_postdissector_wanted_hfids
+prime_epan_dissect_with_postdissector_wanted_hfids.restype = None
+prime_epan_dissect_with_postdissector_wanted_hfids.argtypes = [
+    POINTER(epan_dissect_t)]
