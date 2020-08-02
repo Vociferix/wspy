@@ -135,3 +135,19 @@ GSList._fields_ = [('data', gpointer), ('next', POINTER(GSList))]
 class GByteArray(Structure):
     _fields_ = [('data', POINTER(guint8)),
                 ('len', guint)]
+
+
+# typedef struct _GRegex GRegex;
+class _GRegex(Structure):
+    _fields_ = []
+
+
+GRegex = _GRegex
+
+
+# typedef struct _GMatchInfo GMatchInfo;
+class _GMatchInfo(Structure):
+    _fields_ = []
+
+
+GMatchInfo = _GMatchInfo

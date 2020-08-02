@@ -4126,3 +4126,565 @@ PT_IBQP = c_int(10)
 
 
 PT_BLUETOOTH = c_int(11)
+
+
+#################
+# packet_info.h #
+#################
+
+class endpoint(Structure):
+    _fields_ = []
+
+
+# define P2P_DIR_UNKNOWN -1
+P2P_DIR_UNKNOWN = -1
+
+# define P2P_DIR_SENT    0
+P2P_DIR_SENT = 0
+
+# define P2P_DIR_RECV    1
+P2P_DIR_RECV = 1
+
+# define LINK_DIR_UNKNOWN    -1
+LINK_DIR_UNKNOWN = -1
+
+# define P2P_DIR_UL  0
+P2P_DIR_UL = 0
+
+# define P2P_DIR_DL  1
+P2P_DIR_DL = 1
+
+# define PINFO_HAS_TS            0x00000001
+PINFO_HAS_TS = 0x00000001
+
+# typedef struct _packet_info {
+#   const char *current_proto;
+#   struct epan_column_info *cinfo;
+#   guint32 presence_flags;
+#   guint32 num;
+#   nstime_t abs_ts;
+#   nstime_t rel_ts;
+#   frame_data *fd;
+#   union wtap_pseudo_header *pseudo_header;
+#   wtap_rec *rec;
+#   GSList *data_src;
+#   address dl_src;
+#   address dl_dst;
+#   address net_src;
+#   address net_dst;
+#   address src;
+#   address dst;
+#   guint32 vlan_id;
+#   const char *noreassembly_reason;
+#   gboolean fragmented;
+#   struct {
+#     guint32 in_error_pkt:1;
+#     guint32 in_gre_pkt:1;
+#   } flags;
+#   port_type ptype;
+#   guint32 srcport;
+#   guint32 destport;
+#   guint32 match_uint;
+#   const char *match_string;
+#   gboolean use_endpoint;
+#   struct endpoint* conv_endpoint;
+#   guint16 can_desegment;
+#   guint16 saved_can_desegment;
+#   int desegment_offset;
+# #define DESEGMENT_ONE_MORE_SEGMENT 0x0fffffff
+# #define DESEGMENT_UNTIL_FIN        0x0ffffffe
+#   guint32 desegment_len;
+#   guint16 want_pdu_tracking;
+#   guint32 bytes_until_next_pdu;
+#   int     p2p_dir;
+#   GHashTable *private_table;
+#   wmem_list_t *layers;
+#   guint8 curr_layer_num;
+#   guint16 link_number;
+#   guint16 clnp_srcref;
+#   guint16 clnp_dstref;
+#   int link_dir;
+#   GSList* proto_data;
+#   GSList* dependent_frames;
+#   GSList* frame_end_routines;
+#   wmem_allocator_t *pool;
+#   struct epan_session *epan;
+#   const gchar *heur_list_name;
+# } packet_info;
+
+
+class _packet_info_flags(Structure):
+    _fields_ = [('in_error_pkt', guint32, 1),
+                ('in_gre_pkt', guint32, 1)]
+
+
+class _packet_info(Structure):
+    _fields_ = [('current_proto', c_char_p),
+                ('cinfo', POINTER(epan_column_info)),
+                ('presence_flags', guint32),
+                ('num', guint32),
+                ('abs_ts', nstime_t),
+                ('rel_ts', nstime_t),
+                ('fd', POINTER(frame_data)),
+                ('pseudo_header', POINTER(wtap_pseudo_header)),
+                ('rec', POINTER(wtap_rec)),
+                ('data_src', POINTER(GSList)),
+                ('dl_src', address),
+                ('dl_dst', address),
+                ('net_src', address),
+                ('net_dst', address),
+                ('src', address),
+                ('dst', address),
+                ('vlan_id', guint32),
+                ('noreassembly_reason', c_char_p),
+                ('fragmented', gboolean),
+                ('flags', _packet_info_flags),
+                ('ptype', port_type),
+                ('srcport', guint32),
+                ('destport', guint32),
+                ('match_uint', guint32),
+                ('use_endpoint', gboolean),
+                ('conv_endpoint', POINTER(endpoint)),
+                ('can_desegment', guint16),
+                ('saved_can_desgment', guint16),
+                ('desegment_offset', c_int),
+                ('desegment_len', guint32),
+                ('want_pdu_tracking', guint16),
+                ('bytes_unitl_next_pdu', guint32),
+                ('p2p_dir', c_int),
+                ('private_table', POINTER(GHashTable)),
+                ('layers', POINTER(wmem_list_t)),
+                ('curr_layer_num', guint8),
+                ('link_number', guint16),
+                ('clnp_srcref', guint16),
+                ('clnp_dstref', guint16),
+                ('link_dir', c_int),
+                ('proto_data', POINTER(GSList)),
+                ('dependent_frames', POINTER(GSList)),
+                ('frame_end_routines', POINTER(GSList)),
+                ('pool', POINTER(wmem_allocator_t)),
+                ('epan', POINTER(epan_session)),
+                ('heur_list_name', gchar_p)]
+
+
+packet_info = _packet_info
+
+DESEGMENT_ONE_MORE_SEGMENT = 0x0fffffff
+DESEGMENT_UNTIL_FIN = 0x0ffffffe
+
+
+###################
+# ftypes/ftypes.h #
+###################
+
+# enum ftenum {
+# 	FT_NONE,
+# 	FT_PROTOCOL,
+# 	FT_BOOLEAN,
+# 	FT_CHAR,
+# 	FT_UINT8,
+# 	FT_UINT16,
+# 	FT_UINT24,
+# 	FT_UINT32,
+# 	FT_UINT40,
+# 	FT_UINT48,
+# 	FT_UINT56,
+# 	FT_UINT64,
+# 	FT_INT8,
+# 	FT_INT16,
+# 	FT_INT24,
+# 	FT_INT32,
+# 	FT_INT40,
+# 	FT_INT48,
+# 	FT_INT56,
+# 	FT_INT64,
+# 	FT_IEEE_11073_SFLOAT,
+# 	FT_IEEE_11073_FLOAT,
+# 	FT_FLOAT,
+# 	FT_DOUBLE,
+# 	FT_ABSOLUTE_TIME,
+# 	FT_RELATIVE_TIME,
+# 	FT_STRING,
+# 	FT_STRINGZ,
+# 	FT_UINT_STRING,
+# 	FT_ETHER,
+# 	FT_BYTES,
+# 	FT_UINT_BYTES,
+# 	FT_IPv4,
+# 	FT_IPv6,
+# 	FT_IPXNET,
+# 	FT_FRAMENUM,
+# 	FT_PCRE,
+# 	FT_GUID,
+# 	FT_OID,
+# 	FT_EUI64,
+# 	FT_AX25,
+# 	FT_VINES,
+# 	FT_REL_OID,
+# 	FT_SYSTEM_ID,
+# 	FT_STRINGZPAD,
+# 	FT_FCWWN,
+# 	FT_NUM_TYPES
+# };
+ftenum = c_int
+FT_NONE = c_int(0)
+FT_PROTOCOL = c_int(1)
+FT_BOOLEAN = c_int(2)
+FT_CHAR = c_int(3)
+FT_UINT8 = c_int(4)
+FT_UINT16 = c_int(5)
+FT_UINT24 = c_int(6)
+FT_UINT32 = c_int(7)
+FT_UINT40 = c_int(8)
+FT_UINT48 = c_int(9)
+FT_UINT56 = c_int(10)
+FT_UINT64 = c_int(11)
+FT_INT8 = c_int(12)
+FT_INT16 = c_int(13)
+FT_INT24 = c_int(14)
+FT_INT32 = c_int(15)
+FT_INT40 = c_int(16)
+FT_INT48 = c_int(17)
+FT_INT56 = c_int(18)
+FT_INT64 = c_int(19)
+FT_IEEE_11073_SFLOAT = c_int(20)
+FT_IEEE_11073_FLOAT = c_int(21)
+FT_FLOAT = c_int(22)
+FT_DOUBLE = c_int(23)
+FT_ABSOLUTE_TIME = c_int(24)
+FT_RELATIVE_TIME = c_int(25)
+FT_STRING = c_int(26)
+FT_STRINGZ = c_int(27)
+FT_UINT_STRING = c_int(28)
+FT_ETHER = c_int(29)
+FT_BYTES = c_int(30)
+FT_UINT_BYTES = c_int(31)
+FT_IPv4 = c_int(32)
+FT_IPv6 = c_int(33)
+FT_IPXNET = c_int(34)
+FT_FRAMENUM = c_int(35)
+FT_PCRE = c_int(36)
+FT_GUID = c_int(37)
+FT_OID = c_int(38)
+FT_EUI64 = c_int(39)
+FT_AX25 = c_int(40)
+FT_VINES = c_int(41)
+FT_REL_OID = c_int(42)
+FT_SYSTEM_ID = c_int(43)
+FT_STRINGZPAD = c_int(44)
+FT_FCWWN = c_int(45)
+FT_NUM_TYPES = c_int(46)
+
+
+# #define IS_FT_INT32(ft) \
+# 	((ft) == FT_INT8 ||  \
+# 	 (ft) == FT_INT16 || \
+# 	 (ft) == FT_INT24 || \
+# 	 (ft) == FT_INT32)
+def IS_FT_INT32(ft):
+    return ft.value == FT_INT8.value or ft.value == FT_INT16.value or ft.value == FT_INT24.value or ft.value == FT_INT32.value
+
+
+# #define IS_FT_INT64(ft) \
+# 	((ft) == FT_INT40 || \
+# 	 (ft) == FT_INT48 || \
+# 	 (ft) == FT_INT56 || \
+# 	 (ft) == FT_INT64)
+def IS_FT_INT64(ft):
+    return ft.value == FT_INT40.value or ft.value == FT_INT48.value or ft.value == FT_INT56.value or ft.value == FT_INT64.value
+
+
+# #define IS_FT_INT(ft) (IS_FT_INT32(ft) || IS_FT_INT64(ft))
+def IS_FT_INT(ft):
+    return IS_FT_INT32(ft) or IS_FT_INT64(ft)
+
+
+# #define IS_FT_UINT32(ft) \
+# 	((ft) == FT_CHAR ||   \
+# 	 (ft) == FT_UINT8 ||  \
+# 	 (ft) == FT_UINT16 || \
+# 	 (ft) == FT_UINT24 || \
+# 	 (ft) == FT_UINT32 || \
+# 	 (ft) == FT_FRAMENUM)
+def IS_FT_UINT32(ft):
+    return ft.value == FT_CHAR.value or ft.value == FT_UINT8.value or ft.value == FT_UINT16.value or ft.value == FT_UINT24.value or ft.value == FT_UINT32.value or ft.value == FT_FRAMENUM.value
+
+
+# #define IS_FT_UINT64(ft) \
+# 	((ft) == FT_UINT40 || \
+# 	 (ft) == FT_UINT48 || \
+# 	 (ft) == FT_UINT56 || \
+# 	 (ft) == FT_UINT64)
+def IS_FT_UINT64(ft):
+    return ft.value == FT_UINT40.value or ft.value == FT_UINT48.value or ft.value == FT_UINT56.value or ft.value == FT_UINT64.value
+
+
+# #define IS_FT_UINT(ft) (IS_FT_UINT32(ft) || IS_FT_UINT64(ft))
+def IS_FT_UINT(ft):
+    return IS_FT_UINT32(ft) or IS_FT_UINT64(ft)
+
+
+# #define IS_FT_TIME(ft) \
+# 	((ft) == FT_ABSOLUTE_TIME || (ft) == FT_RELATIVE_TIME)
+def IS_FT_TIME(ft):
+    return ft.value == FT_ABSOLUTE_TIME.value or ft.value == FT_RELATIVE_TIME.value
+
+
+# #define IS_FT_STRING(ft) \
+# 	((ft) == FT_STRING || (ft) == FT_STRINGZ || (ft) == FT_STRINGZPAD)
+def IS_FT_STRING(ft):
+    return ft.value == FT_STRING.value or ft.value == FT_STRINGZ.value or ft.value == FT_STRINGZPAD.value
+
+
+# #define FT_ETHER_LEN		6
+FT_ETHER_LEN = 6
+
+# #define FT_GUID_LEN		16
+FT_GUID_LEN = 16
+
+# #define FT_IPv4_LEN		4
+FT_IPv4_LEN = 4
+
+# #define FT_IPv6_LEN		16
+FT_IPv6_LEN = 16
+
+# #define FT_IPXNET_LEN		4
+FT_IPXNET_LEN = 4
+
+# #define FT_EUI64_LEN		8
+FT_EUI64_LEN = 8
+
+# #define FT_AX25_ADDR_LEN	7
+FT_AX25_ADDR_LEN = 7
+
+# #define FT_VINES_ADDR_LEN	6
+FT_VINES_ADDR_LEN = 6
+
+# #define FT_FCWWN_LEN		8
+FT_FCWWN_LEN = 8
+
+# #define FT_VARINT_MAX_LEN	10
+FT_VARINT_MAX_LEN = 10
+
+# typedef enum ftenum ftenum_t;
+ftenum_t = ftenum
+
+# enum ft_framenum_type {
+# 	FT_FRAMENUM_NONE,
+# 	FT_FRAMENUM_REQUEST,
+# 	FT_FRAMENUM_RESPONSE,
+# 	FT_FRAMENUM_ACK,
+# 	FT_FRAMENUM_DUP_ACK,
+# 	FT_FRAMENUM_RETRANS_PREV,
+# 	FT_FRAMENUM_RETRANS_NEXT,
+# 	FT_FRAMENUM_NUM_TYPES
+# };
+ft_framenum_type = c_int
+FT_FRAMENUM_NONE = c_int(0)
+FT_FRAMENUM_REQUEST = c_int(1)
+FT_FRAMENUM_RESPONSE = c_int(2)
+FT_FRAMENUM_ACK = c_int(3)
+FT_FRAMENUM_DUP_ACK = c_int(4)
+FT_FRAMENUM_RETRANS_PREV = c_int(5)
+FT_FRAMENUM_RETRANS_NEXT = c_int(6)
+FT_FRAMENUM_NUM_TYPES = c_int(7)
+
+# typedef enum ft_framenum_type ft_framenum_type_t;
+ft_framenum_type_t = ft_framenum_type
+
+
+# struct _ftype_t;
+class _ftype_t(Structure):
+    _fields_ = []
+
+
+# typedef struct _ftype_t ftype_t;
+ftype_t = _ftype_t
+
+# enum ftrepr {
+# 	FTREPR_DISPLAY,
+# 	FTREPR_DFILTER
+# };
+ftrepr = c_int
+FTREPR_DISPLAY = c_int(0)
+FTREPR_DFILTER = c_int(1)
+
+# typedef enum ftrepr ftrepr_t;
+ftrepr_t = ftrepr
+
+# const char* ftype_name(ftenum_t ftype);
+ftype_name = libwireshark.ftype_name
+ftype_name.restype = c_char_p
+ftype_name.argtypes = [ftenum_t]
+
+# const char* ftype_pretty_name(ftenum_t ftype);
+ftype_pretty_name = libwireshark.ftype_pretty_name
+ftype_pretty_name.restype = c_char_p
+ftype_pretty_name.argtypes = [ftenum_t]
+
+# gboolean ftype_can_slice(enum ftenum ftype);
+ftype_can_slice = libwireshark.ftype_can_slice
+ftype_can_slice.restype = gboolean
+ftype_can_slice.argtypes = [ftenum]
+
+# gboolean ftype_can_eq(enum ftenum ftype);
+ftype_can_eq = libwireshark.ftype_can_eq
+ftype_can_eq.restype = gboolean
+ftype_can_eq.argtypes = [ftenum]
+
+# gboolean ftype_can_ne(enum ftenum ftype);
+ftype_can_ne = libwireshark.ftype_can_ne
+ftype_can_ne.restype = gboolean
+ftype_can_ne.argtypes = [ftenum]
+
+# gboolean ftype_can_gt(enum ftenum ftype);
+ftype_can_gt = libwireshark.ftype_can_gt
+ftype_can_gt.restype = gboolean
+ftype_can_gt.argtypes = [ftenum]
+
+# gboolean ftype_can_ge(enum ftenum ftype);
+ftype_can_ge = libwireshark.ftype_can_ge
+ftype_can_ge.restype = gboolean
+ftype_can_ge.argtypes = [ftenum]
+
+# gboolean ftype_can_lt(enum ftenum ftype);
+ftype_can_lt = libwireshark.ftype_can_lt
+ftype_can_lt.restype = gboolean
+ftype_can_lt.argtypes = [ftenum]
+
+# gboolean ftype_can_le(enum ftenum ftype);
+ftype_can_le = libwireshark.ftype_can_le
+ftype_can_le.restype = gboolean
+ftype_can_le.argtypes = [ftenum]
+
+# gboolean ftype_can_contains(enum ftenum ftype);
+ftype_can_contains = libwireshark.ftype_can_contains
+ftype_can_contains.restype = gboolean
+ftype_can_contains.argtypes = [ftenum]
+
+# gboolean ftype_can_matches(enum ftenum ftype);
+ftype_can_matches = libwireshark.ftype_can_matches
+ftype_can_matches.restype = gboolean
+ftype_can_matches.argtypes = [ftenum]
+
+
+# typedef struct _protocol_value_t {
+# 	tvbuff_t	*tvb;
+# 	gchar		*proto_string;
+# } protocol_value_t;
+class _protocol_value_t(Structure):
+    _fields_ = [('tvb', POINTER(tvbuff_t)),
+                ('proto_string', gchar_p)]
+
+
+protocol_value_t = _protocol_value_t
+
+
+# typedef struct _fvalue_t {
+# 	ftype_t	*ftype;
+# 	union {
+# 		guint32			uinteger;
+# 		gint32			sinteger;
+# 		guint64			integer64;
+# 		guint64			uinteger64;
+# 		gint64			sinteger64;
+# 		gdouble			floating;
+# 		gchar			*string;
+# 		guchar			*ustring;
+# 		GByteArray		*bytes;
+# 		ipv4_addr_and_mask	ipv4;
+# 		ipv6_addr_and_prefix	ipv6;
+# 		e_guid_t		guid;
+# 		nstime_t		time;
+# 		protocol_value_t 	protocol;
+# 		GRegex			*re;
+# 		guint16			sfloat_ieee_11073;
+# 		guint32			float_ieee_11073;
+# 	} value;
+# 	gboolean	fvalue_gboolean1;
+# } fvalue_t;
+
+class _fvalue_t_value(Union):
+    _fields_ = [('uinteger', guint32),
+                ('sinteger', gint32),
+                ('integer64', guint64),
+                ('uinteger64', guint64),
+                ('sinteger64', gint64),
+                ('floating', gdouble),
+                ('string', gchar_p),
+                ('ustring', POINTER(guchar)),
+                ('bytes', POINTER(GByteArray)),
+                ('ipv4', ipv4_addr_and_mask),
+                ('ipv6', ipv6_addr_and_prefix),
+                ('guid', e_guid_t),
+                ('time', nstime_t),
+                ('protocol', protocol_value_t),
+                ('re', POINTER(GRegex)),
+                ('sfloat_ieee_11073', guint16),
+                ('float_ieee_11073', guint32)]
+
+
+class _fvalue_t(Structure):
+    _fields_ = [('ftype', POINTER(ftype_t)),
+                ('value', _fvalue_t_value),
+                ('fvalue_gboolean1', gboolean)]
+
+
+fvalue_t = _fvalue_t
+
+
+# fvalue_t* fvalue_from_unparsed(ftenum_t ftype, const char *s, gboolean
+# allow_partial_value, gchar **err_msg);
+fvalue_from_unparsed = libwireshark.fvalue_from_unparsed
+fvalue_from_unparsed.restype = POINTER(fvalue_t)
+fvalue_from_unparsed.argtypes = [
+    ftenum_t, c_char_p, gboolean, POINTER(gchar_p)]
+
+# int fvalue_string_repr_len(fvalue_t *fv, ftrepr_t rtype, int field_display);
+fvalue_string_repr_len = libwireshark.fvalue_string_repr_len
+fvalue_string_repr_len.restype = c_int
+fvalue_string_repr_len.argtypes = [POINTER(fvalue_t), ftrepr_t, c_int]
+
+# char *fvalue_to_string_repr(wmem_allocator_t *scope, fvalue_t *fv,
+# ftrepr_t rtype, int field_display);
+fvalue_to_string_repr = libwireshark.fvalue_to_string_repr
+fvalue_to_string_repr.restype = c_char_p
+fvalue_to_string_repr.argtypes = [POINTER(wmem_allocator_t),
+                                  POINTER(fvalue_t),
+                                  ftrepr_t,
+                                  c_int]
+
+# ftenum_t fvalue_type_ftenum(fvalue_t *fv);
+fvalue_type_ftenum = libwireshark.fvalue_type_ftenum
+fvalue_type_ftenum.restype = ftenum_t
+fvalue_type_ftenum.argtypes = [POINTER(fvalue_t)]
+
+# gpointer fvalue_get(fvalue_t *fv);
+fvalue_get = libwireshark.fvalue_get
+fvalue_get.restype = gpointer
+fvalue_get.argtypes = [POINTER(fvalue_t)]
+
+# guint32 fvalue_get_uinteger(fvalue_t *fv);
+fvalue_get_uinteger = libwireshark.fvalue_get_uinteger
+fvalue_get_uinteger.restype = guint32
+fvalue_get_uinteger.argtypes = [POINTER(fvalue_t)]
+
+# gint32 fvalue_get_sinteger(fvalue_t *fv);
+fvalue_get_sinteger = libwireshark.fvalue_get_sinteger
+fvalue_get_sinteger.restype = gint32
+fvalue_get_sinteger.argtypes = [POINTER(fvalue_t)]
+
+# guint64 fvalue_get_uinteger64(fvalue_t *fv);
+fvalue_get_uinteger64 = libwireshark.fvalue_get_uinteger64
+fvalue_get_uinteger64.restype = guint64
+fvalue_get_uinteger64.argtypes = [POINTER(fvalue_t)]
+
+# gint64 fvalue_get_sinteger64(fvalue_t *fv);
+fvalue_get_sinteger64 = libwireshark.fvalue_get_sinteger64
+fvalue_get_sinteger64.restype = gint64
+fvalue_get_sinteger64.argtypes = [POINTER(fvalue_t)]
+
+# double fvalue_get_floating(fvalue_t *fv);
+fvalue_get_floating = libwireshark.fvalue_get_floating
+fvalue_get_floating.restype = c_double
+fvalue_get_floating.argtypes = [POINTER(fvalue_t)]
