@@ -3570,3 +3570,559 @@ try_bytesprefix_to_str = libwireshark.try_bytesprefix_to_str
 try_bytesprefix_to_str.restype = gchar_p
 try_bytesprefix_to_str.argtypes = [
     POINTER(guint8), c_size_t, POINTER(bytes_string)]
+
+
+#########
+# tfs.h #
+#########
+
+# typedef struct true_false_string {
+#         const char      *true_string;
+#         const char      *false_string;
+# } true_false_string;
+class true_false_string(Structure):
+    _fields_ = [('true_string', c_char_p),
+                ('false_string', c_char_p)]
+
+
+# const true_false_string tfs_true_false;
+tfs_true_false = true_false_string.in_dll(libwireshark, 'tfs_true_false')
+
+# const true_false_string tfs_yes_no;
+tfs_yes_no = true_false_string.in_dll(libwireshark, 'tfs_yes_no')
+
+# const true_false_string tfs_no_yes;
+tfs_no_yes = true_false_string.in_dll(libwireshark, 'tfs_no_yes')
+
+# const true_false_string tfs_set_notset;
+tfs_set_notset = true_false_string.in_dll(libwireshark, 'tfs_set_notset')
+
+# const true_false_string tfs_enabled_disabled;
+tfs_enabled_disabled = true_false_string.in_dll(
+    libwireshark, 'tfs_enabled_disabled')
+
+# const true_false_string tfs_disabled_enabled;
+tfs_disabled_enabled = true_false_string.in_dll(
+    libwireshark, 'tfs_disabled_enabled')
+
+# const true_false_string tfs_ok_error;
+tfs_ok_error = true_false_string.in_dll(libwireshark, 'tfs_ok_error')
+
+# const true_false_string tfs_error_ok;
+tfs_error_ok = true_false_string.in_dll(libwireshark, 'tfs_error_ok')
+
+# const true_false_string tfs_success_fail;
+tfs_success_fail = true_false_string.in_dll(libwireshark, 'tfs_success_fail')
+
+# const true_false_string tfs_fail_success;
+tfs_fail_success = true_false_string.in_dll(libwireshark, 'tfs_fail_success')
+
+# const true_false_string tfs_on_off;
+tfs_on_off = true_false_string.in_dll(libwireshark, 'tfs_on_off')
+
+# const true_false_string tfs_ack_nack;
+tfs_ack_nack = true_false_string.in_dll(libwireshark, 'tfs_ack_nack')
+
+# const true_false_string tfs_odd_even;
+tfs_odd_even = true_false_string.in_dll(libwireshark, 'tfs_odd_even')
+
+# const true_false_string tfs_allow_block;
+tfs_allow_block = true_false_string.in_dll(libwireshark, 'tfs_allow_block')
+
+# const true_false_string tfs_restricted_allowed;
+tfs_restricted_allowed = true_false_string.in_dll(
+    libwireshark, 'tfs_restricted_allowed')
+
+# const true_false_string tfs_restricted_not_restricted;
+tfs_restricted_not_restricted = true_false_string.in_dll(
+    libwireshark, 'tfs_restricted_not_restricted')
+
+# const true_false_string tfs_accept_reject;
+tfs_accept_reject = true_false_string.in_dll(libwireshark, 'tfs_accept_reject')
+
+# const true_false_string tfs_more_nomore;
+tfs_more_nomore = true_false_string.in_dll(libwireshark, 'tfs_more_nomore')
+
+# const true_false_string tfs_present_absent;
+tfs_present_absent = true_false_string.in_dll(
+    libwireshark, 'tfs_present_absent')
+
+# const true_false_string tfs_present_not_present;
+tfs_present_not_present = true_false_string.in_dll(
+    libwireshark, 'tfs_present_not_present')
+
+# const true_false_string tfs_active_inactive;
+tfs_active_inactive = true_false_string.in_dll(
+    libwireshark, 'tfs_active_inactive')
+
+# const true_false_string tfs_activated_deactivated;
+tfs_activated_deactivated = true_false_string.in_dll(
+    libwireshark, 'tfs_activated_deactivated')
+
+# const true_false_string tfs_found_not_found;
+tfs_found_not_found = true_false_string.in_dll(
+    libwireshark, 'tfs_found_not_found')
+
+# const true_false_string tfs_command_response;
+tfs_command_response = true_false_string.in_dll(
+    libwireshark, 'tfs_command_response')
+
+# const true_false_string tfs_response_command;
+tfs_response_command = true_false_string.in_dll(
+    libwireshark, 'tfs_response_command')
+
+# const true_false_string tfs_capable_not_capable;
+tfs_capable_not_capable = true_false_string.in_dll(
+    libwireshark, 'tfs_capable_not_capable')
+
+# const true_false_string tfs_supported_not_supported;
+tfs_supported_not_supported = true_false_string.in_dll(
+    libwireshark, 'tfs_supported_not_supported')
+
+# const true_false_string tfs_not_supported_supported;
+tfs_not_supported_supported = true_false_string.in_dll(
+    libwireshark, 'tfs_not_supported_supported')
+
+# const true_false_string tfs_used_notused;
+tfs_used_notused = true_false_string.in_dll(libwireshark, 'tfs_used_notused')
+
+# const true_false_string tfs_high_low;
+tfs_high_low = true_false_string.in_dll(libwireshark, 'tfs_high_low')
+
+# const true_false_string tfs_high_normal;
+tfs_high_normal = true_false_string.in_dll(libwireshark, 'tfs_high_normal')
+
+# const true_false_string tfs_low_normal;
+tfs_low_normal = true_false_string.in_dll(libwireshark, 'tfs_low_normal')
+
+# const true_false_string tfs_pressed_not_pressed;
+tfs_pressed_not_pressed = true_false_string.in_dll(
+    libwireshark, 'tfs_pressed_not_pressed')
+
+# const true_false_string tfs_implemented_not_implemented;
+tfs_implemented_not_implemented = true_false_string.in_dll(
+    libwireshark, 'tfs_implemented_not_implemented')
+
+# const true_false_string tfs_requested_not_requested;
+tfs_requested_not_requested = true_false_string.in_dll(
+    libwireshark, 'tfs_requested_not_requested')
+
+# const true_false_string tfs_reliable_not_reliable;
+tfs_reliable_not_reliable = true_false_string.in_dll(
+    libwireshark, 'tfs_reliable_not_reliable')
+
+# const true_false_string tfs_allowed_not_allowed;
+tfs_allowed_not_allowed = true_false_string.in_dll(
+    libwireshark, 'tfs_allowed_not_allowed')
+
+# const true_false_string tfs_not_allowed_allowed;
+tfs_not_allowed_allowed = true_false_string.in_dll(
+    libwireshark, 'tfs_not_allowed_allowed')
+
+# const true_false_string tfs_accepted_not_accepted;
+tfs_accepted_not_accepted = true_false_string.in_dll(
+    libwireshark, 'tfs_accepted_not_accepted')
+
+# const true_false_string tfs_detected_not_detected;
+tfs_detected_not_detected = true_false_string.in_dll(
+    libwireshark, 'tfs_detected_not_detected')
+
+# const true_false_string tfs_available_not_available;
+tfs_available_not_available = true_false_string.in_dll(
+    libwireshark, 'tfs_available_not_available')
+
+# const true_false_string tfs_shared_independent;
+tfs_shared_independent = true_false_string.in_dll(
+    libwireshark, 'tfs_shared_independent')
+
+# const true_false_string tfs_valid_invalid;
+tfs_valid_invalid = true_false_string.in_dll(libwireshark, 'tfs_valid_invalid')
+
+# const true_false_string tfs_invalid_valid;
+tfs_invalid_valid = true_false_string.in_dll(libwireshark, 'tfs_invalid_valid')
+
+# const true_false_string tfs_group_unique_name;
+tfs_group_unique_name = true_false_string.in_dll(
+    libwireshark, 'tfs_group_unique_name')
+
+# const true_false_string tfs_inuse_not_inuse;
+tfs_inuse_not_inuse = true_false_string.in_dll(
+    libwireshark, 'tfs_inuse_not_inuse')
+
+# const true_false_string tfs_critical_not_critical;
+tfs_critical_not_critical = true_false_string.in_dll(
+    libwireshark, 'tfs_critical_not_critical')
+
+# const true_false_string tfs_complete_incomplete;
+tfs_complete_incomplete = true_false_string.in_dll(
+    libwireshark, 'tfs_complete_incomplete')
+
+# const true_false_string tfs_valid_not_valid;
+tfs_valid_not_valid = true_false_string.in_dll(
+    libwireshark, 'tfs_valid_not_valid')
+
+# const true_false_string tfs_do_not_clear_clear;
+tfs_do_not_clear_clear = true_false_string.in_dll(
+    libwireshark, 'tfs_do_not_clear_clear')
+
+# const true_false_string tfs_confirmed_unconfirmed;
+tfs_confirmed_unconfirmed = true_false_string.in_dll(
+    libwireshark, 'tfs_confirmed_unconfirmed')
+
+# const true_false_string tfs_enforced_not_enforced;
+tfs_enforced_not_enforced = true_false_string.in_dll(
+    libwireshark, 'tfs_enforced_not_enforced')
+
+# const true_false_string tfs_possible_not_possible;
+tfs_possible_not_possible = true_false_string.in_dll(
+    libwireshark, 'tfs_possible_not_possible')
+
+# const true_false_string tfs_required_not_required;
+tfs_required_not_required = true_false_string.in_dll(
+    libwireshark, 'tfs_required_not_required')
+
+# const true_false_string tfs_registered_not_registered;
+tfs_registered_not_registered = true_false_string.in_dll(
+    libwireshark, 'tfs_registered_not_registered')
+
+# const true_false_string tfs_provisioned_not_provisioned;
+tfs_provisioned_not_provisioned = true_false_string.in_dll(
+    libwireshark, 'tfs_provisioned_not_provisioned')
+
+# const true_false_string tfs_included_not_included;
+tfs_included_not_included = true_false_string.in_dll(
+    libwireshark, 'tfs_included_not_included')
+
+# const true_false_string tfs_allocated_by_receiver_sender;
+tfs_allocated_by_receiver_sender = true_false_string.in_dll(
+    libwireshark, 'tfs_allocated_by_receiver_sender')
+
+# const true_false_string tfs_asynchronous_synchronous;
+tfs_asynchronous_synchronous = true_false_string.in_dll(
+    libwireshark, 'tfs_asynchronous_synchronous')
+
+# const true_false_string tfs_protocol_sensative_bit_transparent;
+tfs_protocol_sensative_bit_transparent = true_false_string.in_dll(
+    libwireshark, 'tfs_protocol_sensative_bit_transparent')
+
+# const true_false_string tfs_full_half;
+tfs_full_half = true_false_string.in_dll(libwireshark, 'tfs_full_half')
+
+# const true_false_string tfs_acknowledged_not_acknowledged;
+tfs_acknowledged_not_acknowledged = true_false_string.in_dll(
+    libwireshark, 'tfs_acknowledged_not_acknowledged')
+
+# const true_false_string tfs_segmentation_no_segmentation;
+tfs_segmentation_no_segmentation = true_false_string.in_dll(
+    libwireshark, 'tfs_segmentation_no_segmentation')
+
+# const true_false_string tfs_response_request;
+tfs_response_request = true_false_string.in_dll(
+    libwireshark, 'tfs_response_request')
+
+# const true_false_string tfs_defined_not_defined;
+tfs_defined_not_defined = true_false_string.in_dll(
+    libwireshark, 'tfs_defined_not_defined')
+
+# const true_false_string tfs_constructed_primitive;
+tfs_constructed_primitive = true_false_string.in_dll(
+    libwireshark, 'tfs_constructed_primitive')
+
+# const true_false_string tfs_client_server;
+tfs_client_server = true_false_string.in_dll(libwireshark, 'tfs_client_server')
+
+# const true_false_string tfs_server_client;
+tfs_server_client = true_false_string.in_dll(libwireshark, 'tfs_server_client')
+
+# const true_false_string tfs_preferred_no_preference;
+tfs_preferred_no_preference = true_false_string.in_dll(
+    libwireshark, 'tfs_preferred_no_preference')
+
+# const true_false_string tfs_encrypt_do_not_encrypt;
+tfs_encrypt_do_not_encrypt = true_false_string.in_dll(
+    libwireshark, 'tfs_encrypt_do_not_encrypt')
+
+# const true_false_string tfs_down_up;
+tfs_down_up = true_false_string.in_dll(libwireshark, 'tfs_down_up')
+
+# const true_false_string tfs_up_down;
+tfs_up_down = true_false_string.in_dll(libwireshark, 'tfs_up_down')
+
+# const true_false_string tfs_downlink_uplink;
+tfs_downlink_uplink = true_false_string.in_dll(
+    libwireshark, 'tfs_downlink_uplink')
+
+# const true_false_string tfs_uplink_downlink;
+tfs_uplink_downlink = true_false_string.in_dll(
+    libwireshark, 'tfs_uplink_downlink')
+
+# const true_false_string tfs_s2c_c2s;
+tfs_s2c_c2s = true_false_string.in_dll(libwireshark, 'tfs_s2c_c2s')
+
+# const true_false_string tfs_c2s_s2c;
+tfs_c2s_s2c = true_false_string.in_dll(libwireshark, 'tfs_c2s_s2c')
+
+# const true_false_string tfs_open_closed;
+tfs_open_closed = true_false_string.in_dll(libwireshark, 'tfs_open_closed')
+
+# const true_false_string tfs_external_internal;
+tfs_external_internal = true_false_string.in_dll(
+    libwireshark, 'tfs_external_internal')
+
+# const true_false_string tfs_changed_not_changed;
+tfs_changed_not_changed = true_false_string.in_dll(
+    libwireshark, 'tfs_changed_not_changed')
+
+# const true_false_string tfs_needed_not_needed;
+tfs_needed_not_needed = true_false_string.in_dll(
+    libwireshark, 'tfs_needed_not_needed')
+
+# const true_false_string tfs_selected_not_selected;
+tfs_selected_not_selected = true_false_string.in_dll(
+    libwireshark, 'tfs_selected_not_selected')
+
+
+#############
+# address.h #
+#############
+
+# typedef enum {
+#     AT_NONE,
+#     AT_ETHER,
+#     AT_IPv4,
+#     AT_IPv6,
+#     AT_IPX,
+#     AT_FC,
+#     AT_FCWWN,
+#     AT_STRINGZ,
+#     AT_EUI64,
+#     AT_IB,
+#     AT_AX25,
+#     AT_VINES,
+#     AT_END_OF_LIST
+# } address_type;
+address_type = c_int
+AT_NONE = c_int(0)
+AT_ETHER = c_int(1)
+AT_IPv4 = c_int(2)
+AT_IPv6 = c_int(3)
+AT_IPX = c_int(4)
+AT_FC = c_int(5)
+AT_FCWWN = c_int(6)
+AT_STRINGZ = c_int(7)
+AT_EUI64 = c_int(8)
+AT_IB = c_int(9)
+AT_AX25 = c_int(10)
+AT_VINES = c_int(11)
+AT_END_OF_LIST = c_int(12)
+
+
+# typedef struct _address {
+#     int           type;
+#     int           len;
+#     const void   *data;
+#     void         *priv;
+# } address;
+class _address(Structure):
+    _fields_ = [('type', c_int),
+                ('len', c_int),
+                ('data', c_void_p),
+                ('priv', c_void_p)]
+
+
+address = _address
+
+
+# #define ADDRESS_INIT(type, len, data) {type, len, data, NULL}
+def ADDRESS_INIT(type, len, data):
+    return address(type, len, cast(data, c_void_p), c_void_p(0))
+
+
+# #define ADDRESS_INIT_NONE ADDRESS_INIT(AT_NONE, 0, NULL)
+ADDRESS_INIT_NONE = ADDRESS_INIT(AT_NONE, c_int(0), c_void_p(0))
+
+
+# static inline void clear_address(address *addr);
+def clear_address(addr):
+    addr[0].type = AT_NONE
+    addr[0].len = c_int(0)
+    addr[0].data = c_void_p(0)
+    addr[0].priv = c_void_p(0)
+
+
+# static inline void set_address(address *addr, int addr_type, int
+# addr_len, const void *addr_data);
+def set_address(addr, addr_type, addr_len, addr_data):
+    addr[0].type = addr_type
+    addr[0].len = addr_len
+    addr[0].data = addr_data
+    addr[0].priv = c_void_p(0)
+
+# static inline void set_address_tvb(address *addr, int addr_type, int
+# addr_len, tvbuff_t *tvb, int offset);
+
+
+def set_address_tvb(addr, addr_type, addr_len, tvb, offset):
+    if addr_len.value != 0:
+        p = tvb_get_ptr(tvb, offset, addr_len)
+    else:
+        p = c_void_p(0)
+    set_address(addr, addr_type, addr_len, p)
+
+
+# static inline void alloc_address_wmem(wmem_allocator_t *scope, address *addr,
+#                         int addr_type, int addr_len, const void *addr_data);
+def alloc_address_wmem(scope, addr, addr_type, addr_len, addr_data):
+    clear_address(addr)
+    addr[0].type = addr_type
+    if addr_len.value != 0:
+        addr[0].priv = wmem_memdup(scope, addr_data, addr_len)
+        addr[0].data = addr[0].priv
+        addr[0].len = addr_len
+
+
+# static inline void alloc_address_tvb(wmem_allocator_t *scope, address *addr,
+#                     int addr_type, int addr_len,  tvbuff_t *tvb, int offset);
+def alloc_address_tvb(scope, addr, addr_type, addr_len, tvb, offset):
+    p = tvb_get_ptr(tvb, offset, addr_len)
+    alloc_address_wmem(scope, addr, addr_type, addr_len, p)
+
+
+# static inline int cmp_address(const address *addr1, const address *addr2);
+def cmp_address(addr1, addr2):
+    if addr1[0].type.value > addr2[0].type:
+        return 1
+    if addr1[0].type.value < addr2[0].type:
+        return -1
+    if addr1[0].len.value > addr2[0].len:
+        return 1
+    if addr1[0].len.value < addr2[0].len:
+        return -1
+    if addr1[0].len.value == 0:
+        return 0
+    a1 = cast(addr1[0].data, POINTER(guint8))
+    a2 = cast(addr2[0].data, POINTER(guint8))
+    for i in range(0, addr1[0].len.value):
+        if a1[i].value < a2[i].value:
+            return -1
+        if a1[i].value > a2[i].value:
+            return 1
+    return 0
+
+
+# static inline gboolean addresses_equal(const address *addr1, const
+# address *addr2);
+def addresses_equal(addr1, addr2):
+    if addr1[0].type.value == addr2[0].type.value and addr1[0].len.value == addr2[0].len.value:
+        if addr1[0].len.value == 0:
+            return gboolean(1)
+        a1 = cast(addr1[0].data, POINTER(guint8))
+        a2 = cast(addr2[0].data, POINTER(guint8))
+        for i in range(0, addr1[0].len.value):
+            if a1[i].value < a2[i].value:
+                return gboolean(0)
+            if a1[i].value > a2[i].value:
+                return gboolean(0)
+        return gboolean(1)
+    return gboolean(0)
+
+
+# static inline gboolean addresses_data_equal(const address *addr1, const
+# address *addr2);
+def addresses_data_equal(addr1, addr2):
+    if addr1[0].len.value == addr2[0].len.value:
+        a1 = cast(addr1[0].data, POINTER(guint8))
+        a2 = cast(addr2[0].data, POINTER(guint8))
+        for i in range(0, addr1[0].len.value):
+            if a1[i].value < a2[i].value:
+                return gboolean(0)
+            if a1[i].value > a2[i].value:
+                return gboolean(0)
+        return gboolean(1)
+    return gboolean(0)
+
+
+# static inline void copy_address_shallow(address *to, const address *from);
+def copy_address_shallow(to, from_):
+    set_address(to, from_[0].type, from_[0].len, from_[0].data)
+
+
+# static inline void copy_address_wmem(wmem_allocator_t *scope, address
+# *to, const address *from);
+def copy_address_wmem(scope, to, from_):
+    alloc_address_wmem(scope, to, from_[0].type, from_[0].len, from_[0].data)
+
+
+# static inline void copy_address(address *to, const address *from);
+def copy_address(to, from_):
+    copy_address_wmem(POINTER(wmem_allocator_t)(0), to, from_)
+
+
+# static inline void free_address_wmem(wmem_allocator_t *scope, address *addr);
+def free_address_wmem(scope, addr):
+    if addr[0].type.value != AT_NONE.value and addr[0].len.value > 0 and addr[0].priv.value != c_void_p(
+            0):
+        wmem_free(scope, addr[0].priv)
+    clear_addresses(addr)
+
+
+# static inline void free_address(address *addr);
+def free_address(addr):
+    free_address_wmem(POINTER(wmem_allocator_t)(0), addr)
+
+
+# static inline guint add_address_to_hash(guint hash_val, const address *addr);
+def add_address_to_hash(hash_val, addr):
+    hash_data = cast(addr[0].data, POINTER(guint8))
+    for idx in range(0, addr[0].len.value):
+        hash_val = guint(hash_val.value + hash_data[idx].value)
+        hash_val = guint(hash_val.value + (hash_val.value << 10))
+        hash_val = guint(hash_val.value ^ (hash_val.value >> 6))
+    return hash_data
+
+
+# static inline guint64 add_address_to_hash64(guint64 hash_val, const
+# address *addr);
+def add_address_to_hash64(hash_val, addr):
+    hash_data = cast(addr[0].data, POINTER(guint8))
+    for idx in range(0, addr[0].len.value):
+        hash_val = guint64(hash_val.value + hash_data[idx].value)
+        hash_val = guint64(hash_val.value + (hash_val.value << 10))
+        hash_val = guint64(hash_val.value ^ (hash_val.value >> 6))
+    return hash_data
+
+
+# guint address_to_bytes(const address *addr, guint8 *buf, guint buf_len);
+address_to_bytes = libwireshark.address_to_bytes
+address_to_bytes.restype = guint
+address_to_bytes.argtypes = [POINTER(address), POINTER(guint8), guint]
+
+# typedef enum {
+#     PT_NONE,
+#     PT_SCTP,
+#     PT_TCP,
+#     PT_UDP,
+#     PT_DCCP,
+#     PT_IPX,
+#     PT_DDP,
+#     PT_IDP,
+#     PT_USB,
+#     PT_I2C,
+#     PT_IBQP,
+#     PT_BLUETOOTH
+# } port_type;
+port_type = c_int
+PT_NONE = c_int(0)
+PT_SCTP = c_int(1)
+PT_TCP = c_int(2)
+PT_UDP = c_int(3)
+PT_DCCP = c_int(4)
+PT_IPX = c_int(5)
+PT_DDP = c_int(6)
+PT_IDP = c_int(7)
+PT_USB = c_int(8)
+PT_I2C = c_int(9)
+PT_IBQP = c_int(10)
+
+
+PT_BLUETOOTH = c_int(11)
