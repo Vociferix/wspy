@@ -3099,3 +3099,474 @@ epan_get_compiled_version_info.argtypes = [POINTER(GString)]
 epan_get_runtime_version_info = libwireshark.epan_get_runtime_version_info
 epan_get_runtime_version_info.restype = None
 epan_get_runtime_version_info.argtypes = [POINTER(GString)]
+
+
+##########
+# ipv4.h #
+##########
+
+# typedef struct {
+# 	guint32	addr;
+# 	guint32	nmask;
+# } ipv4_addr_and_mask;
+class ipv4_addr_and_mask(Structure):
+    _fields_ = [('addr', guint32),
+                ('nmask', guint32)]
+
+
+##############
+# time_fmt.h #
+##############
+
+# typedef enum {
+# 	TO_STR_TIME_RES_T_SECS,
+# 	TO_STR_TIME_RES_T_DSECS,
+# 	TO_STR_TIME_RES_T_CSECS,
+# 	TO_STR_TIME_RES_T_MSECS,
+# 	TO_STR_TIME_RES_T_USECS,
+# 	TO_STR_TIME_RES_T_NSECS
+# } to_str_time_res_t;
+to_str_time_res_t = c_int
+TO_STR_TIME_RES_T_SECS = c_int(0)
+TO_STR_TIME_RES_T_DSECS = c_int(1)
+TO_STR_TIME_RES_T_CSECS = c_int(2)
+TO_STR_TIME_RES_T_MSECS = c_int(3)
+TO_STR_TIME_RES_T_USECS = c_int(4)
+TO_STR_TIME_RES_T_NSECS = c_int(5)
+
+# typedef enum {
+# 	ABSOLUTE_TIME_LOCAL = 1000,
+# 	ABSOLUTE_TIME_UTC,
+# 	ABSOLUTE_TIME_DOY_UTC,
+# 	ABSOLUTE_TIME_NTP_UTC
+# } absolute_time_display_e;
+absolute_time_display_e = c_int
+ABSOLUTE_TIME_LOCAL = c_int(1000)
+ABSOLUTE_TIME_UTC = c_int(1001)
+ABSOLUTE_TIME_DOY_UTC = c_int(1002)
+ABSOLUTE_TIME_NTP_UTC = c_int(1003)
+
+
+##################
+# value_string.h #
+##################
+
+# typedef struct _value_string {
+#     guint32      value;
+#     const gchar *strptr;
+# } value_string;
+class _value_string(Structure):
+    _fields_ = [('value', guint32),
+                ('strptr', gchar_p)]
+
+
+value_string = _value_string
+
+
+# const gchar *val_to_str(const guint32 val, const value_string *vs, const
+# char *fmt);
+val_to_str = libwireshark.val_to_str
+val_to_str.restype = gchar_p
+val_to_str.argtypes = [guint32, POINTER(value_string), c_char_p]
+
+# gchar *val_to_str_wmem(wmem_allocator_t *scope, const guint32 val, const
+# value_string *vs, const char *fmt);
+val_to_str_wmem = libwireshark.val_to_str_wmem
+val_to_str_wmem.restype = gchar_p
+val_to_str_wmem.argtypes = [POINTER(wmem_allocator_t),
+                            guint32,
+                            POINTER(value_string),
+                            c_char_p]
+
+# const gchar *val_to_str_const(const guint32 val, const value_string *vs,
+# const char *unknown_str);
+val_to_str_const = libwireshark.val_to_str_const
+val_to_str_const.restype = gchar_p
+val_to_str_const.argtypes = [guint32, POINTER(value_string), c_char_p]
+
+# const gchar *try_val_to_str(const guint32 val, const value_string *vs);
+try_val_to_str = libwireshark.try_val_to_str
+try_val_to_str.restype = gchar_p
+try_val_to_str.argtypes = [guint32, POINTER(value_string)]
+
+# const gchar *try_val_to_str_idx(const guint32 val, const value_string
+# *vs, gint *idx);
+try_val_to_str_idx = libwireshark.try_val_to_str_idx
+try_val_to_str_idx.restype = gchar_p
+try_val_to_str_idx.argtypes = [guint32, POINTER(value_string), POINTER(gint)]
+
+
+# typedef struct _val64_string {
+#     guint64      value;
+#     const gchar *strptr;
+# } val64_string;
+class _val64_string(Structure):
+    _fields_ = [('value', guint64),
+                ('strptr', gchar_p)]
+
+
+val64_string = _val64_string
+
+
+# const gchar *val64_to_str(const guint64 val, const val64_string *vs,
+# const char *fmt);
+val64_to_str = libwireshark.val64_to_str
+val64_to_str.restype = gchar_p
+val64_to_str.argtypes = [guint64, POINTER(val64_string), c_char_p]
+
+# const gchar *val64_to_str_const(const guint64 val, const val64_string
+# *vs, const char *unknown_str);
+val64_to_str_const = libwireshark.val64_to_str_const
+val64_to_str_const.restype = gchar_p
+val64_to_str_const.argtypes = [guint64, POINTER(val64_string), c_char_p]
+
+# const gchar *try_val64_to_str(const guint64 val, const val64_string *vs);
+try_val64_to_str = libwireshark.try_val64_to_str
+try_val64_to_str.restype = gchar_p
+try_val64_to_str.argtypes = [guint64, POINTER(val64_string)]
+
+# const gchar *try_val64_to_str_idx(const guint64 val, const val64_string
+# *vs, gint *idx);
+try_val64_to_str_idx = libwireshark.try_val64_to_str_idx
+try_val64_to_str_idx.restype = gchar_p
+try_val64_to_str_idx.argtypes = [guint64, POINTER(val64_string), POINTER(gint)]
+
+# guint32 str_to_val(const gchar *val, const value_string *vs, const
+# guint32 err_val);
+str_to_val = libwireshark.str_to_val
+str_to_val.restype = guint32
+str_to_val.argtypes = [gchar_p, POINTER(value_string), guint32]
+
+# gint str_to_val_idx(const gchar *val, const value_string *vs);
+str_to_val_idx = libwireshark.str_to_val_idx
+str_to_val_idx.restype = gint
+str_to_val_idx.argtypes = [gchar_p, POINTER(value_string)]
+
+
+# typedef struct _value_string_ext value_string_ext;
+class _value_string_ext(Structure):
+    pass
+
+
+value_string_ext = _value_string_ext
+
+# typedef const value_string *(*_value_string_match2_t)(const guint32,
+# value_string_ext*);
+_value_string_match2_t = CFUNCTYPE(POINTER(value_string),
+                                   guint32,
+                                   POINTER(value_string_ext))
+
+# struct _value_string_ext {
+#     _value_string_match2_t _vs_match2;
+#     guint32                _vs_first_value;
+#     guint                  _vs_num_entries;
+#     const value_string    *_vs_p;
+#     const gchar           *_vs_name;
+# };
+_value_string_ext._fields_ = [('_vs_match2', _value_string_match2_t),
+                              ('_vs_first_value', guint32),
+                              ('_vs_num_entries', guint),
+                              ('_vs_p', POINTER(value_string)),
+                              ('_vs_name', gchar_p)]
+
+
+# #define VALUE_STRING_EXT_VS_P(x)           (x)->_vs_p
+def VALUE_STRING_EXT_VS_P(x):
+    return x[0]._vs_p
+
+
+# #define VALUE_STRING_EXT_VS_NUM_ENTRIES(x) (x)->_vs_num_entries
+def VALUE_STRING_EXT_VS_NUM_ENTRIES(x):
+    return x[0]._vs_num_entries
+
+
+# #define VALUE_STRING_EXT_VS_NAME(x)        (x)->_vs_name
+def VALUE_STRING_EXT_VS_NAME(x):
+    return x[0]._vs_name
+
+
+# const value_string *_try_val_to_str_ext_init(const guint32 val,
+# value_string_ext *vse);
+_try_val_to_str_ext_init = libwireshark._try_val_to_str_ext_init
+_try_val_to_str_ext_init.restype = POINTER(value_string)
+_try_val_to_str_ext_init.argtypes = [guint32, POINTER(value_string_ext)]
+
+
+# #define VALUE_STRING_EXT_INIT(x) { _try_val_to_str_ext_init, 0, G_N_ELEMENTS(x)-1, x, #x }
+def VALUE_STRING_EXT_INIT(x, name):
+    return value_string_ext(_try_val_to_str_ext_init, 0, len(x) - 1, x, name)
+
+
+# value_string_ext *value_string_ext_new(const value_string *vs, guint
+# vs_tot_num_entries, const gchar *vs_name);
+value_string_ext_new = libwireshark.value_string_ext_new
+value_string_ext_new.restype = POINTER(value_string_ext)
+value_string_ext_new.argtypes = [POINTER(value_string), guint, gchar_p]
+
+# void value_string_ext_free(value_string_ext *vse);
+value_string_ext_free = libwireshark.value_string_ext_free
+value_string_ext_free.restype = None
+value_string_ext_free.argtypes = [POINTER(value_string_ext)]
+
+# const gchar *val_to_str_ext(const guint32 val, value_string_ext *vse,
+# const char *fmt);
+val_to_str_ext = libwireshark.val_to_str_ext
+val_to_str_ext.restype = gchar_p
+val_to_str_ext.argtypes = [guint32, POINTER(value_string_ext), c_char_p]
+
+# gchar *val_to_str_ext_wmem(wmem_allocator_t *scope, const guint32 val,
+# value_string_ext *vse, const char *fmt);
+val_to_str_ext_wmem = libwireshark.val_to_str_ext_wmem
+val_to_str_ext_wmem.restype = gchar_p
+val_to_str_ext_wmem.argtypes = [POINTER(wmem_allocator_t),
+                                guint32,
+                                POINTER(value_string_ext),
+                                c_char_p]
+
+# const gchar *val_to_str_ext_const(const guint32 val, value_string_ext
+# *vs, const char *unknown_str);
+val_to_str_ext_const = libwireshark.val_to_str_ext_const
+val_to_str_ext_const.restype = gchar_p
+val_to_str_ext_const.argtypes = [guint32, POINTER(value_string_ext), c_char_p]
+
+# const gchar *try_val_to_str_ext(const guint32 val, value_string_ext *vse);
+try_val_to_str_ext = libwireshark.try_val_to_str_ext
+try_val_to_str_ext.restype = gchar_p
+try_val_to_str_ext.argtypes = [guint32, POINTER(value_string_ext)]
+
+# const gchar *try_val_to_str_idx_ext(const guint32 val, value_string_ext
+# *vse, gint *idx);
+try_val_to_str_idx_ext = libwireshark.try_val_to_str_idx_ext
+try_val_to_str_idx_ext.restype = gchar_p
+try_val_to_str_idx_ext.argtypes = [
+    guint32, POINTER(value_string_ext), POINTER(gint)]
+
+
+# typedef struct _val64_string_ext val64_string_ext;
+class _val64_string_ext(Structure):
+    pass
+
+
+val64_string_ext = _val64_string_ext
+
+
+# typedef const val64_string *(*_val64_string_match2_t)(const guint64,
+# val64_string_ext*);
+_val64_string_match2_t = CFUNCTYPE(POINTER(val64_string),
+                                   guint64,
+                                   POINTER(val64_string_ext))
+
+# struct _val64_string_ext {
+#     _val64_string_match2_t _vs_match2;
+#     guint64                _vs_first_value;
+#     guint                  _vs_num_entries;
+#     const val64_string    *_vs_p;
+#     const gchar           *_vs_name;
+# };
+_val64_string_ext._fields_ = [('_vs_match2', _val64_string_match2_t),
+                              ('_vs_first_value', guint64),
+                              ('_vs_num_entries', guint),
+                              ('_vs_p', POINTER(val64_string)),
+                              ('_vs_name', gchar_p)]
+
+
+# #define VAL64_STRING_EXT_VS_P(x)           (x)->_vs_p
+def VAL64_STRING_EXT_VS_P(x):
+    return x[0]._vs_p
+
+
+# #define VAL64_STRING_EXT_VS_NUM_ENTRIES(x) (x)->_vs_num_entries
+def VAL64_STRING_EXT_VS_NUM_ENTRIES(x):
+    return x[0]._vs_num_entries
+
+
+# #define VAL64_STRING_EXT_VS_NAME(x)        (x)->_vs_name
+def VAL64_STRING_EXT_VS_NAME(x):
+    return x[0]._vs_name
+
+
+# const val64_string *_try_val64_to_str_ext_init(const guint64 val,
+# val64_string_ext *vse);
+_try_val64_to_str_ext_init = libwireshark._try_val64_to_str_ext_init
+_try_val64_to_str_ext_init.restype = POINTER(val64_string)
+_try_val64_to_str_ext_init.argtypes = [guint64, POINTER(val64_string_ext)]
+
+
+# #define VAL64_STRING_EXT_INIT(x) { _try_val64_to_str_ext_init, 0, G_N_ELEMENTS(x)-1, x, #x }
+def VAL64_STRING_EXT_INIT(x, name):
+    return val64_string_ext(_try_val64_to_str_ext_init, 0, len(x) - 1, x, name)
+
+
+# val64_string_ext *val64_string_ext_new(const val64_string *vs, guint
+# vs_tot_num_entries, const gchar *vs_name);
+val64_string_ext_new = libwireshark.val64_string_ext_new
+val64_string_ext_new.restype = POINTER(val64_string_ext)
+val64_string_ext_new.argtypes = [POINTER(val64_string), guint, gchar_p]
+
+# void val64_string_ext_free(val64_string_ext *vse);
+val64_string_ext_free = libwireshark.val64_string_ext_free
+val64_string_ext_free.restype = None
+val64_string_ext_free.argtypes = [POINTER(val64_string_ext)]
+
+# const gchar *val64_to_str_ext(const guint64 val, val64_string_ext *vse,
+# const char *fmt);
+val64_to_str_ext = libwireshark.val64_to_str_ext
+val64_to_str_ext.restype = gchar_p
+val64_to_str_ext.argtypes = [guint64, POINTER(val64_string_ext), c_char_p]
+
+# gchar *val64_to_str_ext_wmem(wmem_allocator_t *scope, const guint64 val,
+# val64_string_ext *vse, const char *fmt);
+val64_to_str_ext_wmem = libwireshark.val64_to_str_ext_wmem
+val64_to_str_ext_wmem.restype = gchar_p
+val64_to_str_ext_wmem.argtypes = [POINTER(wmem_allocator_t),
+                                  guint64,
+                                  POINTER(val64_string_ext),
+                                  c_char_p]
+
+# const gchar *val64_to_str_ext_const(const guint64 val, val64_string_ext
+# *vs, const char *unknown_str);
+val64_to_str_ext_const = libwireshark.val64_to_str_ext_const
+val64_to_str_ext_const.restype = gchar_p
+val64_to_str_ext_const.argtypes = [
+    guint64, POINTER(val64_string_ext), c_char_p]
+
+# const gchar *try_val64_to_str_ext(const guint64 val, val64_string_ext *vse);
+try_val64_to_str_ext = libwireshark.try_val64_to_str_ext
+try_val64_to_str_ext.restype = gchar_p
+try_val64_to_str_ext.argtypes = [guint64, POINTER(val64_string_ext)]
+
+# const gchar *try_val64_to_str_idx_ext(const guint64 val,
+# val64_string_ext *vse, gint *idx);
+try_val64_to_str_idx_ext = libwireshark.try_val64_to_str_idx_ext
+try_val64_to_str_idx_ext.restype = gchar_p
+try_val64_to_str_idx_ext.argtypes = [
+    guint64, POINTER(val64_string_ext), POINTER(gint)]
+
+
+# typedef struct _string_string {
+#     const gchar *value;
+#     const gchar *strptr;
+# } string_string;
+class _string_string(Structure):
+    _fields_ = [('value', gchar_p),
+                ('strptr', gchar_p)]
+
+
+string_string = _string_string
+
+
+# const gchar *str_to_str(const gchar *val, const string_string *vs, const
+# char *fmt);
+str_to_str = libwireshark.str_to_str
+str_to_str.restype = gchar_p
+str_to_str.argtypes = [gchar_p, POINTER(string_string), c_char_p]
+
+# const gchar *try_str_to_str(const gchar *val, const string_string *vs);
+try_str_to_str = libwireshark.try_str_to_str
+try_str_to_str.restype = gchar_p
+try_str_to_str.argtypes = [gchar_p, POINTER(string_string)]
+
+# const gchar *try_str_to_str_idx(const gchar *val, const string_string
+# *vs, gint *idx);
+try_str_to_str_idx = libwireshark.try_str_to_str_idx
+try_str_to_str_idx.restype = gchar_p
+try_str_to_str_idx.argtypes = [gchar_p, POINTER(string_string), POINTER(gint)]
+
+
+# typedef struct _range_string {
+#     guint32      value_min;
+#     guint32      value_max;
+#     const gchar *strptr;
+# } range_string;
+class _range_string(Structure):
+    _fields_ = [('value_min', guint32),
+                ('value_max', guint32),
+                ('strptr', gchar_p)]
+
+
+range_string = _range_string
+
+# const gchar *rval_to_str(const guint32 val, const range_string *rs,
+# const char *fmt);
+rval_to_str = libwireshark.rval_to_str
+rval_to_str.restype = gchar_p
+rval_to_str.argtypes = [guint32, POINTER(range_string), c_char_p]
+
+# const gchar *rval_to_str_const(const guint32 val, const range_string
+# *rs, const char *unknown_str);
+rval_to_str_const = libwireshark.rval_to_str_const
+rval_to_str_const.restype = gchar_p
+rval_to_str_const.argtypes = [guint32, POINTER(range_string), c_char_p]
+
+# const gchar *try_rval_to_str(const guint32 val, const range_string *rs);
+try_rval_to_str = libwireshark.try_rval_to_str
+try_rval_to_str.restype = gchar_p
+try_rval_to_str.argtypes = [guint32, POINTER(range_string)]
+
+# const gchar *try_rval_to_str_idx(const guint32 val, const range_string
+# *rs, gint *idx);
+try_rval_to_str_idx = libwireshark.try_rval_to_str_idx
+try_rval_to_str_idx.restype = gchar_p
+try_rval_to_str_idx.argtypes = [guint32, POINTER(range_string), POINTER(gint)]
+
+# const gchar *try_rval64_to_str(const guint64 val, const range_string *rs);
+try_rval64_to_str = libwireshark.try_rval64_to_str
+try_rval64_to_str.restype = gchar_p
+try_rval64_to_str.argtypes = [guint64, POINTER(range_string)]
+
+# const gchar *try_rval64_to_str_idx(const guint64 val, const range_string
+# *rs, gint *idx);
+try_rval64_to_str_idx = libwireshark.try_rval64_to_str_idx
+try_rval64_to_str_idx.restype = gchar_p
+try_rval64_to_str_idx.argtypes = [
+    guint64, POINTER(range_string), POINTER(gint)]
+
+
+# typedef struct _bytes_string {
+#   const guint8 *value;
+#   const size_t  value_length;
+#   const gchar  *strptr;
+# } bytes_string;
+class _bytes_string(Structure):
+    _fields_ = [('value', POINTER(guint8)),
+                ('value_length', c_size_t),
+                ('strptr', gchar_p)]
+
+
+bytes_string = _bytes_string
+
+# const gchar *bytesval_to_str(const guint8 *val, const size_t val_len,
+# const bytes_string *bs, const char *fmt);
+bytesval_to_str = libwireshark.bytesval_to_str
+bytesval_to_str.restype = gchar_p
+bytesval_to_str.argtypes = [
+    POINTER(guint8),
+    c_size_t,
+    POINTER(bytes_string),
+    c_char_p]
+
+# const gchar *try_bytesval_to_str(const guint8 *val, const size_t
+# val_len, const bytes_string *bs);
+try_bytesval_to_str = libwireshark.try_bytesval_to_str
+try_bytesval_to_str.restype = gchar_p
+try_bytesval_to_str.argtypes = [
+    POINTER(guint8),
+    c_size_t,
+    POINTER(bytes_string)]
+
+# const gchar *bytesprefix_to_str(const guint8 *haystack, const size_t
+# haystack_len, const bytes_string *bs, const char *fmt);
+bytesprefix_to_str = libwireshark.bytesprefix_to_str
+bytesprefix_to_str.restype = gchar_p
+bytesprefix_to_str.argtypes = [
+    POINTER(guint8),
+    c_size_t,
+    POINTER(bytes_string),
+    c_char_p]
+
+# const gchar *try_bytesprefix_to_str(const guint8 *haystack, const size_t
+# haystack_len, const bytes_string *bs);
+try_bytesprefix_to_str = libwireshark.try_bytesprefix_to_str
+try_bytesprefix_to_str.restype = gchar_p
+try_bytesprefix_to_str.argtypes = [
+    POINTER(guint8), c_size_t, POINTER(bytes_string)]
