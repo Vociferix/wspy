@@ -4688,3 +4688,3115 @@ fvalue_get_sinteger64.argtypes = [POINTER(fvalue_t)]
 fvalue_get_floating = libwireshark.fvalue_get_floating
 fvalue_get_floating.restype = c_double
 fvalue_get_floating.argtypes = [POINTER(fvalue_t)]
+
+
+##############
+# register.h #
+##############
+
+# typedef enum {
+#     RA_NONE,
+#     RA_DISSECTORS,
+#     RA_LISTENERS,
+#     RA_EXTCAP,
+#     RA_REGISTER,
+#     RA_PLUGIN_REGISTER,
+#     RA_HANDOFF,
+#     RA_PLUGIN_HANDOFF,
+#     RA_LUA_PLUGINS,
+#     RA_LUA_DEREGISTER,
+#     RA_PREFERENCES,
+#     RA_INTERFACES
+# } register_action_e;
+register_action_e = c_int
+RA_NONE = c_int(0)
+RA_DISSECTORS = c_int(1)
+RA_LISTENERS = c_int(2)
+RA_EXTCAP = c_int(3)
+RA_REGISTER = c_int(4)
+RA_PLUGIN_REGISTER = c_int(5)
+RA_HANDOFF = c_int(6)
+RA_PLUGIN_HANDOFF = c_int(7)
+RA_LUA_PLUGINS = c_int(8)
+RA_LUA_DEREGISTER = c_int(9)
+RA_PREFERENCES = c_int(10)
+RA_INTERFACES = c_int(11)
+
+# #define RA_BASE_COUNT (RA_INTERFACES - 3)
+RA_BASE_COUNT = c_int(RA_INTERFACES.value - 3)
+
+# typedef void (*register_cb)(register_action_e action, const char
+# *message, gpointer client_data);
+register_cb = CFUNCTYPE(None, register_action_e, c_char_p, gpointer)
+
+
+###########
+# proto.h #
+###########
+
+# int hf_text_only;
+hf_text_only = c_int.in_dll(libwireshark, 'hf_text_only')
+
+# #define ITEM_LABEL_LENGTH       240
+ITEM_LABEL_LENGTH = 240
+
+# #define ITEM_LABEL_UNKNOWN_STR  "Unknown"
+ITEM_LABEL_UNKNOWN_STR = b'Unknown'
+
+
+# struct expert_field;
+class expert_field(Structure):
+    _fields_ = []
+
+
+# typedef void (*custom_fmt_func_t)(gchar *, guint32);
+custom_fmt_func_t = CFUNCTYPE(None, gchar_p, guint32)
+
+# typedef void (*custom_fmt_func_64_t)(gchar *, guint64);
+custom_fmt_func_64_t = CFUNCTYPE(None, gchar_p, guint64)
+
+
+# #define CF_FUNC(x) ((const void *) (gsize) (x))
+def CF_FUNC(x):
+    return cast(cast(x, gsize), c_void_p)
+
+
+# #define FRAMENUM_TYPE(x) GINT_TO_POINTER(x)
+def FRAMENUM_TYPE(x):
+    return cast(cast(x, gsize), gpointer)
+
+
+# struct _protocol;
+class _protocol(Structure):
+    _fields_ = []
+
+
+# typedef struct _protocol protocol_t;
+protocol_t = _protocol
+
+# void proto_report_dissector_bug(const char *format, ...);
+
+
+def proto_report_dissector_bug(format, *argv):
+    args, types = c_va_list(*argv)
+    _proto_report_dissector_bug = libwireshark.proto_report_dissector_bug
+    _proto_report_dissector_bug.restype = None
+    _proto_report_dissector_bug.argtypes = [c_char_p] + types
+    _proto_report_dissector_bug(format, *args)
+
+
+# #define REPORT_DISSECTOR_BUG(...)  \
+#     proto_report_dissector_bug(__VA_ARGS__)
+def REPORT_DISSECTOR_BUG(*args):
+    proto_report_dissector_bug(*args)
+
+
+# #define ENC_BIG_ENDIAN      0x00000000
+ENC_BIG_ENDIAN = 0x00000000
+
+# #define ENC_LITTLE_ENDIAN   0x80000000
+ENC_LITTLE_ENDIAN = 0x80000000
+
+# if G_BYTE_ORDER == G_LITTLE_ENDIAN
+if sys.byteorder == 'little':
+    # define ENC_HOST_ENDIAN ENC_LITTLE_ENDIAN
+    ENC_HOST_ENDIAN = ENC_LITTLE_ENDIAN
+# else
+else:
+    # define ENC_HOST_ENDIAN ENC_BIG_ENDIAN
+    ENC_HOST_ENDIAN = ENC_BIG_ENDIAN
+
+# #define ENC_TIME_SECS_NSECS    0x00000000
+ENC_TIME_SECS_NSECS = 0x00000000
+
+# #define ENC_TIME_TIMESPEC      0x00000000
+ENC_TIME_TIMESPEC = 0x00000000
+
+# #define ENC_TIME_NTP           0x00000002
+ENC_TIME_NTP = 0x00000002
+
+# #define ENC_TIME_TOD           0x00000004
+ENC_TIME_TOD = 0x00000004
+
+# #define ENC_TIME_RTPS          0x00000008
+ENC_TIME_RTPS = 0x00000008
+
+# #define ENC_TIME_NTP_BASE_ZERO 0x00000008
+ENC_TIME_NTP_BASE_ZERO = 0x00000008
+
+# #define ENC_TIME_SECS_USECS    0x00000010
+ENC_TIME_SECS_USECS = 0x00000010
+
+# #define ENC_TIME_TIMEVAL       0x00000010
+ENC_TIME_TIMEVAL = 0x00000010
+
+# #define ENC_TIME_SECS          0x00000012
+ENC_TIME_SECS = 0x00000012
+
+# #define ENC_TIME_MSECS         0x00000014
+ENC_TIME_MSECS = 0x00000014
+
+# #define ENC_TIME_SECS_NTP      0x00000018
+ENC_TIME_SECS_NTP = 0x00000018
+
+# #define ENC_TIME_RFC_3971      0x00000020
+ENC_TIME_RFC_3971 = 0x00000020
+
+# #define ENC_TIME_MSEC_NTP      0x00000022
+ENC_TIME_MSEC_NTP = 0x00000022
+
+# #define ENC_TIME_MIP6          0x00000024
+ENC_TIME_MIP6 = 0x00000024
+
+
+# #define ENC_ZIGBEE               0x40000000
+ENC_ZIGBEE = 0x40000000
+
+
+# #define ENC_CHARENCODING_MASK    0x3FFFFFFE
+ENC_CHARENCODING_MASK = 0x3FFFFFFE
+
+# #define ENC_ASCII                0x00000000
+ENC_ASCII = 0x00000000
+
+# #define ENC_ISO_646_IRV          ENC_ASCII
+ENC_ISO_646_IRV = ENC_ASCII
+
+# #define ENC_UTF_8                0x00000002
+ENC_UTF_8 = 0x00000002
+
+# #define ENC_UTF_16               0x00000004
+ENC_UTF_16 = 0x00000004
+
+# #define ENC_UCS_2                0x00000006
+ENC_UCS_2 = 0x00000006
+
+# #define ENC_UCS_4                0x00000008
+ENC_UCS_4 = 0x00000008
+
+# #define ENC_ISO_8859_1           0x0000000A
+ENC_ISO_8859_1 = 0x0000000A
+
+# #define ENC_ISO_8859_2           0x0000000C
+ENC_ISO_8859_2 = 0x0000000C
+
+# #define ENC_ISO_8859_3           0x0000000E
+ENC_ISO_8859_3 = 0x0000000E
+
+# #define ENC_ISO_8859_4           0x00000010
+ENC_ISO_8859_4 = 0x00000010
+
+# #define ENC_ISO_8859_5           0x00000012
+ENC_ISO_8859_5 = 0x00000012
+
+# #define ENC_ISO_8859_6           0x00000014
+ENC_ISO_8859_6 = 0x00000014
+
+# #define ENC_ISO_8859_7           0x00000016
+ENC_ISO_8859_7 = 0x00000016
+
+# #define ENC_ISO_8859_8           0x00000018
+ENC_ISO_8859_8 = 0x00000018
+
+# #define ENC_ISO_8859_9           0x0000001A
+ENC_ISO_8859_9 = 0x0000001A
+
+# #define ENC_ISO_8859_10          0x0000001C
+ENC_ISO_8859_10 = 0x0000001C
+
+# #define ENC_ISO_8859_11          0x0000001E
+ENC_ISO_8859_11 = 0x0000001E
+
+
+# #define ENC_ISO_8859_13          0x00000022
+ENC_ISO_8859_13 = 0x00000022
+
+# #define ENC_ISO_8859_14          0x00000024
+ENC_ISO_8859_14 = 0x00000024
+
+# #define ENC_ISO_8859_15          0x00000026
+ENC_ISO_8859_15 = 0x00000026
+
+# #define ENC_ISO_8859_16          0x00000028
+ENC_ISO_8859_16 = 0x00000028
+
+# #define ENC_WINDOWS_1250         0x0000002A
+ENC_WINDOWS_1250 = 0x0000002A
+
+# #define ENC_3GPP_TS_23_038_7BITS 0x0000002C
+ENC_3GPP_TS_23_038_7BITS = 0x0000002C
+
+# #define ENC_EBCDIC               0x0000002E
+ENC_EBCDIC = 0x0000002E
+
+# #define ENC_MAC_ROMAN            0x00000030
+ENC_MAC_ROMAN = 0x00000030
+
+# #define ENC_CP437                0x00000032
+ENC_CP437 = 0x00000032
+
+# #define ENC_ASCII_7BITS          0x00000034
+ENC_ASCII_7BITS = 0x00000034
+
+# #define ENC_T61                  0x00000036
+ENC_T61 = 0x00000036
+
+# #define ENC_EBCDIC_CP037         0x00000038
+ENC_EBCDIC_CP037 = 0x00000038
+
+# #define ENC_WINDOWS_1252         0x0000003A
+ENC_WINDOWS_1252 = 0x0000003A
+
+# #define ENC_WINDOWS_1251         0x0000003C
+ENC_WINDOWS_1251 = 0x0000003C
+
+# #define ENC_CP855                0x0000003E
+ENC_CP855 = 0x0000003E
+
+# #define ENC_CP866                0x00000040
+ENC_CP866 = 0x00000040
+
+# #define ENC_ISO_646_BASIC        0x00000042
+ENC_ISO_646_BASIC = 0x00000042
+
+
+# #define ENC_NA          0x00000000
+ENC_NA = 0x00000000
+
+
+# #define ENC_STR_NUM     0x01000000
+ENC_STR_NUM = 0x01000000
+
+
+# #define ENC_STR_HEX     0x02000000
+ENC_STR_HEX = 0x02000000
+
+
+# #define ENC_STRING      0x03000000
+ENC_STRING = 0x03000000
+
+
+# #define ENC_STR_MASK    0x0000FFFE
+ENC_STR_MASK = 0x0000FFFE
+
+
+# #define ENC_NUM_PREF    0x00200000
+ENC_NUM_PREF = 0x00200000
+
+
+# #define ENC_VARINT_PROTOBUF      0x00000002
+ENC_VARINT_PROTOBUF = 0x00000002
+
+# #define ENC_VARINT_QUIC          0x00000004
+ENC_VARINT_QUIC = 0x00000004
+
+# #define ENC_VARINT_ZIGZAG        0x00000008
+ENC_VARINT_ZIGZAG = 0x00000008
+
+
+# #define ENC_VARIANT_MASK         (ENC_VARINT_PROTOBUF|ENC_VARINT_QUIC|ENC_VARINT_ZIGZAG)
+ENC_VARIANT_MASK = (ENC_VARINT_PROTOBUF | ENC_VARINT_QUIC | ENC_VARINT_ZIGZAG)
+
+
+# #define ENC_SEP_NONE    0x00010000
+ENC_SEP_NONE = 0x00010000
+
+# #define ENC_SEP_COLON   0x00020000
+ENC_SEP_COLON = 0x00020000
+
+# #define ENC_SEP_DASH    0x00040000
+ENC_SEP_DASH = 0x00040000
+
+# #define ENC_SEP_DOT     0x00080000
+ENC_SEP_DOT = 0x00080000
+
+# #define ENC_SEP_SPACE   0x00100000
+ENC_SEP_SPACE = 0x00100000
+
+
+# #define ENC_SEP_MASK    0x001F0000
+ENC_SEP_MASK = 0x001F0000
+
+
+# #define ENC_ISO_8601_DATE       0x00010000
+ENC_ISO_8601_DATE = 0x00010000
+
+# #define ENC_ISO_8601_TIME       0x00020000
+ENC_ISO_8601_TIME = 0x00020000
+
+# #define ENC_ISO_8601_DATE_TIME  0x00030000
+ENC_ISO_8601_DATE_TIME = 0x00030000
+
+# #define ENC_RFC_822             0x00040000
+ENC_RFC_822 = 0x00040000
+
+# #define ENC_RFC_1123            0x00080000
+ENC_RFC_1123 = 0x00080000
+
+
+# #define ENC_STR_TIME_MASK       0x000F0000
+ENC_STR_TIME_MASK = 0x000F0000
+
+
+# #define FIELD_DISPLAY_E_MASK 0xFF
+FIELD_DISPLAY_E_MASK = 0xFF
+
+
+# typedef enum {
+#     BASE_NONE    = 0,
+#     BASE_DEC     = 1,
+#     BASE_HEX     = 2,
+#     BASE_OCT     = 3,
+#     BASE_DEC_HEX = 4,
+#     BASE_HEX_DEC = 5,
+#     BASE_CUSTOM  = 6,
+#     BASE_FLOAT   = BASE_NONE,
+#     STR_ASCII    = 0,
+#     STR_UNICODE  = 7,
+#     SEP_DOT      = 8,
+#     SEP_DASH     = 9,
+#     SEP_COLON    = 10,
+#     SEP_SPACE    = 11,
+#     BASE_NETMASK = 12,
+#     BASE_PT_UDP  = 13,
+#     BASE_PT_TCP  = 14,
+#     BASE_PT_DCCP = 15,
+#     BASE_PT_SCTP = 16,
+#     BASE_OUI     = 17
+# } field_display_e;
+field_display_e = c_int
+BASE_NONE = c_int(0)
+BASE_DEC = c_int(1)
+BASE_HEX = c_int(2)
+BASE_OCT = c_int(3)
+BASE_DEC_HEX = c_int(4)
+BASE_HEX_DEC = c_int(5)
+BASE_CUSTOM = c_int(6)
+BASE_FLOAT = BASE_NONE
+STR_ASCII = c_int(0)
+STR_UNICODE = c_int(7)
+SEP_DOT = c_int(8)
+SEP_DASH = c_int(9)
+SEP_COLON = c_int(10)
+SEP_SPACE = c_int(11)
+BASE_NETMASK = c_int(12)
+BASE_PT_UDP = c_int(13)
+BASE_PT_TCP = c_int(14)
+BASE_PT_DCCP = c_int(15)
+BASE_PT_SCTP = c_int(16)
+BASE_OUI = c_int(17)
+
+
+# #define FIELD_DISPLAY(d) ((d) & FIELD_DISPLAY_E_MASK)
+def FILED_DISPLAY(d):
+    return type(d)(d.value & FILE_DISPLAY_E_MASK)
+
+
+# #define BASE_RANGE_STRING         0x00000100
+BASE_RANGE_STRING = 0x00000100
+
+# #define BASE_EXT_STRING           0x00000200
+BASE_EXT_STRING = 0x00000200
+
+# #define BASE_VAL64_STRING         0x00000400
+BASE_VAL64_STRING = 0x00000400
+
+
+# #define BASE_ALLOW_ZERO           0x00000800
+BASE_ALLOW_ZERO = 0x00000800
+
+
+# #define BASE_UNIT_STRING          0x00001000
+BASE_UNIT_STRING = 0x00001000
+
+
+# #define BASE_NO_DISPLAY_VALUE     0x00002000
+BASE_NO_DISPLAY_VALUE = 0x00002000
+
+
+# #define BASE_PROTOCOL_INFO        0x00004000
+BASE_PROTOCOL_INFO = 0x00004000
+
+
+# #define BASE_SPECIAL_VALS         0x00008000
+BASE_SPECIAL_VALS = 0x00008000
+
+
+# #define BASE_SHOW_ASCII_PRINTABLE 0x00010000
+BASE_SHOW_ASCII_PRINTABLE = 0x00010000
+
+
+# #define IS_BASE_DUAL(b) ((b)==BASE_DEC_HEX||(b)==BASE_HEX_DEC)
+def IS_BASE_DUAL(b):
+    return b.value == BASE_DEC_HEX.value or b.value == BASE_HEX_DEC.value
+
+
+# #define IS_BASE_PORT(b) (((b)==BASE_PT_UDP||(b)==BASE_PT_TCP||(b)==BASE_PT_DCCP||(b)==BASE_PT_SCTP))
+def IS_BASE_PORT(b):
+    return b.value == BASE_PT_UDP.value or b.value == BASE_PT_TCP.value or b.value == BASE_PT_DCCP.value or b.value == BASE_PT_SCTP.value
+
+
+# typedef enum {
+#     HF_REF_TYPE_NONE,
+#     HF_REF_TYPE_INDIRECT,
+#     HF_REF_TYPE_DIRECT
+# } hf_ref_type;
+hf_ref_type = c_int
+HF_REF_TYPE_NONE = c_int(0)
+HF_REF_TYPE_INDIRECT = c_int(1)
+HF_REF_TYPE_DIRECT = c_int(2)
+
+
+# typedef struct _header_field_info header_field_info;
+class _header_field_info(Structure):
+    pass
+
+
+header_field_info = _header_field_info
+
+
+# struct _header_field_info {
+#     const char        *name;
+#     const char        *abbrev;
+#     enum ftenum        type;
+#     int                display;
+#     const void        *strings;
+#     guint64            bitmask;
+#     const char        *blurb;
+#     int                id;
+#     int                parent;
+#     hf_ref_type        ref_type;
+#     int                same_name_prev_id;
+#     header_field_info *same_name_next;
+# };
+_header_field_info._fields_ = [('name', c_char_p),
+                               ('abbrev', c_char_p),
+                               ('type', ftenum),
+                               ('display', c_int),
+                               ('strings', c_void_p),
+                               ('bitmask', guint64),
+                               ('blurb', c_char_p),
+                               ('id', c_int),
+                               ('parent', c_int),
+                               ('ref_type', hf_ref_type),
+                               ('same_name_prev_id', c_int),
+                               ('same_name_next', POINTER(header_field_info))]
+
+
+# #define HFILL_INIT(hf)   \
+#     (hf).hfinfo.id                = -1;   \
+#     (hf).hfinfo.parent            = 0;   \
+#     (hf).hfinfo.ref_type          = HF_REF_TYPE_NONE;   \
+#     (hf).hfinfo.same_name_prev_id = -1;   \
+#     (hf).hfinfo.same_name_next    = NULL;
+def HFILL_INIT(hf):
+    hf.hfinfo.id = c_int(-1)
+    hf.hfinfo.parent = c_int(0)
+    hf.hfinfo.ref_type = HF_REF_TYPE_NONE
+    hf.hfinfo.same_name_prev_id = c_int(-1)
+    hf.hfinfo.same_name_next = POINTER(header_field_info)(0)
+
+
+# typedef struct hf_register_info {
+#     int               *p_id;
+#     header_field_info  hfinfo;
+# } hf_register_info;
+class hf_register_info(Structure):
+    _fields_ = [('p_id', POINTER(c_int)),
+                ('hfinfo', header_field_info)]
+
+
+# typedef struct _item_label_t {
+#     char representation[ITEM_LABEL_LENGTH];
+# } item_label_t;
+class _item_label_t(Structure):
+    _fields_ = [('representation', c_char * ITEM_LABEL_LENGTH)]
+
+
+item_label_t = _item_label_t
+
+
+# typedef struct field_info {
+#     header_field_info   *hfinfo;
+#     gint                 start;
+#     gint                 length;
+#     gint                 appendix_start;
+#     gint                 appendix_length;
+#     gint                 tree_type;
+#     guint32              flags;
+#     item_label_t        *rep;
+#     tvbuff_t            *ds_tvb;
+#     fvalue_t             value;
+# } field_info;
+class field_info(Structure):
+    _fields_ = [('hfinfo', POINTER(header_field_info)),
+                ('start', gint),
+                ('length', gint),
+                ('appendix_start', gint),
+                ('appendix_length', gint),
+                ('tree_type', gint),
+                ('flags', guint32),
+                ('rep', POINTER(item_label_t)),
+                ('ds_tvb', POINTER(tvbuff_t)),
+                ('value', fvalue_t)]
+
+
+# typedef struct {
+#     guint  crumb_bit_offset;
+#     guint8 crumb_bit_length;
+# } crumb_spec_t;
+class crumb_spec_t(Structure):
+    _fields_ = [('crumb_bit_offset', guint),
+                ('crumb_bit_length', guint8)]
+
+
+# #define FI_HIDDEN               0x00000001
+FI_HIDDEN = 0x00000001
+
+# #define FI_GENERATED            0x00000002
+FI_GENERATED = 0x00000002
+
+
+# #define FI_URL                  0x00000004
+FI_URL = 0x00000004
+
+
+# #define FI_LITTLE_ENDIAN        0x00000008
+FI_LITTLE_ENDIAN = 0x00000008
+
+
+# #define FI_BIG_ENDIAN           0x00000010
+FI_BIG_ENDIAN = 0x00000010
+
+
+# #define FI_BITS_OFFSET(n)       (((n) & 7) << 5)
+def FI_BITS_OFFSET(n):
+    return type(n)((n.value & 7) << 5)
+
+
+# #define FI_BITS_SIZE(n)         (((n) & 63) << 8)
+def FI_BITS_SIZE(n):
+    return type(n)((n.value & 63) << 8)
+
+
+# #define FI_VARINT               0x00004000
+FI_VARINT = 0x00004000
+
+
+# #define FI_GET_FLAG(fi, flag)   ((fi) ? ((fi)->flags & (flag)) : 0)
+def FI_GET_FLAG(fi, flag):
+    if fi.value != 0:
+        return type(fi[0].flags)(fi[0].flags & flag.value)
+    else:
+        return type(fi[0].flags)(0)
+
+
+# #define FI_SET_FLAG(fi, flag) \
+#     do { \
+#       if (fi) \
+#         (fi)->flags = (fi)->flags | (flag); \
+#     } while(0)
+def FI_SET_FLAG(fi, flag):
+    if fi.value != 0:
+        fi[0].flags = type(fi[0].flags)(fi[0].flags.value | flag.value)
+
+
+# #define FI_RESET_FLAG(fi, flag) \
+#     do { \
+#       if (fi) \
+#         (fi)->flags = (fi)->flags & ~(flag); \
+#     } while(0)
+def FI_RESET_FLAG(fi, flag):
+    if fi.value != 0:
+        fi[0].flags = type(fi[0].flags)(fi[0].flags.value & ~(flag.value))
+
+
+# define FI_GET_BITS_OFFSET(fi) (FI_GET_FLAG(fi, FI_BITS_OFFSET(7)) >> 5)
+def FI_GET_BITS_OFFSET(fi):
+    tmp = FI_GET_FLAG(fi, FI_BITS_OFFSET(type(fi[0].flags)(7)))
+    return type(tmp)(tmp.value >> 5)
+
+
+# define FI_GET_BITS_SIZE(fi)   (FI_GET_FLAG(fi, FI_BITS_SIZE(63)) >> 8)
+def FI_GET_BITS_OFFSET(fi):
+    tmp = FI_GET_FLAG(fi, FI_BITS_SIZE(type(fi[0].flags)(63)))
+    return type(tmp)(tmp.value >> 8)
+
+
+# typedef struct {
+#     GHashTable          *interesting_hfids;
+#     gboolean             visible;
+#     gboolean             fake_protocols;
+#     gint                 count;
+#     struct _packet_info *pinfo;
+# } tree_data_t;
+class tree_data_t(Structure):
+    _fields_ = [('interesting_hfids', POINTER(GHashTable)),
+                ('visible', gboolean),
+                ('fake_protocols', gboolean),
+                ('count', gint),
+                ('pinfo', POINTER(_packet_info))]
+
+
+# typedef struct _proto_node {
+#     struct _proto_node *first_child;
+#     struct _proto_node *last_child;
+#     struct _proto_node *next;
+#     struct _proto_node *parent;
+#     field_info         *finfo;
+#     tree_data_t        *tree_data;
+# } proto_node;
+class _proto_node(Structure):
+    pass
+
+
+_proto_node._fields_ = [('first_child', POINTER(_proto_node)),
+                        ('last_child', POINTER(_proto_node)),
+                        ('next', POINTER(_proto_node)),
+                        ('parent', POINTER(_proto_node)),
+                        ('finfo', POINTER(field_info)),
+                        ('tree_data', POINTER(tree_data_t))]
+
+proto_node = _proto_node
+
+# typedef proto_node proto_tree;
+proto_tree = proto_node
+
+# typedef proto_node proto_item;
+proto_item = proto_node
+
+# #define PI_SEVERITY_MASK        0x00F00000
+PI_SEVERITY_MASK = 0x00F00000
+
+
+# #define PI_COMMENT              0x00100000
+PI_COMMENT = 0x00100000
+
+
+# #define PI_CHAT                 0x00200000
+PI_CHAT = 0x00200000
+
+
+# #define PI_NOTE                 0x00400000
+PI_NOTE = 0x00400000
+
+
+# #define PI_WARN                 0x00600000
+PI_WARN = 0x00600000
+
+
+# #define PI_ERROR                0x00800000
+PI_ERROR = 0x00800000
+
+
+# #define PI_GROUP_MASK           0xFF000000
+PI_GROUP_MASK = 0xFF000000
+
+
+# #define PI_CHECKSUM             0x01000000
+PI_CHECKSUM = 0x01000000
+
+
+# #define PI_SEQUENCE             0x02000000
+PI_SEQUENCE = 0x02000000
+
+
+# #define PI_RESPONSE_CODE        0x03000000
+PI_RESPONSE_CODE = 0x03000000
+
+
+# #define PI_REQUEST_CODE         0x04000000
+PI_REQUEST_CODE = 0x04000000
+
+
+# #define PI_UNDECODED            0x05000000
+PI_UNDECODED = 0x05000000
+
+
+# #define PI_REASSEMBLE           0x06000000
+PI_REASSEMBLE = 0x06000000
+
+
+# #define PI_MALFORMED            0x07000000
+PI_MALFORMED = 0x07000000
+
+
+# #define PI_DEBUG                0x08000000
+PI_DEBUG = 0x08000000
+
+
+# #define PI_PROTOCOL             0x09000000
+PI_PROTOCOL = 0x09000000
+
+
+# #define PI_SECURITY             0x0a000000
+PI_SECURITY = 0x0a000000
+
+
+# #define PI_COMMENTS_GROUP       0x0b000000
+PI_COMMENTS_GROUP = 0x0b000000
+
+
+# #define PI_DECRYPTION           0x0c000000
+PI_DECRYPTION = 0x0c000000
+
+
+# #define PI_ASSUMPTION           0x0d000000
+PI_ASSUMPTION = 0x0d000000
+
+
+# #define PI_DEPRECATED           0x0e000000
+PI_DEPRECATED = 0x0e000000
+
+
+# #define PNODE_FINFO(proto_node)  ((proto_node)->finfo)
+def PNODE_FINFO(proto_node):
+    return proto_node[0].finfo
+
+
+# #define PITEM_FINFO(proto_item)  PNODE_FINFO(proto_item)
+def PITEM_FINFO(proto_item):
+    return PNODE_FINFO(proto_item)
+
+
+# #define PTREE_FINFO(proto_tree)  PNODE_FINFO(proto_tree)
+def PTREE_FINFO(proto_tree):
+    return PNODE_FINFO(proto_tree)
+
+
+# #define PTREE_DATA(proto_tree)   ((proto_tree)->tree_data)
+def PTREE_DATA(proto_tree):
+    return proto_tree[0].tree_data
+
+
+# #define PNODE_POOL(proto_node)   ((proto_node)->tree_data->pinfo->pool)
+def PNODE_POOL(proto_node):
+    proto_node[0].tree_data[0].pinfo[0].pool
+
+
+# static inline gboolean proto_item_is_hidden(proto_item *ti);
+def proto_item_is_hidden(ti):
+    if ti.value != 0:
+        return cast(FI_GET_FLAG(PITEM_FINFO(ti), FI_HIDDEN), gboolean)
+    return gboolean(0)
+
+
+# #define PROTO_ITEM_IS_HIDDEN(ti) proto_item_is_hidden((ti))
+def PROTO_ITEM_IS_HIDDEN(ti):
+    return proto_item_is_hidden(ti)
+
+
+# static inline void proto_item_set_hidden(proto_item *ti);
+def proto_item_set_hidden(ti):
+    if ti.value != 0:
+        FI_SET_FLAG(PITEM_FINFO(ti), FI_HIDDEN)
+
+
+# #define PROTO_ITEM_SET_HIDDEN(ti) proto_item_set_hidden((ti))
+def PROTO_ITEM_SET_HIDDEN(ti):
+    proto_item_set_hidden(ti)
+
+
+# static inline void proto_item_set_visible(proto_item *ti);
+def proto_item_set_visible(ti):
+    if ti.value != 0:
+        FI_RESET_FLAG(PITEM_FINFO(ti), FI_HIDDEN)
+
+
+# #define PROTO_ITEM_SET_VISIBLE(ti) proto_item_set_visible((ti))
+def PROTO_ITEM_SET_VISIBLE(ti):
+    proto_item_set_visible(ti)
+
+
+# static inline gboolean proto_item_is_generated(proto_item *ti);
+def proto_item_is_generated(ti):
+    if ti.value != 0:
+        return cast(FI_GET_FLAG(PITEM_FINFO(ti), FI_GENERATED), gboolean)
+    return gboolean(0)
+
+
+# #define PROTO_ITEM_IS_GENERATED(ti) proto_item_is_generated((ti))
+def PROTO_ITEM_IS_GENERATED(ti):
+    return proto_item_is_generated(ti)
+
+
+# static inline void proto_item_set_generated(proto_item *ti);
+def proto_item_set_generated(ti):
+    if ti.value != 0:
+        FI_SET_FLAG(PITEM_FINFO(ti), FI_GENERATED)
+
+
+# #define PROTO_ITEM_SET_GENERATED(ti) proto_item_set_generated((ti))
+def PROTO_ITEM_SET_GENERATED(ti):
+    proto_item_set_generated(ti)
+
+
+# static inline gboolean proto_item_is_url(proto_item *ti);
+def proto_item_is_url(ti):
+    if ti.value != 0:
+        return cast(FI_GET_FLAG(PITEM_FINFO(ti), FI_URL), gboolean)
+    return gboolean(0)
+
+
+# #define PROTO_ITEM_IS_URL(ti) proto_item_is_url((ti))
+def PROTO_ITEM_IS_URL(ti):
+    return proto_item_is_url(ti)
+
+# static inline void proto_item_set_url(proto_item *ti);
+
+
+def proto_item_set_url(ti):
+    if ti.value != 0:
+        FI_SET_FLAG(PITEM_FINFO(ti), FI_URL)
+
+
+# #define PROTO_ITEM_SET_URL(ti) proto_item_set_url((ti))
+def PROTO_ITEM_SET_URL(ti):
+    proto_item_set_url(ti)
+
+
+# typedef void (*proto_tree_foreach_func)(proto_node *, gpointer);
+proto_tree_foreach_func = CFUNCTYPE(None, POINTER(proto_node), gpointer)
+
+# typedef gboolean (*proto_tree_traverse_func)(proto_node *, gpointer);
+proto_tree_traverse_func = CFUNCTYPE(gboolean, POINTER(proto_node), gpointer)
+
+# void proto_tree_children_foreach(proto_tree *tree,
+#     proto_tree_foreach_func func, gpointer data);
+proto_tree_children_foreach = libwireshark.proto_tree_children_foreach
+proto_tree_children_foreach.restype = None
+proto_tree_children_foreach.argtypes = [POINTER(proto_tree),
+                                        proto_tree_foreach_func,
+                                        gpointer]
+
+# typedef struct {
+#     void (*register_protoinfo)(void);
+#     void (*register_handoff)(void);
+# } proto_plugin;
+
+
+class proto_plugin(Structure):
+    _fields_ = [('register_protoinfo', CFUNCTYPE(None)),
+                ('register_handoff', CFUNCTYPE(None))]
+
+
+# void proto_register_plugin(const proto_plugin *plugin);
+proto_register_plugin = libwireshark.proto_register_plugin
+proto_register_plugin.restype = None
+proto_register_plugin.argtypes = [POINTER(proto_plugin)]
+
+# gboolean proto_field_is_referenced(proto_tree *tree, int proto_id);
+proto_field_is_referenced = libwireshark.proto_field_is_referenced
+proto_field_is_referenced.restype = gboolean
+proto_field_is_referenced.argtypes = [POINTER(proto_tree), c_int]
+
+# proto_tree* proto_item_add_subtree(proto_item *ti, const gint idx);
+proto_item_add_subtree = libwireshark.proto_item_add_subtree
+proto_item_add_subtree.restype = POINTER(proto_tree)
+proto_item_add_subtree.argtypes = [POINTER(proto_item), gint]
+
+# proto_tree* proto_item_get_subtree(proto_item *ti);
+proto_item_get_subtree = libwireshark.proto_item_get_subtree
+proto_item_get_subtree.restype = POINTER(proto_tree)
+proto_item_get_subtree.argtypes = [POINTER(proto_item)]
+
+# proto_item* proto_item_get_parent(const proto_item *ti);
+proto_item_get_parent = libwireshark.proto_item_get_parent
+proto_item_get_parent.restype = POINTER(proto_item)
+proto_item_get_parent.argtypes = [POINTER(proto_item)]
+
+# proto_item* proto_item_get_parent_nth(proto_item *ti, int gen);
+proto_item_get_parent_nth = libwireshark.proto_item_get_parent_nth
+proto_item_get_parent_nth.restype = POINTER(proto_item)
+proto_item_get_parent_nth.argtypes = [POINTER(proto_item), c_int]
+
+
+# void proto_item_set_text(proto_item *ti, const char *format, ...);
+def proto_item_set_text(ti, format, *argv):
+    args, types = c_va_list(*argv)
+    _proto_item_set_text = libwireshark.proto_item_set_text
+    _proto_item_set_text.restype = None
+    _proto_item_set_text.argtypes = [POINTER(proto_item), c_char_p] + types
+    _proto_item_set_text(ti, format, *args)
+
+
+# void proto_item_append_text(proto_item *ti, const char *format, ...);
+def proto_item_append_text(ti, format, *argv):
+    args, types = c_va_list(*argv)
+    _proto_item_append_text = libwireshark.proto_item_append_text
+    _proto_item_append_text.restype = None
+    _proto_item_append_text.argtypes = [POINTER(proto_item), c_char_p] + types
+    _proto_item_append_text(ti, format, *args)
+
+
+# void proto_item_prepend_text(proto_item *ti, const char *format, ...);
+def proto_item_prepend_text(ti, format, *argv):
+    args, types = c_va_list(*argv)
+    _proto_item_prepend_text = libwireshark.proto_item_prepend_text
+    _proto_item_prepend_text.restype = None
+    _proto_item_prepend_text.argtypes = [POINTER(proto_item), c_char_p] + types
+    _proto_item_prepend_text(ti, format, *args)
+
+
+# void proto_item_set_len(proto_item *ti, const gint length);
+proto_item_set_len = libwireshark.proto_item_set_len
+proto_item_set_len.restype = None
+proto_item_set_len.argtypes = [POINTER(proto_item), gint]
+
+# void proto_item_set_end(proto_item *ti, tvbuff_t *tvb, gint end);
+proto_item_set_end = libwireshark.proto_item_set_end
+proto_item_set_end.restype = None
+proto_item_set_end.argtypes = [POINTER(proto_item), POINTER(tvbuff_t), gint]
+
+# int proto_item_get_len(const proto_item *ti);
+proto_item_get_len = libwireshark.proto_item_get_len
+proto_item_get_len.restype = c_int
+proto_item_get_len.argtypes = [POINTER(proto_item)]
+
+# void proto_tree_free(proto_tree *tree);
+proto_tree_free = libwireshark.proto_tree_free
+proto_tree_free.restype = None
+proto_tree_free.argtypes = [POINTER(proto_tree)]
+
+# gboolean proto_tree_set_visible(proto_tree *tree, gboolean visible);
+proto_tree_set_visible = libwireshark.proto_tree_set_visible
+proto_tree_set_visible.restype = gboolean
+proto_tree_set_visible.argtypes = [POINTER(proto_tree), gboolean]
+
+# proto_item* proto_tree_get_parent(proto_tree *tree);
+proto_tree_get_parent = libwireshark.proto_tree_get_parent
+proto_tree_get_parent.restype = POINTER(proto_item)
+proto_tree_get_parent.argtypes = [POINTER(proto_tree)]
+
+# proto_tree *proto_tree_get_parent_tree(proto_tree *tree);
+proto_tree_get_parent_tree = libwireshark.proto_tree_get_parent_tree
+proto_tree_get_parent_tree.restype = POINTER(proto_tree)
+proto_tree_get_parent_tree.argtypes = [POINTER(proto_tree)]
+
+# proto_tree* proto_tree_get_root(proto_tree *tree);
+proto_tree_get_root = libwireshark.proto_tree_get_root
+proto_tree_get_root.restype = POINTER(proto_tree)
+proto_tree_get_root.argtypes = [POINTER(proto_tree)]
+
+# void proto_tree_move_item(proto_tree *tree, proto_item *fixed_item,
+# proto_item *item_to_move);
+proto_tree_move_item = libwireshark.proto_tree_move_item
+proto_tree_move_item.restype = None
+proto_tree_move_item.argtypes = [POINTER(proto_tree),
+                                 POINTER(proto_item),
+                                 POINTER(proto_item)]
+
+# void proto_tree_set_appendix(proto_tree *tree, tvbuff_t *tvb, gint
+# start, const gint length);
+proto_tree_set_appendix = libwireshark.proto_tree_set_appendix
+proto_tree_set_appendix.restype = None
+proto_tree_set_appendix.argtypes = [POINTER(proto_tree),
+                                    POINTER(tvbuff_t),
+                                    gint,
+                                    gint]
+
+# proto_item *proto_tree_add_item_new(proto_tree *tree, header_field_info *hfinfo, tvbuff_t *tvb,
+#     const gint start, gint length, const guint encoding);
+proto_tree_add_item_new = libwireshark.proto_tree_add_item_new
+proto_tree_add_item_new.restype = POINTER(proto_item)
+proto_tree_add_item_new.argtypes = [POINTER(proto_tree),
+                                    POINTER(header_field_info),
+                                    POINTER(tvbuff_t),
+                                    gint,
+                                    gint,
+                                    guint]
+
+# proto_item *proto_tree_add_item(proto_tree *tree, int hfindex, tvbuff_t *tvb,
+#     const gint start, gint length, const guint encoding);
+proto_tree_add_item = libwireshark.proto_tree_add_item
+proto_tree_add_item.restype = POINTER(proto_item)
+proto_tree_add_item.argtypes = [POINTER(proto_tree),
+                                c_int,
+                                POINTER(tvbuff_t),
+                                gint,
+                                gint,
+                                guint]
+
+# proto_item *proto_tree_add_item_new_ret_length(proto_tree *tree, header_field_info *hfinfo, tvbuff_t *tvb,
+#     const gint start, gint length, const guint encoding, gint *lenretval);
+proto_tree_add_item_new_ret_length = libwireshark.proto_tree_add_item_new_ret_length
+proto_tree_add_item_new_ret_length.restype = POINTER(proto_item)
+proto_tree_add_item_new_ret_length.argtypes = [POINTER(proto_tree),
+                                               POINTER(header_field_info),
+                                               POINTER(tvbuff_t),
+                                               gint,
+                                               gint,
+                                               guint,
+                                               POINTER(gint)]
+
+# proto_item *proto_tree_add_item_ret_length(proto_tree *tree, int hfindex, tvbuff_t *tvb,
+#     const gint start, gint length, const guint encoding, gint *lenretval);
+proto_tree_add_item_ret_length = libwireshark.proto_tree_add_item_ret_length
+proto_tree_add_item_ret_length.restype = POINTER(proto_item)
+proto_tree_add_item_ret_length.argtypes = [POINTER(proto_tree),
+                                           c_int,
+                                           POINTER(tvbuff_t),
+                                           gint,
+                                           gint,
+                                           guint,
+                                           POINTER(gint)]
+
+# proto_item *proto_tree_add_item_ret_int(proto_tree *tree, int hfindex, tvbuff_t *tvb,
+#     const gint start, gint length, const guint encoding, gint32 *retval);
+proto_tree_add_item_ret_int = libwireshark.proto_tree_add_item_ret_int
+proto_tree_add_item_ret_int.restype = POINTER(proto_item)
+proto_tree_add_item_ret_int.argtypes = [POINTER(proto_tree),
+                                        c_int,
+                                        POINTER(tvbuff_t),
+                                        gint,
+                                        gint,
+                                        guint,
+                                        POINTER(gint32)]
+
+# proto_item *proto_tree_add_item_ret_int64(proto_tree *tree, int hfindex, tvbuff_t *tvb,
+#     const gint start, gint length, const guint encoding, gint64 *retval);
+proto_tree_add_item_ret_int64 = libwireshark.proto_tree_add_item_ret_int64
+proto_tree_add_item_ret_int64.restype = POINTER(proto_item)
+proto_tree_add_item_ret_int64.argtypes = [POINTER(proto_tree),
+                                          c_int,
+                                          POINTER(tvbuff_t),
+                                          gint,
+                                          gint,
+                                          guint,
+                                          POINTER(gint64)]
+
+# proto_item *proto_tree_add_item_ret_uint(proto_tree *tree, int hfindex, tvbuff_t *tvb,
+#     const gint start, gint length, const guint encoding, guint32 *retval);
+proto_tree_add_item_ret_uint = libwireshark.proto_tree_add_item_ret_uint
+proto_tree_add_item_ret_uint.restype = POINTER(proto_item)
+proto_tree_add_item_ret_uint.argtypes = [POINTER(proto_tree),
+                                         c_int,
+                                         POINTER(tvbuff_t),
+                                         gint,
+                                         gint,
+                                         guint,
+                                         POINTER(guint32)]
+
+# proto_item *proto_tree_add_item_ret_uint64(proto_tree *tree, int hfindex, tvbuff_t *tvb,
+#     const gint start, gint length, const guint encoding, guint64 *retval);
+proto_tree_add_item_ret_uint64 = libwireshark.proto_tree_add_item_ret_uint64
+proto_tree_add_item_ret_uint64.restype = POINTER(proto_item)
+proto_tree_add_item_ret_uint64.argtypes = [POINTER(proto_tree),
+                                           c_int,
+                                           POINTER(tvbuff_t),
+                                           gint,
+                                           gint,
+                                           guint,
+                                           POINTER(guint64)]
+
+# proto_item *proto_tree_add_item_ret_varint(proto_tree *tree, int hfindex, tvbuff_t *tvb,
+# const gint start, gint length, const guint encoding, guint64 *retval,
+# gint *lenretval);
+proto_tree_add_item_ret_varint = libwireshark.proto_tree_add_item_ret_varint
+proto_tree_add_item_ret_varint.restype = POINTER(proto_item)
+proto_tree_add_item_ret_varint.argtypes = [POINTER(proto_tree),
+                                           c_int,
+                                           POINTER(tvbuff_t),
+                                           gint,
+                                           gint,
+                                           guint,
+                                           POINTER(guint64),
+                                           POINTER(gint)]
+
+# proto_item *proto_tree_add_item_ret_boolean(proto_tree *tree, int hfindex, tvbuff_t *tvb,
+#     const gint start, gint length, const guint encoding, gboolean *retval);
+proto_tree_add_item_ret_boolean = libwireshark.proto_tree_add_item_ret_boolean
+proto_tree_add_item_ret_boolean.restype = POINTER(proto_item)
+proto_tree_add_item_ret_boolean.argtypes = [POINTER(proto_tree),
+                                            c_int,
+                                            POINTER(tvbuff_t),
+                                            gint,
+                                            gint,
+                                            guint,
+                                            POINTER(gboolean)]
+
+# proto_item *proto_tree_add_item_ret_string_and_length(proto_tree *tree, int hfindex,
+#     tvbuff_t *tvb, const gint start, gint length, const guint encoding,
+#     wmem_allocator_t *scope, const guint8 **retval, gint *lenretval);
+proto_tree_add_item_ret_string_and_length = libwireshark.proto_tree_add_item_ret_string_and_length
+proto_tree_add_item_ret_string_and_length.restype = POINTER(proto_item)
+proto_tree_add_item_ret_string_and_length.argtypes = [
+    POINTER(proto_tree),
+    c_int,
+    POINTER(tvbuff_t),
+    gint,
+    gint,
+    guint,
+    POINTER(wmem_allocator_t),
+    POINTER(
+        POINTER(guint8)),
+    POINTER(gint)]
+
+# proto_item * proto_tree_add_item_ret_string(proto_tree *tree, int hfindex, tvbuff_t *tvb,
+#     const gint start, gint length, const guint encoding,
+#     wmem_allocator_t *scope, const guint8 **retval);
+proto_tree_add_item_ret_string = libwireshark.proto_tree_add_item_ret_string
+proto_tree_add_item_ret_string.restype = POINTER(proto_item)
+proto_tree_add_item_ret_string.argtypes = [POINTER(proto_tree),
+                                           c_int,
+                                           POINTER(tvbuff_t),
+                                           gint,
+                                           gint,
+                                           guint,
+                                           POINTER(wmem_allocator_t),
+                                           POINTER(POINTER(guint8))]
+
+# proto_item *proto_tree_add_item_ret_display_string_and_length(proto_tree *tree, int hfindex,
+#     tvbuff_t *tvb,
+#     const gint start, gint length, const guint encoding,
+#     wmem_allocator_t *scope, char **retval, gint *lenretval);
+proto_tree_add_item_ret_display_string_and_length = libwireshark.proto_tree_add_item_ret_display_string_and_length
+proto_tree_add_item_ret_display_string_and_length.restype = POINTER(proto_item)
+proto_tree_add_item_ret_display_string_and_length.argtypes = [
+    POINTER(proto_item),
+    c_int,
+    POINTER(tvbuff_t),
+    gint,
+    gint,
+    guint,
+    POINTER(wmem_allocator_t),
+    POINTER(c_char_p),
+    POINTER(gint)]
+
+# proto_item *proto_tree_add_item_ret_display_string(proto_tree *tree, int hfindex,
+#     tvbuff_t *tvb,
+#     const gint start, gint length, const guint encoding,
+#     wmem_allocator_t *scope, char **retval);
+proto_tree_add_item_ret_display_string = libwireshark.proto_tree_add_item_ret_display_string
+proto_tree_add_item_ret_display_string.restype = POINTER(proto_item)
+proto_tree_add_item_ret_display_string.argtypes = [POINTER(proto_tree),
+                                                   c_int,
+                                                   POINTER(tvbuff_t),
+                                                   gint,
+                                                   gint,
+                                                   guint,
+                                                   POINTER(wmem_allocator_t),
+                                                   POINTER(c_char_p)]
+
+# proto_item *proto_tree_add_item_ret_time_string(proto_tree *tree, int hfindex,
+# 	tvbuff_t *tvb,
+# 	const gint start, gint length, const guint encoding,
+# 	wmem_allocator_t *scope, char **retval);
+proto_tree_add_item_ret_time_string = libwireshark.proto_tree_add_item_ret_time_string
+proto_tree_add_item_ret_time_string.restype = POINTER(proto_item)
+proto_tree_add_item_ret_time_string.argtypes = [POINTER(proto_tree),
+                                                c_int,
+                                                POINTER(tvbuff_t),
+                                                gint,
+                                                gint,
+                                                guint,
+                                                POINTER(wmem_allocator_t),
+                                                POINTER(c_char_p)]
+
+# proto_tree *proto_tree_add_subtree(proto_tree *tree, tvbuff_t *tvb, gint start, gint length, gint idx,
+#     proto_item **tree_item, const char *text);
+proto_tree_add_subtree = libwireshark.proto_tree_add_subtree
+proto_tree_add_subtree.restype = POINTER(proto_tree)
+proto_tree_add_subtree.argtypes = [POINTER(proto_tree),
+                                   POINTER(tvbuff_t),
+                                   gint,
+                                   gint,
+                                   gint,
+                                   POINTER(POINTER(proto_item)),
+                                   c_char_p]
+
+# proto_tree *proto_tree_add_subtree_format(proto_tree *tree, tvbuff_t *tvb, gint start, gint length, gint idx,
+#     proto_item **tree_item, const char *format, ...);
+
+
+def proto_tree_add_subtree_format(
+        tree,
+        tvb,
+        start,
+        length,
+        idx,
+        tree_item,
+        format,
+        *argv):
+    args, types = c_va_list(*argv)
+    _proto_tree_add_subtree_format = libwireshark.proto_tree_add_subtree_format
+    _proto_tree_add_subtree_format.restype = POINTER(proto_tree)
+    _proto_tree_add_subtree_format.argtypes = [POINTER(proto_tree),
+                                               POINTER(tvbuff_t),
+                                               gint,
+                                               gint,
+                                               gint,
+                                               POINTER(POINTER(proto_item)),
+                                               c_char_p] + types
+    return _proto_tree_add_subtree_format(
+        tree, tvb, start, length, idx, tree_item, format, *args)
+
+
+# proto_item *proto_tree_add_none_format(proto_tree *tree, const int hfindex, tvbuff_t *tvb, const gint start,
+#     gint length, const char *format, ...);
+def proto_tree_add_none_format(
+        tree,
+        hfindex,
+        tvb,
+        start,
+        length,
+        format,
+        *argv):
+    args, types = c_va_list(*argv)
+    _proto_tree_add_none_format = libwireshark.proto_tree_add_none_format
+    _proto_tree_add_none_format.restype = POINTER(proto_item)
+    _proto_tree_add_none_format.argtypes = [POINTER(proto_tree),
+                                            c_int,
+                                            POINTER(tvbuff_t),
+                                            gint,
+                                            gint,
+                                            c_char_p] + types
+    return _proto_tree_add_none_format(
+        tree, hfindex, tvb, start, length, format, *args)
+
+
+# proto_item *proto_tree_add_protocol_format(proto_tree *tree, int hfindex, tvbuff_t *tvb, gint start,
+#     gint length, const char *format, ...);
+def proto_tree_add_protocol_format(
+        tree,
+        hfindex,
+        tvb,
+        start,
+        length,
+        format,
+        *argv):
+    args, types = c_va_list(*argv)
+    _proto_tree_add_protocol_format = libwireshark.proto_tree_add_protocol_format
+    _proto_tree_add_protocol_format.restype = POINTER(proto_item)
+    _proto_tree_add_protocol_format.argtypes = [POINTER(proto_tree),
+                                                c_int,
+                                                POINTER(tvbuff_t),
+                                                gint,
+                                                gint,
+                                                c_char_p] + types
+    return _proto_tree_add_protocol_format(
+        tree, hfindex, tvb, start, length, format, *args)
+
+
+# proto_item *proto_tree_add_bytes(proto_tree *tree, int hfindex, tvbuff_t *tvb, gint start,
+#     gint length, const guint8* start_ptr);
+proto_tree_add_bytes = libwireshark.proto_tree_add_bytes
+proto_tree_add_bytes.restype = POINTER(proto_item)
+proto_tree_add_bytes.argtypes = [POINTER(proto_tree),
+                                 c_int,
+                                 POINTER(tvbuff_t),
+                                 gint,
+                                 gint,
+                                 POINTER(guint8)]
+
+# proto_item *proto_tree_add_bytes_with_length(proto_tree *tree, int hfindex, tvbuff_t *tvb, gint start,
+#     gint length, const guint8 *start_ptr, gint ptr_length);
+proto_tree_add_bytes_with_length = libwireshark.proto_tree_add_bytes_with_length
+proto_tree_add_bytes_with_length.restype = POINTER(proto_item)
+proto_tree_add_bytes_with_length.argtypes = [POINTER(proto_tree),
+                                             c_int,
+                                             POINTER(tvbuff_t),
+                                             gint,
+                                             gint,
+                                             POINTER(guint8),
+                                             gint]
+
+# proto_item *proto_tree_add_bytes_item(proto_tree *tree, int hfindex, tvbuff_t *tvb,
+#     const gint start, gint length, const guint encoding,
+#     GByteArray *retval, gint *endoff, gint *err);
+proto_tree_add_bytes_item = libwireshark.proto_tree_add_bytes_item
+proto_tree_add_bytes_item.restype = POINTER(proto_item)
+proto_tree_add_bytes_item.argtypes = [POINTER(proto_tree),
+                                      c_int,
+                                      POINTER(tvbuff_t),
+                                      gint,
+                                      gint,
+                                      guint,
+                                      POINTER(GByteArray),
+                                      POINTER(gint),
+                                      POINTER(gint)]
+
+# proto_item *proto_tree_add_bytes_format_value(proto_tree *tree, int hfindex, tvbuff_t *tvb,
+# gint start, gint length, const guint8* start_ptr, const char *format,
+# ...);
+
+
+def proto_tree_add_bytes_format_value(
+        tree,
+        hfindex,
+        tvb,
+        start,
+        length,
+        start_ptr,
+        format,
+        *argv):
+    args, types = c_va_list(*argv)
+    _proto_tree_add_bytes_format_value = libwireshark.proto_tree_add_bytes_format_value
+    _proto_tree_add_bytes_format_value.restype = POINTER(proto_item)
+    _proto_tree_add_bytes_format_value.argtypes = [POINTER(proto_tree),
+                                                   c_int,
+                                                   POINTER(tvbuff_t),
+                                                   gint,
+                                                   gint,
+                                                   POINTER(guint8),
+                                                   c_char_p] + types
+    return _proto_tree_add_bytes_format_value(
+        tree, hfindex, tvb, start, length, start_ptr, format, *args)
+
+
+# proto_item * proto_tree_add_bytes_format(proto_tree *tree, int hfindex, tvbuff_t *tvb, gint start,
+#     gint length, const guint8* start_ptr, const char *format, ...);
+def proto_tree_add_bytes_format(
+        tree,
+        hfindex,
+        tvb,
+        start,
+        length,
+        start_ptr,
+        format,
+        *argv):
+    args, types = c_va_list(*argv)
+    _proto_tree_add_bytes_format = libwireshark.proto_tree_add_bytes_format
+    _proto_tree_add_bytes_format.restype = POINTER(proto_item)
+    _proto_tree_add_bytes_format.argtypes = [POINTER(proto_tree),
+                                             c_int,
+                                             POINTER(tvbuff_t),
+                                             gint,
+                                             gint,
+                                             POINTER(guint8),
+                                             c_char_p] + types
+    return _proto_tree_add_bytes_format(
+        tree, hfindex, tvb, start, length, start_ptr, format, *args)
+
+
+# proto_item *proto_tree_add_time(proto_tree *tree, int hfindex, tvbuff_t *tvb, gint start,
+#     gint length, const nstime_t* value_ptr);
+proto_tree_add_time = libwireshark.proto_tree_add_time
+proto_tree_add_time.restype = POINTER(proto_item)
+proto_tree_add_time.argtypes = [POINTER(proto_tree),
+                                c_int,
+                                POINTER(tvbuff_t),
+                                gint,
+                                gint,
+                                POINTER(nstime_t)]
+
+# proto_item *proto_tree_add_time_item(proto_tree *tree, int hfindex, tvbuff_t *tvb,
+#     const gint start, gint length, const guint encoding,
+#     nstime_t *retval, gint *endoff, gint *err);
+proto_tree_add_time_item = libwireshark.proto_tree_add_time_item
+proto_tree_add_time_item.restype = POINTER(proto_item)
+proto_tree_add_time_item.argtypes = [POINTER(proto_tree),
+                                     c_int,
+                                     POINTER(tvbuff_t),
+                                     gint,
+                                     gint,
+                                     guint,
+                                     POINTER(nstime_t),
+                                     POINTER(gint),
+                                     POINTER(gint)]
+
+# proto_item *proto_tree_add_time_format_value(proto_tree *tree, int hfindex, tvbuff_t *tvb,
+#     gint start, gint length, nstime_t* value_ptr, const char *format, ...);
+
+
+def proto_tree_add_time_format_value(
+        tree,
+        hfindex,
+        tvb,
+        start,
+        length,
+        value_ptr,
+        format,
+        *argv):
+    args, types = c_va_list(*argv)
+    _proto_tree_add_time_format_value = libwireshark.proto_tree_add_time_format_value
+    _proto_tree_add_time_format_value.restype = POINTER(proto_item)
+    _proto_tree_add_time_format_value.argtypes = [POINTER(proto_tree),
+                                                  c_int,
+                                                  POINTER(tvbuff_t),
+                                                  gint,
+                                                  gint,
+                                                  POINTER(nstime_t),
+                                                  c_char_p] + types
+    return _proto_tree_add_time_format_value(
+        tree, hfindex, tvb, start, length, value_ptr, format, *args)
+
+
+# proto_item *proto_tree_add_time_format(proto_tree *tree, int hfindex, tvbuff_t *tvb, gint start,
+#     gint length, nstime_t* value_ptr, const char *format, ...);
+def proto_tree_add_time_format(
+        tree,
+        hfindex,
+        tvb,
+        start,
+        length,
+        value_ptr,
+        format,
+        *argv):
+    args, types = c_va_list(*argv)
+    _proto_tree_add_time_format = libwireshark.proto_tree_add_time_format
+    _proto_tree_add_time_format.restype = POINTER(proto_item)
+    _proto_tree_add_time_format.argtypes = [POINTER(proto_tree),
+                                            c_int,
+                                            POINTER(tvbuff_t),
+                                            gint,
+                                            gint,
+                                            POINTER(nstime_t),
+                                            c_char_p] + types
+    return _proto_tree_add_time_format(
+        tree, hfindex, tvb, start, length, value_ptr, format, *args)
+
+
+# proto_item *proto_tree_add_ipxnet(proto_tree *tree, int hfindex, tvbuff_t *tvb, gint start,
+#     gint length, guint32 value);
+proto_tree_add_ipxnet = libwireshark.proto_tree_add_ipxnet
+proto_tree_add_ipxnet.restype = POINTER(proto_item)
+proto_tree_add_ipxnet.argtypes = [POINTER(proto_tree),
+                                  c_int,
+                                  POINTER(tvbuff_t),
+                                  gint,
+                                  gint,
+                                  guint32]
+
+# proto_item *proto_tree_add_ipxnet_format_value(proto_tree *tree, int hfindex, tvbuff_t *tvb,
+#     gint start, gint length, guint32 value, const char *format, ...);
+
+
+def proto_tree_add_ipxnet_format_value(
+        tree,
+        hfindex,
+        tvb,
+        start,
+        length,
+        value,
+        format,
+        *argv):
+    args, types = c_va_list(*argv)
+    _proto_tree_add_ipxnet_format_value = libwireshark.proto_tree_add_ipxnet_format_value
+    _proto_tree_add_ipxnet_format_value.restype = POINTER(proto_item)
+    _proto_tree_add_ipxnet_format_value.argtypes = [POINTER(proto_tree),
+                                                    c_int,
+                                                    POINTER(tvbuff_t),
+                                                    gint,
+                                                    gint,
+                                                    guint32,
+                                                    c_char_p] + types
+    return _proto_tree_add_ipxnet_format_value(
+        tree, hfindex, tvb, start, length, value, format, *args)
+
+
+# proto_item *proto_tree_add_ipxnet_format(proto_tree *tree, int hfindex, tvbuff_t *tvb, gint start,
+#     gint length, guint32 value, const char *format, ...);
+def proto_tree_add_ipxnet_format(
+        tree,
+        hfindex,
+        tvb,
+        start,
+        length,
+        value,
+        format,
+        *argv):
+    args, types = c_va_list(*argv)
+    _proto_tree_add_ipxnet_format = libwireshark.proto_tree_add_ipxnet_format
+    _proto_tree_add_ipxnet_format.restype = POINTER(proto_item)
+    _proto_tree_add_ipxnet_format.argtypes = [POINTER(proto_tree),
+                                              c_int,
+                                              POINTER(tvbuff_t),
+                                              gint,
+                                              gint,
+                                              guint32,
+                                              c_char_p] + types
+    return _proto_tree_add_ipxnet_format(
+        tree, hfindex, tvb, start, length, value, format, *args)
+
+
+# proto_item *proto_tree_add_ipv4(proto_tree *tree, int hfindex, tvbuff_t *tvb, gint start,
+#     gint length, guint32 value);
+proto_tree_add_ipv4 = libwireshark.proto_tree_add_ipv4
+proto_tree_add_ipv4.restype = POINTER(proto_item)
+proto_tree_add_ipv4.argtypes = [POINTER(proto_tree),
+                                c_int,
+                                POINTER(tvbuff_t),
+                                gint,
+                                gint,
+                                guint32]
+
+# proto_item *proto_tree_add_ipv4_format_value(proto_tree *tree, int hfindex, tvbuff_t *tvb,
+#     gint start, gint length, guint32 value, const char *format, ...);
+
+
+def proto_tree_add_ipv4_format_value(
+        tree,
+        hfindex,
+        tvb,
+        start,
+        length,
+        value,
+        format,
+        *argv):
+    args, types = c_va_list(*argv)
+    _proto_tree_add_ipv4_format_value = libwireshark.proto_tree_add_ipv4_format_value
+    _proto_tree_add_ipv4_format_value.restype = POINTER(proto_item)
+    _proto_tree_add_ipv4_format_value.argtypes = [POINTER(proto_tree),
+                                                  c_int,
+                                                  POINTER(tvbuff_t),
+                                                  gint,
+                                                  gint,
+                                                  guint32,
+                                                  c_char_p] + types
+    return _proto_tree_add_ipv4_format_value(
+        tree, hfindex, tvb, start, length, value, format, *args)
+
+
+# proto_item *proto_tree_add_ipv4_format(proto_tree *tree, int hfindex, tvbuff_t *tvb, gint start,
+#     gint length, guint32 value, const char *format, ...);
+def proto_tree_add_ipv4_format(
+        tree,
+        hfindex,
+        tvb,
+        start,
+        length,
+        value,
+        format,
+        *argv):
+    args, types = c_va_list(*argv)
+    _proto_tree_add_ipv4_format = libwireshark.proto_tree_add_ipv4_format
+    _proto_tree_add_ipv4_format.restype = POINTER(proto_item)
+    _proto_tree_add_ipv4_format.argtypes = [POINTER(proto_tree),
+                                            c_int,
+                                            POINTER(tvbuff_t),
+                                            gint,
+                                            gint,
+                                            guint32,
+                                            c_char_p] + types
+    return _proto_tree_add_ipv4_format(
+        tree, hfindex, tvb, start, length, value, format, *args)
+
+
+# proto_item *proto_tree_add_ipv6(proto_tree *tree, int hfindex, tvbuff_t *tvb, gint start,
+#     gint length, const ws_in6_addr *value_ptr);
+proto_tree_add_ipv6 = libwireshark.proto_tree_add_ipv6
+proto_tree_add_ipv6.restype = POINTER(proto_item)
+proto_tree_add_ipv6.argtypes = [POINTER(proto_tree),
+                                c_int,
+                                POINTER(tvbuff_t),
+                                gint,
+                                gint,
+                                POINTER(ws_in6_addr)]
+
+# proto_item *proto_tree_add_ipv6_format_value(proto_tree *tree, int hfindex, tvbuff_t *tvb,
+# gint start, gint length, const ws_in6_addr *value_ptr, const char
+# *format, ...);
+
+
+def proto_tree_add_ipv6_format_value(
+        tree,
+        hfindex,
+        tvb,
+        start,
+        length,
+        value_ptr,
+        format,
+        *argv):
+    args, types = c_va_list(*argv)
+    _proto_tree_add_ipv6_format_value = libwireshark.proto_tree_add_ipv6_format_value
+    _proto_tree_add_ipv6_format_value.restype = POINTER(proto_item)
+    _proto_tree_add_ipv6_format_value.argtypes = [POINTER(proto_tree),
+                                                  c_int,
+                                                  POINTER(tvbuff_t),
+                                                  gint,
+                                                  gint,
+                                                  POINTER(ws_in6_addr),
+                                                  c_char_p] + types
+    return _proto_tree_add_ipv6_format_value(
+        tree, hfindex, tvb, start, length, value_ptr, format, *args)
+
+
+# proto_item *proto_tree_add_ipv6_format(proto_tree *tree, int hfindex, tvbuff_t *tvb, gint start,
+#     gint length, const ws_in6_addr *value_ptr, const char *format, ...);
+def proto_tree_add_ipv6_format(
+        tree,
+        hfindex,
+        tvb,
+        start,
+        length,
+        value_ptr,
+        format,
+        *argv):
+    args, types = c_va_list(*argv)
+    _proto_tree_add_ipv6_format = libwireshark.proto_tree_add_ipv6_format
+    _proto_tree_add_ipv6_format.restype = POINTER(proto_item)
+    _proto_tree_add_ipv6_format.argtypes = [POINTER(proto_tree),
+                                            c_int,
+                                            POINTER(tvbuff_t),
+                                            gint,
+                                            gint,
+                                            POINTER(ws_in6_addr),
+                                            c_char_p] + types
+    return _proto_tree_add_ipv6_format(
+        tree, hfindex, tvb, start, length, value_ptr, format, *args)
+
+
+# proto_item *proto_tree_add_ether(proto_tree *tree, int hfindex, tvbuff_t *tvb, gint start,
+#     gint length, const guint8* value);
+proto_tree_add_ether = libwireshark.proto_tree_add_ether
+proto_tree_add_ether.restype = POINTER(proto_item)
+proto_tree_add_ether.argtypes = [POINTER(proto_tree),
+                                 c_int,
+                                 POINTER(tvbuff_t),
+                                 gint,
+                                 gint,
+                                 POINTER(guint8)]
+
+# proto_item *proto_tree_add_ether_format_value(proto_tree *tree, int hfindex, tvbuff_t *tvb,
+#     gint start, gint length, const guint8* value, const char *format, ...);
+
+
+def proto_tree_add_ether_format_value(
+        tree,
+        hfindex,
+        tvb,
+        start,
+        length,
+        value,
+        format,
+        *argv):
+    args, types = c_va_list(*argv)
+    _proto_tree_add_ether_format_value = libwireshark.proto_tree_add_ether_format_value
+    _proto_tree_add_ether_format_value.restype = POINTER(proto_item)
+    _proto_tree_add_ether_format_value.argtypes = [POINTER(proto_tree),
+                                                   c_int,
+                                                   POINTER(tvbuff_t),
+                                                   gint,
+                                                   gint,
+                                                   POINTER(guint8),
+                                                   c_char_p] + types
+    return _proto_tree_add_ether_format_value(
+        tree, hfindex, tvb, start, length, value, format, *args)
+
+
+# proto_item *proto_tree_add_ether_format(proto_tree *tree, int hfindex, tvbuff_t *tvb, gint start,
+#     gint length, const guint8* value, const char *format, ...);
+def proto_tree_add_ether_format(
+        tree,
+        hfindex,
+        tvb,
+        start,
+        length,
+        value,
+        format,
+        *argv):
+    args, types = c_va_list(*argv)
+    _proto_tree_add_ether_format = libwireshark.proto_tree_add_ether_format
+    _proto_tree_add_ether_format.restype = POINTER(proto_item)
+    _proto_tree_add_ether_format.argtypes = [POINTER(proto_tree),
+                                             c_int,
+                                             POINTER(tvbuff_t),
+                                             gint,
+                                             gint,
+                                             POINTER(guint8),
+                                             c_char_p] + types
+    return _proto_tree_add_ether_format(
+        tree, hfindex, tvb, start, length, value, format, *args)
+
+
+# proto_item *proto_tree_add_guid(proto_tree *tree, int hfindex, tvbuff_t *tvb, gint start,
+#     gint length, const e_guid_t *value_ptr);
+proto_tree_add_guid = libwireshark.proto_tree_add_guid
+proto_tree_add_guid.restype = POINTER(proto_item)
+proto_tree_add_guid.argtypes = [POINTER(proto_tree),
+                                c_int,
+                                POINTER(tvbuff_t),
+                                gint,
+                                gint,
+                                POINTER(e_guid_t)]
+
+# proto_item *proto_tree_add_guid_format_value(proto_tree *tree, int hfindex, tvbuff_t *tvb,
+# gint start, gint length, const e_guid_t *value_ptr, const char *format,
+# ...);
+
+
+def proto_tree_add_guid_format_value(
+        tree,
+        hfindex,
+        tvb,
+        start,
+        length,
+        value_ptr,
+        format,
+        *argv):
+    args, types = c_va_list(*argv)
+    _proto_tree_add_guid_format_value = libwireshark.proto_tree_add_guid_format_value
+    _proto_tree_add_guid_format_value.restype = POINTER(proto_item)
+    _proto_tree_add_guid_format_value.argtypes = [POINTER(proto_tree),
+                                                  c_int,
+                                                  POINTER(tvbuff_t),
+                                                  gint,
+                                                  gint,
+                                                  POINTER(e_guid_t),
+                                                  c_char_p] + types
+    return _proto_tree_add_guid_format_value(
+        tree, hfindex, tvb, start, length, value_ptr, format, *args)
+
+
+# proto_item *proto_tree_add_guid_format(proto_tree *tree, int hfindex, tvbuff_t *tvb, gint start,
+#     gint length, const e_guid_t *value_ptr, const char *format, ...);
+def proto_tree_add_guid_format(
+        tree,
+        hfindex,
+        tvb,
+        start,
+        length,
+        value_ptr,
+        format,
+        *argv):
+    args, types = c_va_list(*argv)
+    _proto_tree_add_guid_format = libwireshark.proto_tree_add_guid_format
+    _proto_tree_add_guid_format.restype = POINTER(proto_item)
+    _proto_tree_add_guid_format.argtypes = [POINTER(proto_tree),
+                                            c_int,
+                                            POINTER(tvbuff_t),
+                                            gint,
+                                            gint,
+                                            POINTER(e_guid_t),
+                                            c_char_p] + types
+    return _proto_tree_add_guid_format(
+        tree, hfindex, tvb, start, length, value_ptr, format, *args)
+
+
+# proto_item *proto_tree_add_oid(proto_tree *tree, int hfindex, tvbuff_t *tvb, gint start,
+#     gint length, const guint8* value_ptr);
+proto_tree_add_oid = libwireshark.proto_tree_add_oid
+proto_tree_add_oid.restype = POINTER(proto_item)
+proto_tree_add_oid.argtypes = [POINTER(proto_tree),
+                               c_int,
+                               POINTER(tvbuff_t),
+                               gint,
+                               gint,
+                               POINTER(guint8)]
+
+# proto_item *proto_tree_add_oid_format_value(proto_tree *tree, int hfindex, tvbuff_t *tvb,
+# gint start, gint length, const guint8* value_ptr, const char *format,
+# ...);
+
+
+def proto_tree_add_oid_format_value(
+        tree,
+        hfindex,
+        tvb,
+        start,
+        length,
+        value_ptr,
+        format,
+        *argv):
+    args, types = c_va_list(*argv)
+    _proto_tree_add_oid_format_value = libwireshark.proto_tree_add_oid_format_value
+    _proto_tree_add_oid_format_value.restype = POINTER(proto_item)
+    _proto_tree_add_oid_format_value.argtypes = [POINTER(proto_tree),
+                                                 c_int,
+                                                 POINTER(tvbuff_t),
+                                                 gint,
+                                                 gint,
+                                                 POINTER(guint8),
+                                                 c_char_p] + types
+    return _proto_tree_add_oid_format_value(
+        tree, hfindex, tvb, start, length, value_ptr, format, *args)
+
+
+# proto_item *proto_tree_add_oid_format(proto_tree *tree, int hfindex, tvbuff_t *tvb, gint start,
+#     gint length, const guint8* value_ptr, const char *format, ...);
+def proto_tree_add_oid_format(
+        tree,
+        hfindex,
+        tvb,
+        start,
+        length,
+        value_ptr,
+        format,
+        *argv):
+    args, types = c_va_list(*argv)
+    _proto_tree_add_oid_format = libwireshark.proto_tree_add_oid_format
+    _proto_tree_add_oid_format.restype = POINTER(proto_item)
+    _proto_tree_add_oid_format.argtypes = [POINTER(proto_tree),
+                                           c_int,
+                                           POINTER(tvbuff_t),
+                                           gint,
+                                           gint,
+                                           POINTER(guint8),
+                                           c_char_p] + types
+    return _proto_tree_add_oid_format(
+        tree,
+        hfindex,
+        tvb,
+        start,
+        length,
+        value_ptr,
+        format,
+        *args)
+
+
+# proto_item *proto_tree_add_string(proto_tree *tree, int hfindex, tvbuff_t *tvb, gint start,
+#     gint length, const char* value);
+proto_tree_add_string = libwireshark.proto_tree_add_string
+proto_tree_add_string.restype = POINTER(proto_item)
+proto_tree_add_string.argtypes = [POINTER(proto_tree),
+                                  c_int,
+                                  POINTER(tvbuff_t),
+                                  gint,
+                                  gint,
+                                  c_char_p]
+
+# proto_item *proto_tree_add_string_format_value(proto_tree *tree, int hfindex, tvbuff_t *tvb,
+#     gint start, gint length, const char* value, const char *format, ...);
+
+
+def proto_tree_add_string_format_value(
+        tree,
+        hfindex,
+        tvb,
+        start,
+        length,
+        value,
+        format,
+        *argv):
+    args, types = c_va_list(*argv)
+    _proto_tree_add_string_format_value = libwireshark.proto_tree_add_string_format_value
+    _proto_tree_add_string_format_value.restype = POINTER(proto_item)
+    _proto_tree_add_string_format_value.argtypes = [POINTER(proto_tree),
+                                                    c_int,
+                                                    POINTER(tvbuff_t),
+                                                    gint,
+                                                    gint,
+                                                    c_char_p,
+                                                    c_char_p] + types
+    return _proto_tree_add_string_format_value(
+        tree, hfindex, tvb, start, length, value, format, *args)
+
+
+# proto_item *proto_tree_add_string_format(proto_tree *tree, int hfindex, tvbuff_t *tvb, gint start,
+#     gint length, const char* value, const char *format, ...);
+def proto_tree_add_string_format(
+        tree,
+        hfindex,
+        tvb,
+        start,
+        length,
+        value,
+        format,
+        *argv):
+    args, types = c_va_list(*argv)
+    _proto_tree_add_string_format = libwireshark.proto_tree_add_string_format
+    _proto_tree_add_string_format.restype = POINTER(proto_item)
+    _proto_tree_add_string_format.argtypes = [POINTER(proto_tree),
+                                              c_int,
+                                              POINTER(tvbuff_t),
+                                              gint,
+                                              gint,
+                                              c_char_p,
+                                              c_char_p] + types
+    return _proto_tree_add_string_format(
+        tree, hfindex, tvb, start, length, value, format, *args)
+
+
+# proto_item *proto_tree_add_boolean(proto_tree *tree, int hfindex, tvbuff_t *tvb, gint start,
+#     gint length, guint32 value);
+proto_tree_add_boolean = libwireshark.proto_tree_add_boolean
+proto_tree_add_boolean.restype = POINTER(proto_item)
+proto_tree_add_boolean.argtypes = [POINTER(proto_tree),
+                                   c_int,
+                                   POINTER(tvbuff_t),
+                                   gint,
+                                   gint,
+                                   guint32]
+
+# proto_item *proto_tree_add_boolean_format_value(proto_tree *tree, int hfindex,
+# tvbuff_t *tvb, gint start, gint length, guint32 value, const char
+# *format, ...);
+
+
+def proto_tree_add_boolean_format_value(
+        tree,
+        hfindex,
+        tvb,
+        start,
+        length,
+        value,
+        format,
+        *argv):
+    args, types = c_va_list(*argv)
+    _proto_tree_add_boolean_format_value = libwireshark.proto_tree_add_boolean_format_value
+    _proto_tree_add_boolean_format_value.restype = POINTER(proto_item)
+    _proto_tree_add_boolean_format_value.argtypes = [POINTER(proto_tree),
+                                                     c_int,
+                                                     POINTER(tvbuff_t),
+                                                     gint,
+                                                     gint,
+                                                     guint32,
+                                                     c_char_p] + types
+    return _proto_tree_add_boolean_format_value(
+        tree, hfindex, tvb, start, length, value, format, *args)
+
+
+# proto_item *proto_tree_add_boolean_format(proto_tree *tree, int hfindex, tvbuff_t *tvb, gint start,
+#     gint length, guint32 value, const char *format, ...);
+def proto_tree_add_boolean_format(
+        tree,
+        hfindex,
+        tvb,
+        start,
+        length,
+        value,
+        format,
+        *argv):
+    args, types = c_va_list(*argv)
+    _proto_tree_add_boolean_format = libwireshark.proto_tree_add_boolean_format
+    _proto_tree_add_boolean_format.restype = POINTER(proto_item)
+    _proto_tree_add_boolean_format.argtypes = [POINTER(proto_tree),
+                                               c_int,
+                                               POINTER(tvbuff_t),
+                                               gint,
+                                               gint,
+                                               guint32,
+                                               c_char_p] + types
+    return _proto_tree_add_boolean_format(
+        tree, hfindex, tvb, start, length, value, format, *args)
+
+
+# proto_item *proto_tree_add_float(proto_tree *tree, int hfindex, tvbuff_t *tvb, gint start,
+#     gint length, float value);
+proto_tree_add_float = libwireshark.proto_tree_add_float
+proto_tree_add_float.restype = POINTER(proto_item)
+proto_tree_add_float.argtypes = [POINTER(proto_tree),
+                                 c_int,
+                                 POINTER(tvbuff_t),
+                                 gint,
+                                 gint,
+                                 c_float]
+
+# proto_item *proto_tree_add_float_format_value(proto_tree *tree, int hfindex, tvbuff_t *tvb,
+#     gint start, gint length, float value, const char *format, ...);
+
+
+def proto_tree_add_float_format_value(
+        tree,
+        hfindex,
+        tvb,
+        start,
+        length,
+        value,
+        format,
+        *argv):
+    args, types = c_va_list(*argv)
+    _proto_tree_add_float_format_value = libwireshark.proto_tree_add_float_format_value
+    _proto_tree_add_float_format_value.restype = POINTER(proto_item)
+    _proto_tree_add_float_format_value.argtypes = [POINTER(proto_tree),
+                                                   c_int,
+                                                   POINTER(tvbuff_t),
+                                                   gint,
+                                                   gint,
+                                                   c_float,
+                                                   c_char_p] + types
+    return _proto_tree_add_float_format_value(
+        tree, hfindex, tvb, start, length, value, format, *args)
+
+
+# proto_item *proto_tree_add_float_format(proto_tree *tree, int hfindex, tvbuff_t *tvb, gint start,
+#     gint length, float value, const char *format, ...);
+def proto_tree_add_float_format(
+        tree,
+        hfindex,
+        tvb,
+        start,
+        length,
+        value,
+        format,
+        *argv):
+    args, types = c_va_list(*argv)
+    _proto_tree_add_float_format = libwireshark.proto_tree_add_float_format
+    _proto_tree_add_float_format.restype = POINTER(proto_item)
+    _proto_tree_add_float_format.argtypes = [POINTER(proto_tree),
+                                             c_int,
+                                             POINTER(tvbuff_t),
+                                             gint,
+                                             gint,
+                                             c_float,
+                                             c_char_p] + types
+    return _proto_tree_add_float_format(
+        tree, hfindex, tvb, start, length, value, format, *args)
+
+
+# proto_item *proto_tree_add_double(proto_tree *tree, int hfindex, tvbuff_t *tvb, gint start,
+#     gint length, double value);
+proto_tree_add_double = libwireshark.proto_tree_add_double
+proto_tree_add_double.restype = POINTER(proto_item)
+proto_tree_add_double.argtypes = [POINTER(proto_tree),
+                                  c_int,
+                                  POINTER(tvbuff_t),
+                                  gint,
+                                  gint,
+                                  c_double]
+
+# proto_item *proto_tree_add_double_format_value(proto_tree *tree, int hfindex, tvbuff_t *tvb,
+#     gint start, gint length, double value, const char *format, ...);
+
+
+def proto_tree_add_double_format_value(
+        tree,
+        hfindex,
+        tvb,
+        start,
+        length,
+        value,
+        format,
+        *argv):
+    args, types = c_va_list(*argv)
+    _proto_tree_add_double_format_value = libwireshark.proto_tree_add_double_format_value
+    _proto_tree_add_double_format_value.restype = POINTER(proto_item)
+    _proto_tree_add_double_format_value.argtypes = [POINTER(proto_tree),
+                                                    c_int,
+                                                    POINTER(tvbuff_t),
+                                                    gint,
+                                                    gint,
+                                                    c_double,
+                                                    c_char_p] + types
+    return _proto_tree_add_double_format_value(
+        tree, hfindex, tvb, start, length, value, format, *args)
+
+
+# proto_item *proto_tree_add_double_format(proto_tree *tree, int hfindex, tvbuff_t *tvb, gint start,
+#     gint length, double value, const char *format, ...);
+def proto_tree_add_double_format(
+        tree,
+        hfindex,
+        tvb,
+        start,
+        length,
+        value,
+        format,
+        *argv):
+    args, types = c_va_list(*argv)
+    _proto_tree_add_double_format = libwireshark.proto_tree_add_double_format
+    _proto_tree_add_double_format.restype = POINTER(proto_item)
+    _proto_tree_add_double_format.argtypes = [POINTER(proto_tree),
+                                              c_int,
+                                              POINTER(tvbuff_t),
+                                              gint,
+                                              gint,
+                                              c_double,
+                                              c_char_p] + types
+    return _proto_tree_add_double_format(
+        tree, hfindex, tvb, start, length, value, format, *args)
+
+
+# proto_item *proto_tree_add_uint(proto_tree *tree, int hfindex, tvbuff_t *tvb, gint start,
+#     gint length, guint32 value);
+proto_tree_add_uint = libwireshark.proto_tree_add_uint
+proto_tree_add_uint.restype = POINTER(proto_item)
+proto_tree_add_uint.argtypes = [POINTER(proto_tree),
+                                c_int,
+                                POINTER(tvbuff_t),
+                                gint,
+                                gint,
+                                guint32]
+
+# proto_item *proto_tree_add_uint_format_value(proto_tree *tree, int hfindex, tvbuff_t *tvb,
+#     gint start, gint length, guint32 value, const char *format, ...);
+
+
+def proto_tree_add_uint_format_value(
+        tree,
+        hfindex,
+        tvb,
+        start,
+        length,
+        value,
+        format,
+        *argv):
+    args, types = c_va_list(*argv)
+    _proto_tree_add_uint_format_value = libwireshark.proto_tree_add_uint_format_value
+    _proto_tree_add_uint_format_value.restype = POINTER(proto_item)
+    _proto_tree_add_uint_format_value.argtypes = [POINTER(proto_tree),
+                                                  c_int,
+                                                  POINTER(tvbuff_t),
+                                                  gint,
+                                                  gint,
+                                                  guint32,
+                                                  c_char_p] + types
+    return _proto_tree_add_uint_format_value(
+        tree, hfindex, tvb, start, length, value, format, *args)
+
+
+# proto_item *proto_tree_add_uint_format(proto_tree *tree, int hfindex, tvbuff_t *tvb, gint start,
+#     gint length, guint32 value, const char *format, ...);
+def proto_tree_add_uint_format(
+        tree,
+        hfindex,
+        tvb,
+        start,
+        length,
+        value,
+        format,
+        *argv):
+    args, types = c_va_list(*argv)
+    _proto_tree_add_uint_format = libwireshark.proto_tree_add_uint_format
+    _proto_tree_add_uint_format.restype = POINTER(proto_item)
+    _proto_tree_add_uint_format.argtypes = [POINTER(proto_tree),
+                                            c_int,
+                                            POINTER(tvbuff_t),
+                                            gint,
+                                            gint,
+                                            guint32,
+                                            c_char_p] + types
+    return _proto_tree_add_uint_format(
+        tree, hfindex, tvb, start, length, value, format, *args)
+
+
+# proto_item *proto_tree_add_uint64(proto_tree *tree, int hfindex, tvbuff_t *tvb, gint start,
+#     gint length, guint64 value);
+proto_tree_add_uint64 = libwireshark.proto_tree_add_uint64
+proto_tree_add_uint64.restype = POINTER(proto_item)
+proto_tree_add_uint64.argtypes = [POINTER(proto_tree),
+                                  c_int,
+                                  POINTER(tvbuff_t),
+                                  gint,
+                                  gint,
+                                  guint64]
+
+# proto_item *proto_tree_add_uint64_format_value(proto_tree *tree, int hfindex, tvbuff_t *tvb,
+#     gint start, gint length, guint64 value, const char *format, ...);
+
+
+def proto_tree_add_uint64_format_value(
+        tree,
+        hfindex,
+        tvb,
+        start,
+        length,
+        value,
+        format,
+        *argv):
+    args, types = c_va_list(*argv)
+    _proto_tree_add_uint64_format_value = libwireshark.proto_tree_add_uint64_format_value
+    _proto_tree_add_uint64_format_value.restype = POINTER(proto_item)
+    _proto_tree_add_uint64_format_value.argtypes = [POINTER(proto_tree),
+                                                    c_int,
+                                                    POINTER(tvbuff_t),
+                                                    gint,
+                                                    gint,
+                                                    guint64,
+                                                    c_char_p] + types
+    return _proto_tree_add_uint64_format_value(
+        tree, hfindex, tvb, start, length, value, format, *args)
+
+
+# proto_item *proto_tree_add_uint64_format(proto_tree *tree, int hfindex, tvbuff_t *tvb, gint start,
+#     gint length, guint64 value, const char *format, ...);
+def proto_tree_add_uint64_format(
+        tree,
+        hfindex,
+        tvb,
+        start,
+        length,
+        value,
+        format,
+        *argv):
+    args, types = c_va_list(*argv)
+    _proto_tree_add_uint64_format = libwireshark.proto_tree_add_uint64_format
+    _proto_tree_add_uint64_format.restype = POINTER(proto_item)
+    _proto_tree_add_uint64_format.argtypes = [POINTER(proto_tree),
+                                              c_int,
+                                              POINTER(tvbuff_t),
+                                              gint,
+                                              gint,
+                                              guint64,
+                                              c_char_p] + types
+    return _proto_tree_add_uint64_format(
+        tree, hfindex, tvb, start, length, value, format, *args)
+
+
+# proto_item *proto_tree_add_int(proto_tree *tree, int hfindex, tvbuff_t *tvb, gint start,
+#     gint length, gint32 value);
+proto_tree_add_int = libwireshark.proto_tree_add_int
+proto_tree_add_int.restype = POINTER(proto_item)
+proto_tree_add_int.argtypes = [POINTER(proto_tree),
+                               c_int,
+                               POINTER(tvbuff_t),
+                               gint,
+                               gint,
+                               gint32]
+
+# proto_item *proto_tree_add_int_format_value(proto_tree *tree, int hfindex, tvbuff_t *tvb,
+#     gint start, gint length, gint32 value, const char *format, ...);
+
+
+def proto_tree_add_int_format_value(
+        tree,
+        hfindex,
+        tvb,
+        start,
+        length,
+        value,
+        format,
+        *argv):
+    args, types = c_va_list(*argv)
+    _proto_tree_add_int_format_value = libwireshark.proto_tree_add_int_format_value
+    _proto_tree_add_int_format_value.restype = POINTER(proto_item)
+    _proto_tree_add_int_format_value.argtypes = [POINTER(proto_tree),
+                                                 c_int,
+                                                 POINTER(tvbuff_t),
+                                                 gint,
+                                                 gint,
+                                                 gint32,
+                                                 c_char_p] + types
+    return _proto_tree_add_int_format_value(
+        tree, hfindex, tvb, start, length, value, format, *args)
+
+
+# proto_item *proto_tree_add_int_format(proto_tree *tree, int hfindex, tvbuff_t *tvb, gint start,
+#     gint length, gint32 value, const char *format, ...);
+def proto_tree_add_int_format(
+        tree,
+        hfindex,
+        tvb,
+        start,
+        length,
+        value,
+        format,
+        *argv):
+    args, types = c_va_list(*argv)
+    _proto_tree_add_int_format = libwireshark.proto_tree_add_int_format
+    _proto_tree_add_int_format.restype = POINTER(proto_item)
+    _proto_tree_add_int_format.argtypes = [POINTER(proto_tree),
+                                           c_int,
+                                           POINTER(tvbuff_t),
+                                           gint,
+                                           gint,
+                                           gint32,
+                                           c_char_p] + types
+    return _proto_tree_add_int_format(
+        tree, hfindex, tvb, start, length, value, format, *args)
+
+
+# proto_item *proto_tree_add_int64(proto_tree *tree, int hfindex, tvbuff_t *tvb, gint start,
+#     gint length, gint64 value);
+proto_tree_add_int64 = libwireshark.proto_tree_add_int64
+proto_tree_add_int64.restype = POINTER(proto_item)
+proto_tree_add_int64.argtypes = [POINTER(proto_tree),
+                                 c_int,
+                                 POINTER(tvbuff_t),
+                                 gint,
+                                 gint,
+                                 gint64]
+
+# proto_item *proto_tree_add_int64_format_value(proto_tree *tree, int hfindex, tvbuff_t *tvb,
+#     gint start, gint length, gint64 value, const char *format, ...);
+
+
+def proto_tree_add_int64_format_value(
+        tree,
+        hfindex,
+        tvb,
+        start,
+        length,
+        value,
+        format,
+        *argv):
+    args, types = c_va_list(*argv)
+    _proto_tree_add_int64_format_value = libwireshark.proto_tree_add_int64_format_value
+    _proto_tree_add_int64_format_value.restype = POINTER(proto_item)
+    _proto_tree_add_int64_format_value.argtypes = [POINTER(proto_tree),
+                                                   c_int,
+                                                   POINTER(tvbuff_t),
+                                                   gint,
+                                                   gint,
+                                                   gint64,
+                                                   c_char_p] + types
+    return _proto_tree_add_int64_format_value(
+        tree, hfindex, tvb, start, length, value, format, *args)
+
+
+# proto_item *proto_tree_add_int64_format(proto_tree *tree, int hfindex, tvbuff_t *tvb, gint start,
+#     gint length, gint64 value, const char *format, ...);
+def proto_tree_add_int64_format(
+        tree,
+        hfindex,
+        tvb,
+        start,
+        length,
+        value,
+        format,
+        *argv):
+    args, types = c_va_list(*argv)
+    _proto_tree_add_int64_format = libwireshark.proto_tree_add_int64_format
+    _proto_tree_add_int64_format.restype = POINTER(proto_item)
+    _proto_tree_add_int64_format.argtypes = [POINTER(proto_tree),
+                                             c_int,
+                                             POINTER(tvbuff_t),
+                                             gint,
+                                             gint,
+                                             gint64,
+                                             c_char_p] + types
+    return _proto_tree_add_int64_format(
+        tree, hfindex, tvb, start, length, value, format, *args)
+
+
+# proto_item *proto_tree_add_eui64(proto_tree *tree, int hfindex, tvbuff_t *tvb, gint start,
+#     gint length, const guint64 value);
+proto_tree_add_eui64 = libwireshark.proto_tree_add_eui64
+proto_tree_add_eui64.restype = POINTER(proto_item)
+proto_tree_add_eui64.argtypes = [POINTER(proto_tree),
+                                 c_int,
+                                 POINTER(tvbuff_t),
+                                 gint,
+                                 gint,
+                                 guint64]
+
+# proto_item *proto_tree_add_eui64_format_value(proto_tree *tree, int hfindex, tvbuff_t *tvb,
+#     gint start, gint length, const guint64 value, const char *format, ...);
+
+
+def proto_tree_add_eui64_format_value(
+        tree,
+        hfindex,
+        tvb,
+        start,
+        length,
+        value,
+        format,
+        *argv):
+    args, types = c_va_list(*argv)
+    _proto_tree_add_eui64_format_value = libwireshark.proto_tree_add_eui64_format_value
+    _proto_tree_add_eui64_format_value.restype = POINTER(proto_item)
+    _proto_tree_add_eui64_format_value.argtypes = [POINTER(proto_tree),
+                                                   c_int,
+                                                   POINTER(tvbuff_t),
+                                                   gint,
+                                                   gint,
+                                                   guint64,
+                                                   c_char_p] + types
+    return _proto_tree_add_eui64_format_value(
+        tree, hfindex, tvb, start, length, value, format, *args)
+
+
+# proto_item *proto_tree_add_eui64_format(proto_tree *tree, int hfindex, tvbuff_t *tvb, gint start,
+#     gint length, const guint64 value, const char *format, ...);
+def proto_tree_add_eui64_format(
+        tree,
+        hfindex,
+        tvb,
+        start,
+        length,
+        value,
+        format,
+        *argv):
+    args, types = c_va_list(*argv)
+    _proto_tree_add_eui64_format = libwireshark.proto_tree_add_eui64_format
+    _proto_tree_add_eui64_format.restype = POINTER(proto_item)
+    _proto_tree_add_eui64_format.argtypes = [POINTER(proto_tree),
+                                             c_int,
+                                             POINTER(tvbuff_t),
+                                             gint,
+                                             gint,
+                                             guint64,
+                                             c_char_p] + types
+    return _proto_tree_add_eui64_format(
+        tree, hfindex, tvb, start, length, value, format, *args)
+
+
+# proto_item *proto_tree_add_debug_text(proto_tree *tree, const char
+# *format, ...);
+def proto_tree_add_debug_text(tree, format, *argv):
+    args, types = c_va_list(*argv)
+    _proto_tree_add_debug_text = libwireshark.proto_tree_add_debug_text
+    _proto_tree_add_debug_text.restype = POINTER(proto_item)
+    _proto_tree_add_debug_text.argtypes = [POINTER(proto_tree),
+                                           c_char_p] + types
+    return _proto_tree_add_debug_text(tree, format, *args)
+
+
+# void proto_item_fill_label(field_info *fi, gchar *label_str);
+proto_item_fill_label = libwireshark.proto_item_fill_label
+proto_item_fill_label.restype = None
+proto_item_fill_label.argtypes = [POINTER(field_info), gchar_p]
+
+# int proto_register_protocol(const char *name, const char *short_name,
+# const char *filter_name);
+proto_register_protocol = libwireshark.proto_register_protocol
+proto_register_protocol.restype = c_int
+proto_register_protocol.argtypes = [c_char_p, c_char_p, c_char_p]
+
+# int proto_register_protocol_in_name_only(const char *name, const char *short_name, const char *filter_name,
+#     int parent_proto, enum ftenum field_type);
+proto_register_protocol_in_name_only = libwireshark.proto_register_protocol_in_name_only
+proto_register_protocol_in_name_only.restype = c_int
+proto_register_protocol_in_name_only.argtypes = [
+    c_char_p, c_char_p, c_char_p, c_int, ftenum]
+
+# void proto_register_alias(const int proto_id, const char *alias_name);
+proto_register_alias = libwireshark.proto_register_alias
+proto_register_alias.restype = None
+proto_register_alias.argtypes = [c_int, c_char_p]
+
+# typedef void (*prefix_initializer_t)(const char* match);
+prefix_initializer_t = CFUNCTYPE(None, c_char_p)
+
+# void proto_register_prefix(const char *prefix,  prefix_initializer_t
+# initializer);
+proto_register_prefix = libwireshark.proto_register_prefix
+proto_register_prefix.restype = None
+proto_register_prefix.argtypes = [c_char_p, prefix_initializer_t]
+
+# void proto_initialize_all_prefixes(void);
+proto_initialize_all_prefixes = libwireshark.proto_initialize_all_prefixes
+proto_initialize_all_prefixes.restype = None
+proto_initialize_all_prefixes.argtypes = []
+
+# void proto_register_fields_manual(const int parent, header_field_info **hfi,
+#     const int num_records);
+proto_register_fields_manual = libwireshark.proto_register_fields_manual
+proto_register_fields_manual.restype = None
+proto_register_fields_manual.argtypes = [
+    c_int, POINTER(POINTER(header_field_info)), c_int]
+
+# void proto_register_fields_section(const int parent, header_field_info *hfi,
+#     const int num_records);
+proto_register_fields_section = libwireshark.proto_register_fields_section
+proto_register_fields_section.restype = None
+proto_register_fields_section.argtypes = [
+    c_int, POINTER(header_field_info), c_int]
+
+# void proto_register_field_array(const int parent, hf_register_info *hf,
+# const int num_records);
+proto_register_field_array = libwireshark.proto_register_field_array
+proto_register_field_array.restype = None
+proto_register_field_array.argtypes = [c_int, POINTER(hf_register_info), c_int]
+
+# void proto_deregister_field (const int parent, gint hf_id);
+proto_deregister_field = libwireshark.proto_deregister_field
+proto_deregister_field.restype = None
+proto_deregister_field.argtypes = [c_int, gint]
+
+# void proto_add_deregistered_data (void *data);
+proto_add_deregistered_data = libwireshark.proto_add_deregistered_data
+proto_add_deregistered_data.restype = None
+proto_add_deregistered_data.argtypes = [c_void_p]
+
+# void proto_free_field_strings (ftenum_t field_type, unsigned int
+# field_display, const void *field_strings);
+proto_free_field_strings = libwireshark.proto_free_field_strings
+proto_free_field_strings.restype = None
+proto_free_field_strings.argtypes = [ftenum_t, c_uint, c_void_p]
+
+# void proto_free_deregistered_fields (void);
+proto_free_deregistered_fields = libwireshark.proto_free_deregistered_fields
+proto_free_deregistered_fields.restype = None
+proto_free_deregistered_fields.argtypes = []
+
+# void proto_register_subtree_array(gint *const *indices, const int
+# num_indices);
+proto_register_subtree_array = libwireshark.proto_register_subtree_array
+proto_register_subtree_array.restype = None
+proto_register_subtree_array.argtypes = [POINTER(gint), c_int]
+
+# const char* proto_registrar_get_name(const int n);
+proto_registrar_get_name = libwireshark.proto_registrar_get_name
+proto_registrar_get_name.restype = c_char_p
+proto_registrar_get_name.argtypes = [c_int]
+
+# const char* proto_registrar_get_abbrev(const int n);
+proto_registrar_get_abbrev = libwireshark.proto_registrar_get_abbrev
+proto_registrar_get_abbrev.restype = c_char_p
+proto_registrar_get_abbrev.argtypes = [c_int]
+
+# header_field_info* proto_registrar_get_nth(guint hfindex);
+proto_registrar_get_nth = libwireshark.proto_registrar_get_nth
+proto_registrar_get_nth.restype = POINTER(header_field_info)
+proto_registrar_get_nth.argtypes = [guint]
+
+# header_field_info* proto_registrar_get_byname(const char *field_name);
+proto_registrar_get_byname = libwireshark.proto_registrar_get_byname
+proto_registrar_get_byname.restype = POINTER(header_field_info)
+proto_registrar_get_byname.argtypes = [c_char_p]
+
+# header_field_info* proto_registrar_get_byalias(const char *alias_name);
+proto_registrar_get_byalias = libwireshark.proto_registrar_get_byalias
+proto_registrar_get_byalias.restype = POINTER(header_field_info)
+proto_registrar_get_byalias.argtypes = [c_char_p]
+
+# int proto_registrar_get_id_byname(const char *field_name);
+proto_registrar_get_id_byname = libwireshark.proto_registrar_get_id_byname
+proto_registrar_get_id_byname.restype = c_int
+proto_registrar_get_id_byname.argtypes = [c_char_p]
+
+# enum ftenum proto_registrar_get_ftype(const int n);
+proto_registrar_get_ftype = libwireshark.proto_registrar_get_ftype
+proto_registrar_get_ftype.restype = ftenum
+proto_registrar_get_ftype.argtypes = [c_int]
+
+# int proto_registrar_get_parent(const int n);
+proto_registrar_get_parent = libwireshark.proto_registrar_get_parent
+proto_registrar_get_parent.restype = c_int
+proto_registrar_get_parent.argtypes = [c_int]
+
+# gboolean proto_registrar_is_protocol(const int n);
+proto_registrar_is_protocol = libwireshark.proto_registrar_is_protocol
+proto_registrar_is_protocol.restype = gboolean
+proto_registrar_is_protocol.argtypes = [c_int]
+
+# int proto_get_first_protocol(void **cookie);
+proto_get_first_protocol = libwireshark.proto_get_first_protocol
+proto_get_first_protocol.restype = c_int
+proto_get_first_protocol.argtypes = [POINTER(c_void_p)]
+
+# int proto_get_data_protocol(void *cookie);
+proto_get_data_protocol = libwireshark.proto_get_data_protocol
+proto_get_data_protocol.restype = c_int
+proto_get_data_protocol.argtypes = [c_void_p]
+
+# int proto_get_next_protocol(void **cookie);
+proto_get_next_protocol = libwireshark.proto_get_next_protocol
+proto_get_next_protocol.restype = c_int
+proto_get_next_protocol.argtypes = [POINTER(c_void_p)]
+
+# header_field_info *proto_get_first_protocol_field(const int proto_id,
+# void **cookie);
+proto_get_first_protocol_field = libwireshark.proto_get_first_protocol_field
+proto_get_first_protocol_field.restype = POINTER(header_field_info)
+proto_get_first_protocol_field.argtypes = [c_int, POINTER(c_void_p)]
+
+# header_field_info *proto_get_next_protocol_field(const int proto_id,
+# void **cookie);
+proto_get_next_protocol_field = libwireshark.proto_get_next_protocol_field
+proto_get_next_protocol_field.restype = POINTER(header_field_info)
+proto_get_next_protocol_field.argtypes = [c_int, POINTER(c_void_p)]
+
+# int proto_name_already_registered(const gchar *name);
+proto_name_already_registered = libwireshark.proto_name_already_registered
+proto_name_already_registered.restype = c_int
+proto_name_already_registered.argtypes = [gchar_p]
+
+# int proto_get_id_by_filter_name(const gchar* filter_name);
+proto_get_id_by_filter_name = libwireshark.proto_get_id_by_filter_name
+proto_get_id_by_filter_name.restype = c_int
+proto_get_id_by_filter_name.argtypes = [gchar_p]
+
+# int proto_get_id_by_short_name(const gchar* short_name);
+proto_get_id_by_short_name = libwireshark.proto_get_id_by_short_name
+proto_get_id_by_short_name.restype = c_int
+proto_get_id_by_short_name.argtypes = [gchar_p]
+
+# gboolean proto_can_toggle_protocol(const int proto_id);
+proto_can_toggle_protocol = libwireshark.proto_can_toggle_protocol
+proto_can_toggle_protocol.restype = gboolean
+proto_can_toggle_protocol.argtypes = [c_int]
+
+# protocol_t *find_protocol_by_id(const int proto_id);
+find_protocol_by_id = libwireshark.find_protocol_by_id
+find_protocol_by_id.restype = POINTER(protocol_t)
+find_protocol_by_id.argtypes = [c_int]
+
+# const char *proto_get_protocol_name(const int proto_id);
+proto_get_protocol_name = libwireshark.proto_get_protocol_name
+proto_get_protocol_name.restype = c_char_p
+proto_get_protocol_name.argtypes = [c_int]
+
+# int proto_get_id(const protocol_t *protocol);
+proto_get_id = libwireshark.proto_get_id
+proto_get_id.restype = c_int
+proto_get_id.argtypes = [POINTER(protocol_t)]
+
+# const char *proto_get_protocol_short_name(const protocol_t *protocol);
+proto_get_protocol_short_name = libwireshark.proto_get_protocol_short_name
+proto_get_protocol_short_name.restype = c_char_p
+proto_get_protocol_short_name.argtypes = [POINTER(protocol_t)]
+
+# const char *proto_get_protocol_long_name(const protocol_t *protocol);
+proto_get_protocol_long_name = libwireshark.proto_get_protocol_long_name
+proto_get_protocol_long_name.restype = c_char_p
+proto_get_protocol_long_name.argtypes = [POINTER(protocol_t)]
+
+# gboolean proto_is_protocol_enabled(const protocol_t *protocol);
+proto_is_protocol_enabled = libwireshark.proto_is_protocol_enabled
+proto_is_protocol_enabled.restype = gboolean
+proto_is_protocol_enabled.argtypes = [POINTER(protocol_t)]
+
+# gboolean proto_is_protocol_enabled_by_default(const protocol_t *protocol);
+proto_is_protocol_enabled_by_default = libwireshark.proto_is_protocol_enabled_by_default
+proto_is_protocol_enabled_by_default.restype = gboolean
+proto_is_protocol_enabled_by_default.argtypes = [POINTER(protocol_t)]
+
+# gboolean proto_is_pino(const protocol_t *protocol);
+proto_is_pino = libwireshark.proto_is_pino
+proto_is_pino.restype = gboolean
+proto_is_pino.argtypes = [POINTER(protocol_t)]
+
+# const char *proto_get_protocol_filter_name(const int proto_id);
+proto_get_protocol_filter_name = libwireshark.proto_get_protocol_filter_name
+proto_get_protocol_filter_name.restype = c_char_p
+proto_get_protocol_filter_name.argtypes = [c_int]
+
+# void proto_heuristic_dissector_foreach(const protocol_t *protocol, GFunc func,
+#     gpointer user_data);
+proto_heuristic_dissector_foreach = libwireshark.proto_heuristic_dissector_foreach
+proto_heuristic_dissector_foreach.restype = None
+proto_heuristic_dissector_foreach.argtypes = [POINTER(protocol_t),
+                                              GFunc,
+                                              gpointer]
+
+# void proto_get_frame_protocols(const wmem_list_t *layers,
+#       gboolean *is_ip, gboolean *is_tcp, gboolean *is_udp, gboolean *is_sctp,
+#       gboolean *is_tls, gboolean *is_rtp, gboolean *is_lte_rlc);
+proto_get_frame_protocols = libwireshark.proto_get_frame_protocols
+proto_get_frame_protocols.restype = None
+proto_get_frame_protocols.argtypes = [POINTER(wmem_list_t),
+                                      POINTER(gboolean),
+                                      POINTER(gboolean),
+                                      POINTER(gboolean),
+                                      POINTER(gboolean),
+                                      POINTER(gboolean),
+                                      POINTER(gboolean),
+                                      POINTER(gboolean)]
+
+# gboolean proto_is_frame_protocol(const wmem_list_t *layers, const char*
+# proto_name);
+proto_is_frame_protocol = libwireshark.proto_is_frame_protocol
+proto_is_frame_protocol.restype = gboolean
+proto_is_frame_protocol.argtypes = [POINTER(wmem_list_t), c_char_p]
+
+# void proto_disable_by_default(const int proto_id);
+proto_disable_by_default = libwireshark.proto_disable_by_default
+proto_disable_by_default.restype = None
+proto_disable_by_default.argtypes = [c_int]
+
+# void proto_set_decoding(const int proto_id, const gboolean enabled);
+proto_set_decoding = libwireshark.proto_set_decoding
+proto_set_decoding.restype = None
+proto_set_decoding.argtypes = [c_int, gboolean]
+
+# void proto_reenable_all(void);
+proto_reenable_all = libwireshark.proto_reenable_all
+proto_reenable_all.restype = None
+proto_reenable_all.argtypes = []
+
+# void proto_set_cant_toggle(const int proto_id);
+proto_set_cant_toggle = libwireshark.proto_set_cant_toggle
+proto_set_cant_toggle.restype = None
+proto_set_cant_toggle.argtypes = [c_int]
+
+# GPtrArray* proto_get_finfo_ptr_array(const proto_tree *tree, const int
+# hfindex);
+proto_get_finfo_ptr_array = libwireshark.proto_get_finfo_ptr_array
+proto_get_finfo_ptr_array.restype = POINTER(GPtrArray)
+proto_get_finfo_ptr_array.argtypes = [POINTER(proto_tree), c_int]
+
+# gboolean proto_tracking_interesting_fields(const proto_tree *tree);
+proto_tracking_interesting_fields = libwireshark.proto_tracking_interesting_fields
+proto_tracking_interesting_fields.restype = gboolean
+proto_tracking_interesting_fields.argtypes = [POINTER(proto_tree)]
+
+# GPtrArray* proto_find_finfo(proto_tree *tree, const int hfindex);
+proto_find_finfo = libwireshark.proto_find_finfo
+proto_find_finfo.restype = POINTER(GPtrArray)
+proto_find_finfo.argtypes = [POINTER(proto_tree), c_int]
+
+# GPtrArray* proto_find_first_finfo(proto_tree *tree, const int hfindex);
+proto_find_first_finfo = libwireshark.proto_find_first_finfo
+proto_find_first_finfo.restype = POINTER(GPtrArray)
+proto_find_first_finfo.argtypes = [POINTER(proto_tree), c_int]
+
+# GPtrArray* proto_all_finfos(proto_tree *tree);
+proto_all_finfos = libwireshark.proto_all_finfos
+proto_all_finfos.restype = POINTER(GPtrArray)
+proto_all_finfos.argtypes = [POINTER(proto_tree)]
+
+# void proto_registrar_dump_protocols(void);
+proto_registrar_dump_protocols = libwireshark.proto_registrar_dump_protocols
+proto_registrar_dump_protocols.restype = None
+proto_registrar_dump_protocols.argtypes = []
+
+# void proto_registrar_dump_values(void);
+proto_registrar_dump_values = libwireshark.proto_registrar_dump_values
+proto_registrar_dump_values.restype = None
+proto_registrar_dump_values.argtypes = []
+
+# void proto_registrar_dump_elastic(const gchar* filter);
+proto_registrar_dump_elastic = libwireshark.proto_registrar_dump_elastic
+proto_registrar_dump_elastic.restype = None
+proto_registrar_dump_elastic.argtypes = [gchar_p]
+
+# gboolean proto_registrar_dump_fieldcount(void);
+proto_registrar_dump_fieldcount = libwireshark.proto_registrar_dump_fieldcount
+proto_registrar_dump_fieldcount.restype = gboolean
+proto_registrar_dump_fieldcount.argtypes = []
+
+# void proto_registrar_dump_fields(void);
+proto_registrar_dump_fields = libwireshark.proto_registrar_dump_fields
+proto_registrar_dump_fields.restype = None
+proto_registrar_dump_fields.argtypes = []
+
+# void proto_registrar_dump_ftypes(void);
+proto_registrar_dump_ftypes = libwireshark.proto_registrar_dump_ftypes
+proto_registrar_dump_ftypes.restype = None
+proto_registrar_dump_ftypes.argtypes = []
+
+# const char* proto_field_display_to_string(int field_display);
+proto_field_display_to_string = libwireshark.proto_field_display_to_string
+proto_field_display_to_string.restype = c_char_p
+proto_field_display_to_string.argtypes = [c_int]
+
+# int num_tree_types;
+num_tree_types = c_int.in_dll(libwireshark, 'num_tree_types')
+
+# gboolean tree_expanded(int tree_type);
+tree_expanded = libwireshark.tree_expanded
+tree_expanded.restype = gboolean
+tree_expanded.argtypes = [c_int]
+
+# void tree_expanded_set(int tree_type, gboolean value);
+tree_expanded_set = libwireshark.tree_expanded_set
+tree_expanded_set.restype = None
+tree_expanded_set.argtypes = [c_int, gboolean]
+
+# int hfinfo_bitshift(const header_field_info *hfinfo);
+hfinfo_bitshift = libwireshark.hfinfo_bitshift
+hfinfo_bitshift.restype = c_int
+hfinfo_bitshift.argtypes = [POINTER(header_field_info)]
+
+# gboolean proto_can_match_selected(field_info *finfo, struct epan_dissect
+# *edt);
+proto_can_match_selected = libwireshark.proto_can_match_selected
+proto_can_match_selected.restype = gboolean
+proto_can_match_selected.argtypes = [POINTER(field_info),
+                                     POINTER(epan_dissect)]
+
+# char* proto_construct_match_selected_string(field_info *finfo, struct
+# epan_dissect *edt);
+proto_construct_match_selected_string = libwireshark.proto_construct_match_selected_string
+proto_construct_match_selected_string.restype = c_char_p
+proto_construct_match_selected_string.argtypes = [
+    POINTER(field_info), POINTER(epan_dissect)]
+
+# field_info* proto_find_field_from_offset(proto_tree *tree, guint offset,
+# tvbuff_t *tvb);
+proto_find_field_from_offset = libwireshark.proto_find_field_from_offset
+proto_find_field_from_offset.restype = POINTER(field_info)
+proto_find_field_from_offset.argtypes = [
+    POINTER(proto_tree), guint, POINTER(tvbuff_t)]
+
+# gchar* proto_find_undecoded_data(proto_tree *tree, guint length);
+proto_find_undecoded_data = libwireshark.proto_find_undecoded_data
+proto_find_undecoded_data.restype = gchar_p
+proto_find_undecoded_data.argtypes = [POINTER(proto_tree), guint]
+
+# proto_item *proto_tree_add_bitmask(proto_tree *tree, tvbuff_t *tvb, const guint offset,
+# const int hf_hdr, const gint ett, const int **fields, const guint
+# encoding);
+proto_tree_add_bitmask = libwireshark.proto_tree_add_bitmask
+proto_tree_add_bitmask.restype = POINTER(proto_item)
+proto_tree_add_bitmask.argtypes = [POINTER(proto_tree),
+                                   POINTER(tvbuff_t),
+                                   guint,
+                                   c_int,
+                                   gint,
+                                   POINTER(POINTER(c_int)),
+                                   guint]
+
+# proto_item *proto_tree_add_bitmask_ret_uint64(proto_tree *tree, tvbuff_t *tvb, const guint offset,
+#         const int hf_hdr, const gint ett, const int **fields,
+#         const guint encoding, guint64 *retval);
+proto_tree_add_bitmask_ret_uint64 = libwireshark.proto_tree_add_bitmask_ret_uint64
+proto_tree_add_bitmask_ret_uint64.restype = POINTER(proto_item)
+proto_tree_add_bitmask_ret_uint64.argtypes = [POINTER(proto_tree),
+                                              POINTER(tvbuff_t),
+                                              guint,
+                                              c_int,
+                                              gint,
+                                              POINTER(POINTER(c_int)),
+                                              guint,
+                                              POINTER(guint64)]
+
+# proto_item *proto_tree_add_bitmask_with_flags(proto_tree *tree, tvbuff_t *tvb, const guint offset,
+# const int hf_hdr, const gint ett, const int **fields, const guint
+# encoding, const int flags);
+proto_tree_add_bitmask_with_flags = libwireshark.proto_tree_add_bitmask_with_flags
+proto_tree_add_bitmask_with_flags.restype = POINTER(proto_item)
+proto_tree_add_bitmask_with_flags.argtypes = [POINTER(proto_tree),
+                                              POINTER(tvbuff_t),
+                                              guint,
+                                              c_int,
+                                              gint,
+                                              POINTER(POINTER(c_int)),
+                                              guint,
+                                              c_int]
+
+# proto_item *proto_tree_add_bitmask_with_flags_ret_uint64(proto_tree *tree, tvbuff_t *tvb, const guint offset,
+#         const int hf_hdr, const gint ett, const int **fields,
+#         const guint encoding, const int flags, guint64 *retval);
+proto_tree_add_bitmask_with_flags_ret_uint64 = libwireshark.proto_tree_add_bitmask_with_flags_ret_uint64
+proto_tree_add_bitmask_with_flags_ret_uint64.restype = POINTER(proto_item)
+proto_tree_add_bitmask_with_flags_ret_uint64.argtypes = [
+    POINTER(proto_tree), POINTER(tvbuff_t), guint, c_int, gint, POINTER(
+        POINTER(c_int)), guint, c_int, POINTER(guint64)]
+
+# proto_item *proto_tree_add_bitmask_value(proto_tree *tree, tvbuff_t *tvb, const guint offset,
+# const int hf_hdr, const gint ett, const int **fields, const guint64
+# value);
+proto_tree_add_bitmask_value = libwireshark.proto_tree_add_bitmask_value
+proto_tree_add_bitmask_value.restype = POINTER(proto_item)
+proto_tree_add_bitmask_value.argtypes = [POINTER(proto_tree),
+                                         POINTER(tvbuff_t),
+                                         guint,
+                                         c_int,
+                                         gint,
+                                         POINTER(POINTER(c_int)),
+                                         guint64]
+
+# proto_item *proto_tree_add_bitmask_value_with_flags(proto_tree *tree, tvbuff_t *tvb, const guint offset,
+# const int hf_hdr, const gint ett, const int **fields, const guint64
+# value, const int flags);
+proto_tree_add_bitmask_value_with_flags = libwireshark.proto_tree_add_bitmask_value_with_flags
+proto_tree_add_bitmask_value_with_flags.restype = POINTER(proto_item)
+proto_tree_add_bitmask_value_with_flags.argtypes = [POINTER(proto_tree),
+                                                    POINTER(tvbuff_t),
+                                                    guint,
+                                                    c_int,
+                                                    gint,
+                                                    POINTER(POINTER(c_int)),
+                                                    guint64,
+                                                    c_int]
+
+# void proto_tree_add_bitmask_list(proto_tree *tree, tvbuff_t *tvb, const guint offset,
+# const int len, const int **fields, const guint encoding);
+proto_tree_add_bitmask_list = libwireshark.proto_tree_add_bitmask_list
+proto_tree_add_bitmask_list.restype = None
+proto_tree_add_bitmask_list.argtypes = [POINTER(proto_tree),
+                                        POINTER(tvbuff_t),
+                                        guint,
+                                        c_int,
+                                        POINTER(POINTER(c_int)),
+                                        guint]
+
+# void proto_tree_add_bitmask_list_value(proto_tree *tree, tvbuff_t *tvb, const guint offset,
+# const int len, const int **fields, const guint64 value);
+proto_tree_add_bitmask_list_value = libwireshark.proto_tree_add_bitmask_list_value
+proto_tree_add_bitmask_list_value.restype = None
+proto_tree_add_bitmask_list_value.argtypes = [POINTER(proto_tree),
+                                              POINTER(tvbuff_t),
+                                              guint,
+                                              c_int,
+                                              POINTER(POINTER(c_int)),
+                                              guint64]
+
+# proto_item *proto_tree_add_bitmask_len(proto_tree *tree, tvbuff_t *tvb, const guint offset, const guint len,
+# const int hf_hdr, const gint ett, const int **fields, struct
+# expert_field* exp, const guint encoding);
+proto_tree_add_bitmask_len = libwireshark.proto_tree_add_bitmask_len
+proto_tree_add_bitmask_len.restype = POINTER(proto_item)
+proto_tree_add_bitmask_len.argtypes = [POINTER(proto_tree),
+                                       POINTER(tvbuff_t),
+                                       guint,
+                                       guint,
+                                       c_int,
+                                       gint,
+                                       POINTER(POINTER(c_int)),
+                                       POINTER(expert_field),
+                                       guint]
+
+# proto_item *proto_tree_add_bitmask_text(proto_tree *tree, tvbuff_t *tvb, const guint offset, const guint len,
+#         const char *name, const char *fallback,
+# const gint ett, const int **fields, const guint encoding, const int
+# flags);
+proto_tree_add_bitmask_text = libwireshark.proto_tree_add_bitmask_text
+proto_tree_add_bitmask_text.restype = POINTER(proto_item)
+proto_tree_add_bitmask_text.argtypes = [POINTER(proto_tree),
+                                        POINTER(tvbuff_t),
+                                        guint,
+                                        guint,
+                                        c_char_p,
+                                        c_char_p,
+                                        gint,
+                                        POINTER(POINTER(c_int)),
+                                        guint,
+                                        c_int]
+
+# #define BMT_NO_FLAGS    0x00
+BMT_NO_FLAGS = 0x00
+
+# #define BMT_NO_APPEND   0x01
+BMT_NO_APPEND = 0x01
+
+# #define BMT_NO_INT      0x02
+BMT_NO_INT = 0x02
+
+# #define BMT_NO_FALSE    0x04
+BMT_NO_FALSE = 0x04
+
+# #define BMT_NO_TFS      0x08
+BMT_NO_TFS = 0x08
+
+
+# proto_item *proto_tree_add_bits_item(proto_tree *tree, const int hf_index, tvbuff_t *tvb, const guint bit_offset,
+#     const gint no_of_bits, const guint encoding);
+proto_tree_add_bits_item = libwireshark.proto_tree_add_bits_item
+proto_tree_add_bits_item.restype = POINTER(proto_item)
+proto_tree_add_bits_item.argtypes = [POINTER(proto_tree),
+                                     c_int,
+                                     POINTER(tvbuff_t),
+                                     guint,
+                                     gint,
+                                     guint]
+
+# proto_item *proto_tree_add_split_bits_item_ret_val(proto_tree *tree, const int hf_index, tvbuff_t *tvb,
+# const guint bit_offset, const crumb_spec_t *crumb_spec, guint64
+# *return_value);
+proto_tree_add_split_bits_item_ret_val = libwireshark.proto_tree_add_split_bits_item_ret_val
+proto_tree_add_split_bits_item_ret_val.restype = POINTER(proto_item)
+proto_tree_add_split_bits_item_ret_val.argtypes = [POINTER(proto_tree),
+                                                   c_int,
+                                                   POINTER(tvbuff_t),
+                                                   guint,
+                                                   POINTER(crumb_spec_t),
+                                                   POINTER(guint64)]
+
+# proto_item *proto_tree_add_bits_ret_val(proto_tree *tree, const int hf_index, tvbuff_t *tvb,
+# const guint bit_offset, const gint no_of_bits, guint64 *return_value,
+# const guint encoding);
+proto_tree_add_bits_ret_val = libwireshark.proto_tree_add_bits_ret_val
+proto_tree_add_bits_ret_val.restype = POINTER(proto_item)
+proto_tree_add_bits_ret_val.argtypes = [POINTER(proto_tree),
+                                        c_int,
+                                        POINTER(tvbuff_t),
+                                        guint,
+                                        gint,
+                                        POINTER(guint64),
+                                        guint]
+
+
+# proto_item *proto_tree_add_uint_bits_format_value(proto_tree *tree, const int hf_index, tvbuff_t *tvb,
+# const guint bit_offset, const gint no_of_bits, guint32 value, const char
+# *format, ...);
+def proto_tree_add_uint_bits_format_value(
+        tree,
+        hf_index,
+        tvb,
+        bit_offset,
+        no_of_bits,
+        value,
+        format,
+        *argv):
+    args, types = c_va_list(*argv)
+    _proto_tree_add_uint_bits_format_value = libwireshark.proto_tree_add_uint_bits_format_value
+    _proto_tree_add_uint_bits_format_value.restype = POINTER(proto_item)
+    _proto_tree_add_uint_bits_format_value.argtypes = [POINTER(proto_tree),
+                                                       c_int,
+                                                       POINTER(tvbuff_t),
+                                                       guint,
+                                                       gint,
+                                                       guint32,
+                                                       c_char_p] + types
+    return _proto_tree_add_uint_bits_format_value(
+        tree, hf_inde, tvb, bit_offset, no_of_bits, value, format, *args)
+
+
+# proto_item *proto_tree_add_uint64_bits_format_value(proto_tree *tree, const int hf_index, tvbuff_t *tvb,
+# const guint bit_offset, const gint no_of_bits, guint64 value, const char
+# *format, ...);
+def proto_tree_add_uint64_bits_format_value(
+        tree,
+        hf_index,
+        tvb,
+        bit_offset,
+        no_of_bits,
+        value,
+        format,
+        *argv):
+    args, types = c_va_list(*argv)
+    _proto_tree_add_uint64_bits_format_value = libwireshark.proto_tree_add_uint64_bits_format_value
+    _proto_tree_add_uint64_bits_format_value.restype = POINTER(proto_item)
+    _proto_tree_add_uint64_bits_format_value.argtypes = [POINTER(proto_tree),
+                                                         c_int,
+                                                         POINTER(tvbuff_t),
+                                                         guint,
+                                                         gint,
+                                                         guint64,
+                                                         c_char_p] + types
+    return _proto_tree_add_uint64_bits_format_value(
+        tree, hf_index, tvb, bit_offset, no_of_bits, value, format, *args)
+
+
+# proto_item *proto_tree_add_ts_23_038_7bits_item(proto_tree *tree, const int hfindex, tvbuff_t *tvb,
+#     const guint bit_offset, const gint no_of_chars);
+proto_tree_add_ts_23_038_7bits_item = libwireshark.proto_tree_add_ts_23_038_7bits_item
+proto_tree_add_ts_23_038_7bits_item.restype = POINTER(proto_item)
+proto_tree_add_ts_23_038_7bits_item.argtypes = [POINTER(proto_tree),
+                                                c_int,
+                                                POINTER(tvbuff_t),
+                                                guint,
+                                                gint]
+
+# proto_item *proto_tree_add_ascii_7bits_item(proto_tree *tree, const int hfindex, tvbuff_t *tvb,
+#     const guint bit_offset, const gint no_of_chars);
+proto_tree_add_ascii_7bits_item = libwireshark.proto_tree_add_ascii_7bits_item
+proto_tree_add_ascii_7bits_item.restype = POINTER(proto_item)
+proto_tree_add_ascii_7bits_item.argtypes = [POINTER(proto_tree),
+                                            c_int,
+                                            POINTER(tvbuff_t),
+                                            guint,
+                                            gint]
+
+# proto_item *proto_tree_add_checksum(proto_tree *tree, tvbuff_t *tvb, const guint offset,
+#         const int hf_checksum, const int hf_checksum_status, struct expert_field* bad_checksum_expert,
+# packet_info *pinfo, guint32 computed_checksum, const guint encoding,
+# const guint flags);
+proto_tree_add_checksum = libwireshark.proto_tree_add_checksum
+proto_tree_add_checksum.restype = POINTER(proto_item)
+proto_tree_add_checksum.argtypes = [POINTER(proto_tree),
+                                    POINTER(tvbuff_t),
+                                    guint,
+                                    c_int,
+                                    c_int,
+                                    POINTER(expert_field),
+                                    POINTER(packet_info),
+                                    guint32,
+                                    guint,
+                                    guint]
+
+# typedef enum {
+#     PROTO_CHECKSUM_E_BAD = 0,
+#     PROTO_CHECKSUM_E_GOOD,
+#     PROTO_CHECKSUM_E_UNVERIFIED,
+#     PROTO_CHECKSUM_E_NOT_PRESENT
+# } proto_checksum_enum_e;
+proto_checksum_enum_e = c_int
+PROTO_CHECKSUM_E_BAD = c_int(0)
+PROTO_CHECKSUM_E_GOOD = c_int(1)
+PROTO_CHECKSUM_E_UNVERIFIED = c_int(2)
+PROTO_CHECKSUM_E_NOT_PRESENT = c_int(3)
+
+# #define PROTO_CHECKSUM_NO_FLAGS     0x00
+PROTO_CHECKSUM_NO_FLAGS = 0x00
+
+# #define PROTO_CHECKSUM_VERIFY       0x01
+PROTO_CHECKSUM_VERIFY = 0x01
+
+# #define PROTO_CHECKSUM_GENERATED    0x02
+PROTO_CHECKSUM_GENERATED = 0x02
+
+# #define PROTO_CHECKSUM_IN_CKSUM     0x04
+PROTO_CHECKSUM_IN_CKSUM = 0x04
+
+# #define PROTO_CHECKSUM_ZERO         0x08
+PROTO_CHECKSUM_ZERO = 0x08
+
+# #define PROTO_CHECKSUM_NOT_PRESENT  0x10
+PROTO_CHECKSUM_NOT_PRESENT = 0x10
+
+
+# const value_string proto_checksum_vals[];
+proto_checksum_vals = POINTER(value_string).in_dll(
+    libwireshark, 'proto_checksum_vals')
+
+# guchar proto_check_field_name(const gchar *field_name);
+proto_check_field_name = libwireshark.proto_check_field_name
+proto_check_field_name.restype = guchar
+proto_check_field_name.argtypes = [gchar_p]
