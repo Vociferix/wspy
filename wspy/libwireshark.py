@@ -9256,3 +9256,138 @@ prime_epan_dissect_with_postdissector_wanted_hfids = libwireshark.prime_epan_dis
 prime_epan_dissect_with_postdissector_wanted_hfids.restype = None
 prime_epan_dissect_with_postdissector_wanted_hfids.argtypes = [
     POINTER(epan_dissect_t)]
+
+
+############
+# column.h #
+############
+
+# typedef struct _fmt_data {
+#   gchar *title;
+#   int fmt;
+#   gchar *custom_fields;
+#   gint custom_occurrence;
+#   gboolean visible;
+#   gboolean resolved;
+# } fmt_data;
+class _fmt_data(Structure):
+    _fields_ = [('title', gchar_p),
+                ('fmt', c_int),
+                ('custom_fields', gchar_p),
+                ('custom_occurence', gint),
+                ('visible', gboolean),
+                ('resolved', gboolean)]
+
+
+fmt_data = _fmt_data
+
+# const gchar         *col_format_to_string(const gint);
+col_format_to_string = libwireshark.col_format_to_string
+col_format_to_string.restype = gchar_p
+col_format_to_string.argtypes = [gint]
+
+# const gchar         *col_format_desc(const gint);
+col_format_desc = libwireshark.col_format_desc
+col_format_desc.restype = gchar_p
+col_format_desc.argtypes = [gint]
+
+# gint                 get_column_format(const gint);
+get_column_format = libwireshark.get_column_format
+get_column_format.restype = gint
+get_column_format.argtypes = [gint]
+
+# void                 set_column_format(const gint, const gint);
+set_column_format = libwireshark.set_column_format
+set_column_format.restype = None
+set_column_format.argtypes = [gint, gint]
+
+# void                 get_column_format_matches(gboolean *, const gint);
+get_column_format_matches = libwireshark.get_column_format_matches
+get_column_format_matches.restype = None
+get_column_format_matches.argtypes = [POINTER(gboolean), gint]
+
+# gint                 get_column_format_from_str(const gchar *);
+get_column_format_from_str = libwireshark.get_column_format_from_str
+get_column_format_from_str.restype = gint
+get_column_format_from_str.argtypes = [gchar_p]
+
+# gchar               *get_column_title(const gint);
+get_column_title = libwireshark.get_column_title
+get_column_title.restype = gchar_p
+get_column_title.argtypes = [gint]
+
+# void                 set_column_title(const gint, const gchar *);
+set_column_title = libwireshark.set_column_title
+set_column_title.restype = None
+set_column_title.argtypes = [gint, gchar_p]
+
+# gboolean             get_column_visible(const gint);
+get_column_visible = libwireshark.get_column_visible
+get_column_visible.restype = gboolean
+get_column_visible.argtypes = [gint]
+
+# void                 set_column_visible(const gint, gboolean);
+set_column_visible = libwireshark.set_column_visible
+set_column_visible.restype = None
+set_column_visible.argtypes = [gint, gboolean]
+
+# gboolean             get_column_resolved(const gint);
+get_column_resolved = libwireshark.get_column_resolved
+get_column_resolved.restype = gboolean
+get_column_resolved.argtypes = [gint]
+
+# void                 set_column_resolved(const gint, gboolean);
+set_column_resolved = libwireshark.set_column_resolved
+set_column_resolved.restype = None
+set_column_resolved.argtypes = [gint, gboolean]
+
+# const gchar         *get_column_custom_fields(const gint);
+get_column_custom_fields = libwireshark.get_column_custom_fields
+get_column_custom_fields.restype = gchar_p
+get_column_custom_fields.argtypes = [gint]
+
+# void                 set_column_custom_fields(const gint, const char *);
+set_column_custom_fields = libwireshark.set_column_custom_fields
+set_column_custom_fields.restype = None
+set_column_custom_fields.argtypes = [gint, c_char_p]
+
+# gint                 get_column_custom_occurrence(const gint);
+get_column_custom_occurrence = libwireshark.get_column_custom_occurrence
+get_column_custom_occurrence.restype = gint
+get_column_custom_occurrence.argtypes = [gint]
+
+# void                 set_column_custom_occurrence(const gint, const gint);
+set_column_custom_occurrence = libwireshark.set_column_custom_occurrence
+set_column_custom_occurrence.restype = None
+set_column_custom_occurrence.argtypes = [gint, gint]
+
+# const gchar         *get_column_width_string(const gint, const gint);
+get_column_width_string = libwireshark.get_column_width_string
+get_column_width_string.restype = gchar_p
+get_column_width_string.argtypes = [gint, gint]
+
+# gint                 get_column_char_width(const gint format);
+get_column_char_width = libwireshark.get_column_char_width
+get_column_char_width.restype = gint
+get_column_char_width.argtypes = [gint]
+
+# gchar               *get_column_tooltip(const gint col);
+get_column_tooltip = libwireshark.get_column_tooltip
+get_column_tooltip.restype = gchar_p
+get_column_tooltip.argtypes = [gint]
+
+# void col_finalize(column_info *cinfo);
+col_finalize = libwireshark.col_finalize
+col_finalize.restype = None
+col_finalize.argtypes = [POINTER(column_info)]
+
+# void build_column_format_array(column_info *cinfo, const gint num_cols,
+# const gboolean reset_fences);
+build_column_format_array = libwireshark.build_column_format_array
+build_column_format_array.restype = None
+build_column_format_array.argtypes = [POINTER(column_info), gint, gboolean]
+
+# void                 column_dump_column_formats(void);
+column_dump_column_formats = libwireshark.column_dump_column_formats
+column_dump_column_formats.restype = None
+column_dump_column_formats.argtypes = []
