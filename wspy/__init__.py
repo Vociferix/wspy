@@ -17,7 +17,5 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.             #
 ###########################################################################
 
-import wspy.libglib2 as libglib2
-import wspy.libwsutil as libwsutil
-#import wspy.libwiretap as libwiretap
-#import wspy.libwireshark as libwireshark
+from wspy.libglib2 import LibGLib2
+from wspy.libwsutil import LibWSUtil
