@@ -19,135 +19,138 @@
 
 from ctypes import *
 
-gboolean = c_int
-gchar = c_char
-gchar_p = c_char_p
-guchar = c_uint8
-guchar_p = POINTER(guchar)
-guint = c_uint
-guint8 = c_uint8
-guint16 = c_uint16
-guint32 = c_uint32
-guint64 = c_uint64
-gint = c_int
-gint8 = c_int8
-gint16 = c_int16
-gint32 = c_int32
-gint64 = c_int64
-gsize = c_size_t
-gssize = c_ssize_t
-gfloat = c_float
-gdouble = c_double
-gunichar = guint32
 
-gpointer = c_void_p
-gconstpointer = c_void_p
+class LibGLib2:
+    gboolean = c_int
+    gchar = c_char
+    gchar_p = c_char_p
+    guchar = c_uint8
+    guchar_p = POINTER(guchar)
+    guint = c_uint
+    guint8 = c_uint8
+    guint16 = c_uint16
+    guint32 = c_uint32
+    guint64 = c_uint64
+    gint = c_int
+    gint8 = c_int8
+    gint16 = c_int16
+    gint32 = c_int32
+    gint64 = c_int64
+    gsize = c_size_t
+    gssize = c_ssize_t
+    gfloat = c_float
+    gdouble = c_double
+    gunichar = guint32
 
-GQuark = guint32
-GPid = c_int
+    gpointer = c_void_p
+    gconstpointer = c_void_p
 
-GCompareFunc = CFUNCTYPE(gint, gconstpointer, gconstpointer)
-GFunc = CFUNCTYPE(None, gpointer, gpointer)
-GHFunc = CFUNCTYPE(None, gpointer, gpointer, gpointer)
-GHashFunc = CFUNCTYPE(guint, gconstpointer)
-GEqualFunc = CFUNCTYPE(gboolean, gconstpointer, gconstpointer)
+    GQuark = guint32
+    GPid = c_int
 
-# struct GString {
-#     gchar* str;
-#     gsize len;
-#     gsize allocated_len;
-# };
+    GCompareFunc = CFUNCTYPE(gint, gconstpointer, gconstpointer)
+    GFunc = CFUNCTYPE(None, gpointer, gpointer)
+    GHFunc = CFUNCTYPE(None, gpointer, gpointer, gpointer)
+    GHashFunc = CFUNCTYPE(guint, gconstpointer)
+    GEqualFunc = CFUNCTYPE(gboolean, gconstpointer, gconstpointer)
 
+    # struct GString {
+    #     gchar* str;
+    #     gsize len;
+    #     gsize allocated_len;
+    # };
 
-class GString(Structure):
-    _fields_ = [('str', gchar),
-                ('len', gsize),
-                ('allocated_len', gsize)]
+    class GString(Structure):
+        pass
 
+    GString._fields_ = [('str', gchar),
+                        ('len', gsize),
+                        ('allocated_len', gsize)]
 
-# typedef struct _GHashTable GHashTable
-class _GHashTable(Structure):
-    _fields_ = []
+    # typedef struct _GHashTable GHashTable
 
+    class _GHashTable(Structure):
+        _fields_ = []
 
-GHashTable = _GHashTable
+    GHashTable = _GHashTable
 
-# struct GList {
-#     gpointer data;
-#     GList* next;
-#     GList* prev;
-# };
+    # struct GList {
+    #     gpointer data;
+    #     GList* next;
+    #     GList* prev;
+    # };
 
+    class GList(Structure):
+        pass
 
-class GList(Structure):
-    pass
+    GList._fields_ = [('data', gpointer),
+                      ('next', POINTER(GList)),
+                      ('prev', POINTER(GList))]
 
+    # struct GError {
+    #     GQuark domain;
+    #     gint code;
+    #     gchar* message;
+    # };
 
-GList._fields_ = [('data', gpointer),
-                  ('next', POINTER(GList)),
-                  ('prev', POINTER(GList))]
+    class GError(Structure):
+        pass
 
-# struct GError {
-#     GQuark domain;
-#     gint code;
-#     gchar* message;
-# };
+    GError_fields_ = [('domain', GQuark),
+                      ('code', gint),
+                      ('message', gchar_p)]
 
+    # struct GPtrArray {
+    #     gpointer* pdata;
+    #     guint     len;
+    # };
 
-class GError(Structure):
-    _fields_ = [('domain', GQuark),
-                ('code', gint),
-                ('message', gchar_p)]
+    class GPtrArray(Structure):
+        pass
 
-# struct GPtrArray {
-#     gpointer* pdata;
-#     guint     len;
-# };
+    GPtrArray._fields_ = [('pdata', POINTER(gpointer)), ('len', guint)]
 
+    # struct GArray {
+    #     gchar* data;
+    #     guint  len;
+    # };
 
-class GPtrArray(Structure):
-    _fields_ = [('pdata', POINTER(gpointer)), ('len', guint)]
+    class GArray(Structure):
+        pass
 
+    GArray._fields_ = [('data', gchar_p), ('len', guint)]
 
-# struct GArray {
-#     gchar* data;
-#     guint  len;
-# };
-class GArray(Structure):
-    _fields_ = [('data', gchar_p), ('len', guint)]
+    # struct GSList {
+    #     gpointer data;
+    #     GSList*  next;
+    # };
 
+    class GSList(Structure):
+        pass
 
-# struct GSList {
-#     gpointer data;
-#     GSList*  next;
-# };
-class GSList(Structure):
-    pass
+    GSList._fields_ = [('data', gpointer), ('next', POINTER(GSList))]
 
+    # struct GByteArray {
+    #     guint8 *data;
+    #     guint   len;
+    # };
 
-GSList._fields_ = [('data', gpointer), ('next', POINTER(GSList))]
+    class GByteArray(Structure):
+        pass
 
+    GByteArray._fields_ = [('data', POINTER(guint8)),
+                           ('len', guint)]
 
-# struct GByteArray {
-#     guint8 *data;
-#     guint   len;
-# };
-class GByteArray(Structure):
-    _fields_ = [('data', POINTER(guint8)),
-                ('len', guint)]
+    # typedef struct _GRegex GRegex;
 
+    class _GRegex(Structure):
+        _fields_ = []
 
-# typedef struct _GRegex GRegex;
-class _GRegex(Structure):
-    _fields_ = []
+    GRegex = _GRegex
 
+    # typedef struct _GMatchInfo GMatchInfo;
 
-GRegex = _GRegex
+    class _GMatchInfo(Structure):
+        _fields_ = []
 
-
-# typedef struct _GMatchInfo GMatchInfo;
-class _GMatchInfo(Structure):
-    _fields_ = []
-
-
-GMatchInfo = _GMatchInfo
+    GMatchInfo = _GMatchInfo

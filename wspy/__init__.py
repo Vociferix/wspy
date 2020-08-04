@@ -19,5 +19,5 @@
 
 import wspy.libglib2 as libglib2
 import wspy.libwsutil as libwsutil
-import wspy.libwiretap as libwiretap
-import wspy.libwireshark as libwireshark
+#import wspy.libwiretap as libwiretap
+#import wspy.libwireshark as libwireshark
