@@ -9391,3 +9391,251 @@ build_column_format_array.argtypes = [POINTER(column_info), gint, gboolean]
 column_dump_column_formats = libwireshark.column_dump_column_formats
 column_dump_column_formats.restype = None
 column_dump_column_formats.argtypes = []
+
+
+############
+# to_str.h #
+############
+
+# #define GUID_STR_LEN     37
+GUID_STR_LEN = 37
+
+# #define MAX_ADDR_STR_LEN 256
+MAX_ADDR_STR_LEN = 256
+
+# #define VINES_ADDR_LEN   6
+VINES_ADDR_LEN = 6
+
+# #define EUI64_STR_LEN    24
+EUI64_STR_LEN = 24
+
+# #define AX25_ADDR_LEN    7
+AX25_ADDR_LEN = 7
+
+# #define FCWWN_ADDR_LEN   8
+FCWWN_ADDR_LEN = 8
+
+# gchar* address_to_str(wmem_allocator_t *scope, const address *addr);
+address_to_str = libwireshark.address_to_str
+address_to_str.restype = gchar_p
+address_to_str.argtypes = [POINTER(wmem_allocator_t), POINTER(address)]
+
+# gchar* address_with_resolution_to_str(wmem_allocator_t *scope, const
+# address *addr);
+address_with_resolution_to_str = libwireshark.address_with_resolution_to_str
+address_with_resolution_to_str.restype = gchar_p
+address_with_resolution_to_str.argtypes = [
+    POINTER(wmem_allocator_t), POINTER(address)]
+
+# gchar* tvb_address_with_resolution_to_str(wmem_allocator_t *scope,
+# tvbuff_t *tvb, int type, const gint offset);
+tvb_address_with_resolution_to_str = libwireshark.tvb_address_with_resolution_to_str
+tvb_address_with_resolution_to_str.restype = gchar_p
+tvb_address_with_resolution_to_str.argtypes = [
+    POINTER(wmem_allocator_t), POINTER(tvbuff_t), c_int, gint]
+
+# const gchar *address_to_name(const address *addr);
+address_to_name = libwireshark.address_to_name
+address_to_name.restype = gchar_p
+address_to_name.argtypes = [POINTER(address)]
+
+# gchar *address_to_display(wmem_allocator_t *allocator, const address *addr);
+address_to_display = libwireshark.address_to_display
+address_to_display.restype = gchar_p
+address_to_display.argtypes = [POINTER(wmem_allocator_t), POINTER(address)]
+
+# void     address_to_str_buf(const address *addr, gchar *buf, int buf_len);
+address_to_str_buf = libwireshark.address_to_str_buf
+address_to_str_buf.restype = None
+address_to_str_buf.argtypes = [POINTER(address), gchar_p, c_int]
+
+
+# #define tvb_ether_to_str(tvb, offset) tvb_address_to_str(wmem_packet_scope(), tvb, AT_ETHER, offset)
+def tvb_ether_to_str(tvb, offset):
+    return tvb_address_to_str(wmem_packet_scope(), tvb, AT_ETHER, offset)
+
+
+# #define tvb_ip_to_str(tvb, offset) tvb_address_to_str(wmem_packet_scope(), tvb, AT_IPv4, offset)
+def tvb_ip_to_str(tvb, offset):
+    return tvb_address_to_str(wmem_packet_scope(), tvb, AT_IPv4, offset)
+
+
+# #define tvb_ip6_to_str(tvb, offset) tvb_address_to_str(wmem_packet_scope(), tvb, AT_IPv6, offset)
+def tvb_ip6_to_str(tvb, offset):
+    return tvb_address_to_str(wmem_packet_scope(), tvb, AT_IPv6, offset)
+
+
+# #define tvb_fcwwn_to_str(tvb, offset) tvb_address_to_str(wmem_packet_scope(), tvb, AT_FCWWN, offset)
+def tvb_fcwwn_to_str(tvb, offset):
+    return tvb_address_to_str(wmem_packet_scope(), tvb, AT_FCWWN, offset)
+
+
+# #define tvb_fc_to_str(tvb, offset) tvb_address_to_str(wmem_packet_scope(), tvb, AT_FC, offset)
+def tvb_fc_to_str(tvb, offset):
+    return tvb_address_to_str(wmem_packet_scope(), tvb, AT_FC, offset)
+
+
+# #define tvb_eui64_to_str(tvb, offset) tvb_address_to_str(wmem_packet_scope(), tvb, AT_EUI64, offset)
+def tvb_eui64_to_str(tvb, offset):
+    return tvb_address_to_str(wmem_packet_scope(), tvb, AT_EUI64, offset)
+
+
+# gchar*	eui64_to_str(wmem_allocator_t *scope, const guint64 ad);
+eui64_to_str = libwireshark.eui64_to_str
+eui64_to_str.restype = gchar_p
+eui64_to_str.argtypes = [POINTER(wmem_allocator_t), guint64]
+
+# gchar*	abs_time_to_str(wmem_allocator_t *scope, const nstime_t*, const absolute_time_display_e fmt,
+#     gboolean show_zone);
+abs_time_to_str = libwireshark.abs_time_to_str
+abs_time_to_str.restype = gchar_p
+abs_time_to_str.argtypes = [
+    POINTER(wmem_allocator_t),
+    POINTER(nstime_t),
+    absolute_time_display_e,
+    gboolean]
+
+# gchar*	abs_time_secs_to_str(wmem_allocator_t *scope, const time_t, const absolute_time_display_e fmt,
+#     gboolean show_zone);
+abs_time_secs_to_str = libwireshark.abs_time_secs_to_str
+abs_time_secs_to_str.restype = gchar_p
+abs_time_secs_to_str.argtypes = [
+    POINTER(wmem_allocator_t),
+    c_int64,
+    absolute_time_display_e,
+    gboolean]
+
+# void    display_epoch_time(gchar *, int, const time_t,  gint32, const
+# to_str_time_res_t);
+display_epoch_time = libwireshark.display_epoch_time
+display_epoch_time.restype = None
+display_epoch_time.argtypes = [
+    gchar_p,
+    c_int,
+    c_int64,
+    gint32,
+    to_str_time_res_t]
+
+# void    display_signed_time(gchar *, int, const gint32, gint32, const
+# to_str_time_res_t);
+display_signed_time = libwireshark.display_signed_time
+display_signed_time.restype = None
+display_signed_time.argtypes = [
+    gchar_p,
+    c_int,
+    gint32,
+    gint32,
+    to_str_time_res_t]
+
+# gchar*  signed_time_secs_to_str(wmem_allocator_t *scope, const gint32
+# time_val);
+signed_time_secs_to_str = libwireshark.signed_time_secs_to_str
+signed_time_secs_to_str.restype = gchar_p
+signed_time_secs_to_str.argtypes = [POINTER(wmem_allocator_t), gint32]
+
+# gchar*	unsigned_time_secs_to_str(wmem_allocator_t *scope, const guint32);
+unsigned_time_secs_to_str = libwireshark.unsigned_time_secs_to_str
+unsigned_time_secs_to_str.restype = gchar_p
+unsigned_time_secs_to_str.argtypes = [POINTER(wmem_allocator_t), guint32]
+
+# gchar*	signed_time_msecs_to_str(wmem_allocator_t *scope, gint32 time_val);
+signed_time_msecs_to_str = libwireshark.signed_time_msecs_to_str
+signed_time_msecs_to_str.restype = gchar_p
+signed_time_msecs_to_str.argtypes = [POINTER(wmem_allocator_t), gint32]
+
+# void guint32_to_str_buf(guint32 u, gchar *buf, int buf_len);
+guint32_to_str_buf = libwireshark.guint32_to_str_buf
+guint32_to_str_buf.restype = None
+guint32_to_str_buf.argtypes = [guint32, gchar_p, c_int]
+
+# void guint64_to_str_buf(guint64 u, gchar *buf, int buf_len);
+guint64_to_str_buf = libwireshark.guint64_to_str_buf
+guint64_to_str_buf.restype = None
+guint64_to_str_buf.argtypes = [guint64, gchar_p, c_int]
+
+# gchar*	rel_time_to_str(wmem_allocator_t *scope, const nstime_t*);
+rel_time_to_str = libwireshark.rel_time_to_str
+rel_time_to_str.restype = gchar_p
+rel_time_to_str.argtypes = [POINTER(wmem_allocator_t), POINTER(nstime_t)]
+
+# gchar*	rel_time_to_secs_str(wmem_allocator_t *scope, const nstime_t*);
+rel_time_to_secs_str = libwireshark.rel_time_to_secs_str
+rel_time_to_secs_str.restype = gchar_p
+rel_time_to_secs_str.argtypes = [POINTER(wmem_allocator_t), POINTER(nstime_t)]
+
+# gchar*	guid_to_str(wmem_allocator_t *scope, const e_guid_t*);
+guid_to_str = libwireshark.guid_to_str
+guid_to_str.restype = gchar_p
+guid_to_str.argtypes = [POINTER(wmem_allocator_t), POINTER(e_guid_t)]
+
+# char *decode_bits_in_field(const guint bit_offset, const gint
+# no_of_bits, const guint64 value);
+decode_bits_in_field = libwireshark.decode_bits_in_field
+decode_bits_in_field.restype = c_char_p
+decode_bits_in_field.argtypes = [guint, gint, guint64]
+
+# const gchar* port_type_to_str (port_type type);
+port_type_to_str = libwireshark.port_type_to_str
+port_type_to_str.restype = gchar_p
+port_type_to_str.argtypes = [port_type]
+
+# gchar* tvb_address_to_str(wmem_allocator_t *scope, tvbuff_t *tvb, int
+# type, const gint offset);
+tvb_address_to_str = libwireshark.tvb_address_to_str
+tvb_address_to_str.restype = gchar_p
+tvb_address_to_str.argtypes = [
+    POINTER(wmem_allocator_t),
+    POINTER(tvbuff_t),
+    c_int,
+    gint]
+
+# gchar* tvb_address_var_to_str(wmem_allocator_t *scope, tvbuff_t *tvb,
+# address_type type, const gint offset, int length);
+tvb_address_var_to_str = libwireshark.tvb_address_var_to_str
+tvb_address_var_to_str.restype = gchar_p
+tvb_address_var_to_str.argtypes = [
+    POINTER(wmem_allocator_t),
+    POINTER(tvbuff_t),
+    address_type,
+    gint,
+    c_int]
+
+# char *guint8_to_hex(char *out, guint8 val);
+guint8_to_hex = libwireshark.guint8_to_hex
+guint8_to_hex.restype = c_char_p
+guint8_to_hex.argtypes = [c_char_p, guint8]
+
+# char *word_to_hex(char *out, guint16 word);
+word_to_hex = libwireshark.word_to_hex
+word_to_hex.restype = c_char_p
+word_to_hex.argtypes = [c_char_p, guint16]
+
+# char *dword_to_hex(char *out, guint32 dword);
+dword_to_hex = libwireshark.dword_to_hex
+dword_to_hex.restype = c_char_p
+dword_to_hex.argtypes = [c_char_p, guint32]
+
+# char *bytes_to_str(wmem_allocator_t *scope, const guint8 *bd, int bd_len);
+bytes_to_str = libwireshark.bytes_to_str
+bytes_to_str.restype = c_char_p
+bytes_to_str.argtypes = [POINTER(wmem_allocator_t), POINTER(guint8), c_int]
+
+# gchar *bytestring_to_str(wmem_allocator_t *scope, const guint8 *ad,
+# const guint32 len, const char punct);
+bytestring_to_str = libwireshark.bytestring_to_str
+bytestring_to_str.restype = gchar_p
+bytestring_to_str.argtypes = [
+    POINTER(wmem_allocator_t),
+    POINTER(guint8),
+    guint32,
+    c_char]
+
+# char *bytes_to_hexstr(char *out, const guint8 *ad, guint32 len);
+bytes_to_hexstr = libwireshark.bytes_to_hexstr
+bytes_to_hexstr.restype = c_char_p
+bytes_to_hexstr.argtypes = [c_char_p, POINTER(guint8), guint32]
+
+# char *uint_to_str_back(char *ptr, guint32 value);
+uint_to_str_back = libwireshark.uint_to_str_back
+uint_to_str_back.restype = c_char_p
+uint_to_str_back.argtypes = [c_char_p, guint32]
