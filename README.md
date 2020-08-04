@@ -16,12 +16,10 @@ $ export WSPY_LIBWIRETAP="/my/path/to/libwiretap.so"
 $ export WSPY_LIBWSUTIL="/my/path/to/libwsutil.so"
 ```
 ```py
-import wspy_config
-wspy_config.set_libwireshark('/my/path/to/libwireshark.so')
-wspy_config.set_libwiretap('/my/path/to/libwiretap.so')
-wspy_config.set_libwsutil('/my/path/to/libwsutil.so')
-
 import wspy
+wspy.config.set_libwireshark('/my/path/to/libwireshark.so')
+wspy.config.set_libwiretap('/my/path/to/libwiretap.so')
+wspy.config.set_libwsutil('/my/path/to/libwsutil.so')
 ```
 
 Or, a single directory can be specified that contains all three libraries:
@@ -29,8 +27,6 @@ Or, a single directory can be specified that contains all three libraries:
 $ export WSPY_LIBDIR="/my/lib/dir"
 ```
 ```py
-import wspy_config
-wspy_config.set_libdir('/my/lib/dir')
-
 import wspy
+wspy.config.set_libdir('/my/lib/dir')
 ```

@@ -20,7 +20,7 @@
 from ctypes import *
 from wspy.libglib2 import LibGLib2
 from wspy.utils import *
-import wspy_config as config
+import wspy.config as config
 import sys
 import os
 
