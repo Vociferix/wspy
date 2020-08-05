@@ -20,3 +20,4 @@
 import wspy.config
 from wspy.libglib2 import LibGLib2
 from wspy.libwsutil import LibWSUtil
+from wspy.libwiretap import LibWiretap

@@ -720,7 +720,7 @@ class LibWSUtil:
 
     def ws_add_crash_info(self, fmt, *argv):
         args, types = c_va_list(*argv)
-        _ws_add_crash_info = self.ws_add_crash_info
+        _ws_add_crash_info = self.dll.ws_add_crash_info
         _ws_add_crash_info.restype = None
         _ws_add_crash_info.argtypes = [c_char_p] + types
         _ws_add_crash_info(fmt, *args)
@@ -1163,7 +1163,7 @@ class LibWSUtil:
 
     def report_failure(self, msg_format, *argv):
         args, types = c_va_list(*argv)
-        _report_failure = self.report_failure
+        _report_failure = self.dll.report_failure
         _report_failure.restype = None
         _report_failure.argtypes = [c_char_p] + types
         _report_failure(msg_format, *argv)
@@ -1172,8 +1172,7 @@ class LibWSUtil:
 
     def report_warning(self, msg_format, *argv):
         args, types = c_va_list(*argv)
-        print(types)
-        _report_warning = self.report_warning
+        _report_warning = self.dll.report_warning
         _report_warning.restype = None
         _report_warning.argtypes = [c_char_p] + types
         _report_warning(msg_format, *argv)
@@ -1210,7 +1209,7 @@ class LibWSUtil:
 
     def log_resource_usage(self, reset_delta, format, *argv):
         args, types = c_va_list(*argv)
-        _log_resource_usage = self.log_resource_usage
+        _log_resource_usage = self.dll.log_resource_usage
         _log_resource_usage.restype = None
         _log_resource_usage.argtypes = [LibGLib2.gboolean, c_char_p] + types
         _log_resource_usage(reset_delta, format, *args)
