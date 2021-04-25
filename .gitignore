@@ -1,0 +1,6 @@
+wspy/libwsextra.*
+build/**
+__pycache__/**
+wspy/__pycache__/**
+*.swp
+*.log
